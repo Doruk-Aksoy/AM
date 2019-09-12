@@ -1,0 +1,41 @@
+/*
+THIS IS THE ITEM MUTATOR FILE FOR ANGER MANAGEMENT. Without this file, items won't get custom stuff.
+*/
+
+appendevent EVENT_LOADACTOR
+	switch sprite[].picnum
+		case I_RADAR
+			// 33% chance to instead drop an ammo booster in this thing's place
+			ifrnd AM_AMMOBONUS_SPAWNCHANCE {
+				espawn I_AMMOBOOST
+				killit
+			}
+		break
+		case I_MEDKIT
+			// 25% chance to instead drop a health syringe in this thing's place
+			ifrnd AM_STAMINA_SPAWNCHANCE {
+				espawn I_SYRINGE
+				killit
+			}
+		break
+	endswitch
+endevent
+		
+appendevent EVENT_SPAWN
+	switch sprite[].picnum
+		case I_RADAR
+			// 33% chance to instead drop an ammo booster in this thing's place
+			ifrnd AM_AMMOBONUS_SPAWNCHANCE {
+				espawn I_AMMOBOOST
+				killit
+			}
+		break
+		case I_MEDKIT
+			// 25% chance to instead drop a health syringe in this thing's place
+			ifrnd AM_STAMINA_SPAWNCHANCE {
+				espawn I_SYRINGE
+				killit
+			}
+		break
+	endswitch
+endevent

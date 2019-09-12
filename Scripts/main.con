@@ -154,8 +154,8 @@ var final_cheevos
 var old_cheevos
 
 // no more cyclone
-/* var cyclone_mod_xv 0 2
-var cyclone_mod_yv 0 2 */
+var cyclone_mod_xv 0 1
+var cyclone_mod_yv 0 1
 var particle_type 0 2
 var particle_force_pal 0 2
 var particle_force_shade 0 2
@@ -638,7 +638,10 @@ include scripts/text.con
 include scripts/levels.con
 include scripts/customize.con
 
+include scripts/am_defs.con
+
 include scripts/subroutines.con
+include scripts/am_helper.con
 
 include scripts/surfaces.con
 include scripts/draw.con
@@ -658,6 +661,8 @@ include scripts/inventory.con
 include scripts/particles.con
 
 include scripts/enemies.con
+
+include scripts/am.con
 /*
 array tilelist MAXTILES GAMEARRAY_BOOLEAN
 appendevent EVENT_WORLD

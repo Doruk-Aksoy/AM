@@ -160,7 +160,7 @@ var WEAPON1_SPAWN -1 1
 var WEAPON1_SHOTSPERBURST 3 1
 var WEAPON1_WORKSLIKE 1 1
 var WEAPON1_INITIALSOUND 0 1
-var WEAPON1_FIRESOUND S_TRIFIRE1 1
+var WEAPON1_FIRESOUND AM_S_TRIFIRE_1 1
 var WEAPON1_SOUND2TIME 54 1
 var WEAPON1_SOUND2SOUND S_TRILOAD2 1
 var WEAPON1_RELOADSOUND1 S_TRILOAD1 1
@@ -179,7 +179,7 @@ var WEAPON2_SPAWN -1 1
 var WEAPON2_SHOTSPERBURST 15 1
 var WEAPON2_WORKSLIKE 2 1
 var WEAPON2_INITIALSOUND 0 1
-var WEAPON2_FIRESOUND S_SHOTGUN_FIRE1 1
+var WEAPON2_FIRESOUND AM_S_SHOTGUNFIRE_1 1
 var WEAPON2_SOUND2TIME 12 1
 var WEAPON2_SOUND2SOUND 0 1
 var WEAPON2_RELOADSOUND1 0 1
@@ -491,15 +491,15 @@ defineprojectile P_SHOCKER PROJ_TOFFSET 0
 defineprojectile P_SHOCKER PROJ_TXREPEAT 0
 
 // remove for demo
-/*
 defineprojectile P_FLAMER PROJ_WORKSLIKE 49218
 defineprojectile P_FLAMER PROJ_SPAWNS A_FIRECYCLONE
-defineprojectile P_FLAMER PROJ_SXREPEAT 32
-defineprojectile P_FLAMER PROJ_SYREPEAT 32
+defineprojectile P_FLAMER PROJ_CLIPDIST 96
+defineprojectile P_FLAMER PROJ_SXREPEAT 16
+defineprojectile P_FLAMER PROJ_SYREPEAT 16
 defineprojectile P_FLAMER PROJ_XREPEAT 2
 defineprojectile P_FLAMER PROJ_YREPEAT 2
 defineprojectile P_FLAMER PROJ_EXTRA 25
-defineprojectile P_FLAMER PROJ_RANGE 7
+defineprojectile P_FLAMER PROJ_RANGE 22
 defineprojectile P_FLAMER PROJ_EXTRA_RAND 0
 defineprojectile P_FLAMER PROJ_HITRADIUS 0
 defineprojectile P_FLAMER PROJ_OFFSET 336
@@ -511,7 +511,6 @@ defineprojectile P_FLAMER PROJ_TRAIL A_EXPLOSION
 defineprojectile P_FLAMER PROJ_TNUM 0
 defineprojectile P_FLAMER PROJ_TOFFSET 0
 defineprojectile P_FLAMER PROJ_TXREPEAT 127 // This is a hack to tell the actor which particle it is
-*/
 
 spritenoshade P_BOMBETTE
 defineprojectile P_BOMBETTE PROJ_WORKSLIKE 2103502 // 6350 + NOSETSHADE // 22734
@@ -1304,7 +1303,7 @@ useractor notenemy A_NAPALM_FLAME 0 AC_NAPALM_FLAMEON
         seta .shade temp
     }
     else ifrnd 32 set shell_shot 1
-    ifge counter 20
+    ifge counter 25
     {
         ifspawnedby A_NAPALM_BURST
         {
@@ -1412,19 +1411,25 @@ action AC_NAPALM_BURSTING 0 6 1 1 4
 useractor notenemy A_NAPALM_BURST 0 AC_NAPALM_BURSTING
     ife counter 0
     {
+		ifspawnedby P_NAPALM_BALL
+			hitradius NAPALM_BALL_RADIUS 15 21 27 33
         flash
         set counter 1
-        rand temp 3
+        rand temp 6
         add temp 5
         for itervar range temp
         {
             espawn A_NAPALM_FLAME
-            ifspawnedby P_FLAMINGSKULL
-                seta[RETURN].pal 6
+            ifspawnedby P_FLAMINGSKULL {
+				ifspritepal 0
+					seta[RETURN].pal 6
+				else
+					seta[RETURN].pal sprite.pal
+			}
             rand temp2 2047
             seta[RETURN].ang temp2
-            rand temp2 128
-            add temp2 128
+            rand temp2 160
+            add temp2 160
             seta[RETURN].xvel temp2
             rand temp2 512
             add temp2 1024
@@ -1433,8 +1438,10 @@ useractor notenemy A_NAPALM_BURST 0 AC_NAPALM_BURSTING
             ssp RETURN 0
             // sub temp 1
         }
-        ifspawnedby P_FLAMINGSKULL
-            spritepal 6
+        ifspawnedby P_FLAMINGSKULL {
+			ifspritepal 0
+				spritepal 6
+		}
     }
     ifactioncount 6
         killit
@@ -1996,6 +2003,8 @@ defstate weapon_projectiles
                                 {
                                     geta[player[myconnectindex].i].htextra temp3
                                     add temp3 1
+									ifrnd 127
+										add temp3 1
                                     clamp temp3 1 131072
                                     seta[player[myconnectindex].i].htextra temp3
                                     seta[player[myconnectindex].i].htpicnum sprite[].picnum
@@ -5000,7 +5009,7 @@ useractor notenemy P_BOWLINGBOMB 1
 enda
 
 // commented out this entire cyclone block for the demo
-/*
+
 spritenoshade A_FIRECYCLONE
 spritenopal A_FIRECYCLONE
 action AC_FIRECYCLONE_SPIN 0 26 1 1 1
@@ -5014,7 +5023,7 @@ appendevent EVENT_SPAWN
         spritepal 62 // temporary?
     }
 endevent
-*/
+
 spritenoshade A_FIRE_SPARK
 spritenopal A_FIRE_SPARK
 action AC_FLAMECYCLONEBURST 0 13 1 1 1
@@ -5169,7 +5178,7 @@ useractor notenemy 6705 0 AC_FLAMECYCLONESMOKE
     add counter 1
 enda
 
-/*
+
 useractor notenemy 7103
     ifl sprite[].xrepeat 32 killit
 enda
@@ -5194,105 +5203,107 @@ useractor notenemy A_FIRECYCLONE 0 AC_FIRECYCLONE_SPIN
     add temp sprite[].z
     seta[flame_child].z temp
     seta[flame_child].sectnum sprite[].sectnum
-    ifrnd 64
-    {
-        espawn A_FIRE_SPARK
-        seta[RETURN].xrepeat 1
-        seta[RETURN].yrepeat 1
-        seta[RETURN].cstat 130
-        seta[RETURN].blend 129
-        seta[RETURN].shade 15
+	
+	ifand counter 1 {
+		ifrnd 64
+		{
+			espawn A_FIRE_SPARK
+			seta[RETURN].xrepeat 1
+			seta[RETURN].yrepeat 1
+			seta[RETURN].cstat 130
+			seta[RETURN].blend 129
+			seta[RETURN].shade 15
 
-        rand temp 2047
-        seta[RETURN].ang temp
-        set move_override RETURN
-        rand move_v 512
+			rand temp 2047
+			seta[RETURN].ang temp
+			set move_override RETURN
+			rand move_v 512
 
-        geta[].xrepeat temp
-        shiftl temp 3
-        add move_v temp
-        state move_actor
-        add move_xv sprite[].x
-        add move_yv sprite[].y
-        seta[RETURN].x move_xv
-        seta[RETURN].y move_yv
+			geta[].xrepeat temp
+			shiftl temp 3
+			add move_v temp
+			state move_actor
+			add move_xv sprite[].x
+			add move_yv sprite[].y
+			seta[RETURN].x move_xv
+			seta[RETURN].y move_yv
 
-        geta[].yrepeat temp
-        shiftl temp 9
-        rand temp2 temp
-        geta[].z temp
-        sub temp temp2
-        seta[RETURN].z temp
-
-
-        geta[RETURN].ang temp4
-        geta[].x face_x
-        sub face_x sprite[RETURN].x
-
-        geta[].y face_y
-        sub face_y sprite[RETURN].y
-
-        getangle face_return face_x face_y
-
-        sub face_return 256
-        and face_return 2047
-        seta[RETURN].ang face_return
-        rand temp 15
-        add temp 50
-        seta[RETURN].xvel temp
-
-    }
-
-    ifrnd 32
-    {
-        espawn 6705
-        seta[RETURN].xrepeat 32
-        seta[RETURN].yrepeat 32
-        seta[RETURN].cstat 130
-        seta[RETURN].blend 129
-        seta[RETURN].shade 30
-
-        rand temp 2047
-        seta[RETURN].ang temp
-        set move_override RETURN
-        rand move_v 512
-
-        geta[].xrepeat temp
-        shiftl temp 3
-        add move_v temp
-        state move_actor
-        add move_xv sprite[].x
-        add move_yv sprite[].y
-        seta[RETURN].x move_xv
-        seta[RETURN].y move_yv
-
-        geta[].yrepeat temp
-        shiftl temp 9
-        rand temp2 temp
-        geta[].z temp
-        sub temp temp2
-        sub temp 2048
-        seta[RETURN].z temp
+			geta[].yrepeat temp
+			shiftl temp 9
+			rand temp2 temp
+			geta[].z temp
+			sub temp temp2
+			seta[RETURN].z temp
 
 
-        geta[RETURN].ang temp4
-        geta[].x face_x
-        sub face_x sprite[RETURN].x
+			geta[RETURN].ang temp4
+			geta[].x face_x
+			sub face_x sprite[RETURN].x
 
-        geta[].y face_y
-        sub face_y sprite[RETURN].y
+			geta[].y face_y
+			sub face_y sprite[RETURN].y
 
-        getangle face_return face_x face_y
+			getangle face_return face_x face_y
 
-        sub face_return 128
-        and face_return 2047
-        seta[RETURN].ang face_return
-        rand temp 15
-        add temp 50
-        seta[RETURN].xvel temp
+			sub face_return 256
+			and face_return 2047
+			seta[RETURN].ang face_return
+			rand temp 15
+			add temp 50
+			seta[RETURN].xvel temp
 
-    }
+		}
 
+		ifrnd 32
+		{
+			espawn 6705
+			seta[RETURN].xrepeat 32
+			seta[RETURN].yrepeat 32
+			seta[RETURN].cstat 130
+			seta[RETURN].blend 129
+			seta[RETURN].shade 30
+
+			rand temp 2047
+			seta[RETURN].ang temp
+			set move_override RETURN
+			rand move_v 512
+
+			geta[].xrepeat temp
+			shiftl temp 3
+			add move_v temp
+			state move_actor
+			add move_xv sprite[].x
+			add move_yv sprite[].y
+			seta[RETURN].x move_xv
+			seta[RETURN].y move_yv
+
+			geta[].yrepeat temp
+			shiftl temp 9
+			rand temp2 temp
+			geta[].z temp
+			sub temp temp2
+			sub temp 2048
+			seta[RETURN].z temp
+
+
+			geta[RETURN].ang temp4
+			geta[].x face_x
+			sub face_x sprite[RETURN].x
+
+			geta[].y face_y
+			sub face_y sprite[RETURN].y
+
+			getangle face_return face_x face_y
+
+			sub face_return 128
+			and face_return 2047
+			seta[RETURN].ang face_return
+			rand temp 15
+			add temp 50
+			seta[RETURN].xvel temp
+		}
+	}
+	
     iffloordistl 1
     {
         getflorzofslope sprite[].sectnum sprite[].x sprite[].y temp
@@ -5339,142 +5350,8 @@ useractor notenemy A_FIRECYCLONE 0 AC_FIRECYCLONE_SPIN
                 set temp -127
             seta[].shade temp
         }
-        ife counter 0
-        {
-            for temp sprofstat STAT_ZOMBIEACTOR
-            {
-                ldist temp2 THISACTOR temp
 
-                ifl temp2 6144
-                {
-                    geta[].z temp5
-                    sub temp5 4096
-                    seta[].z temp5
-                    canseespr THISACTOR temp temp4
-                    add temp5 4096
-                    seta[].z temp5
-                    ife temp4 1
-                    {
-                        changespritestat temp STAT_ACTOR
-                    }
-                }
-            }
-        }
-        for temp sprofstat STAT_ACTOR
-        {
-            getav[temp].actor_moveable temp2
-            ife temp2 1
-            {
-                ldist temp2 temp THISACTOR
-                ifl temp2 8192
-                {
-                    sub temp2 8192
-                    inv temp2
-                    shiftr temp2 9
-                    geta[temp].ang temp4
-                    geta[].x face_x
-                    sub face_x sprite[temp].x
-
-                    geta[].y face_y
-                    sub face_y sprite[temp].y
-
-                    getangle face_return face_x face_y
-
-                    seta[temp].ang face_return
-
-
-                    set move_override temp
-                    clamp temp2 0 50
-                    set move_v temp2
-                    state move_actor
-
-                    getav[temp].actor_moveable_xv temp2
-                    add temp2 move_xv
-                    setav[temp].actor_moveable_xv temp2
-
-                    getav[temp].actor_moveable_yv temp2
-                    add temp2 move_yv
-                    setav[temp].actor_moveable_yv temp2
-
-                    add face_return -512
-                    and face_return 2047
-
-                    seta[temp].ang face_return
-
-                    set move_override temp
-                    state move_actor
-
-                    getav[temp].actor_moveable_xv temp2
-                    add temp2 move_xv
-                    setav[temp].actor_moveable_xv temp2
-
-                    getav[temp].actor_moveable_yv temp2
-                    add temp2 move_yv
-                    setav[temp].actor_moveable_yv temp2
-
-                    seta[temp].ang temp4
-                }
-            }
-            else ifand tiledata[sprite[temp].picnum].gameflags 32
-            {
-                ldist temp2 temp THISACTOR
-                ifl temp2 8192
-                {
-                    sub temp2 8192
-                    inv temp2
-                    shiftr temp2 7
-
-                    geta[temp].ang temp4
-                    geta[].x face_x
-                    sub face_x sprite[temp].x
-
-                    geta[].y face_y
-                    sub face_y sprite[temp].y
-
-                    getangle face_return face_x face_y
-
-                    seta[temp].ang face_return
-
-
-                    set move_override temp
-                    set move_v temp2
-                    state move_actor
-
-                    getav[temp].cyclone_mod_xv temp2
-                    add temp2 move_xv
-                    clamp temp2 -50 50
-                    setav[temp].cyclone_mod_xv temp2
-
-                    getav[temp].cyclone_mod_yv temp2
-                    add temp2 move_yv
-                    clamp temp2 -50 50
-                    setav[temp].cyclone_mod_yv temp2
-
-                    add face_return -512
-                    and face_return 2047
-
-                    seta[temp].ang face_return
-
-                    set move_override temp
-                    shiftr move_v 1
-                    state move_actor
-
-                    getav[temp].cyclone_mod_xv temp2
-                    add temp2 move_xv
-                    clamp temp2 -50 50
-                    setav[temp].cyclone_mod_xv temp2
-
-                    getav[temp].cyclone_mod_yv temp2
-                    add temp2 move_yv
-                    clamp temp2 -50 50
-                    setav[temp].cyclone_mod_yv temp2
-
-                    seta[temp].ang temp4
-                }
-            }
-        }
-
-        ifpdistl 8192
+        ifpdistl AM_FIRECYCLONE_PULLDIST
         {
             getplayer[].i temp
             geta[].ang temp4
@@ -5482,44 +5359,84 @@ useractor notenemy A_FIRECYCLONE 0 AC_FIRECYCLONE_SPIN
             set face_target player[].i
             state face_actor
             seta[].ang face_return
+			sub face_return 1024
+			and face_return 2047
 
             ldist temp2 temp THISACTOR
-            sub temp2 8192
+            sub temp2 AM_FIRECYCLONE_PULLDIST
             inv temp2
-            shiftr temp2 6
-
+            shiftr temp2 3
+			ifrnd 127
+				shiftr temp2 1
+			
             set move_v temp2
-            state move_actor
+            cos move_xv face_return
+            sin move_yv face_return
+            mul move_xv move_v
+            mul move_yv move_v
+			shiftr move_xv 4
+			shiftr move_yv 4
+			ifn playervar.cyclone_mod_xv 0
+			{
+				add move_xv playervar.cyclone_mod_xv
+				setpv .cyclone_mod_xv 0
+			}
+			ifn playervar.cyclone_mod_yv 0
+			{
+				add move_yv playervar.cyclone_mod_yv
+				setpv .cyclone_mod_yv 0
+			}
+			add move_xv player.posxv
+            add move_yv player.posyv
+            setp .posxv move_xv
+            setp .posyv move_yv
 
-
-            getav[temp].cyclone_mod_xv temp2
+            getpv .cyclone_mod_xv temp2
             sub temp2 move_xv
             clamp temp2 -50 50
-            setav[temp].cyclone_mod_xv temp2
+            setpv .cyclone_mod_xv temp2
 
-            getav[temp].cyclone_mod_yv temp2
+            getpv .cyclone_mod_yv temp2
             sub temp2 move_yv
             clamp temp2 -50 50
-            setav[temp].cyclone_mod_yv temp2
+            setpv .cyclone_mod_yv temp2
 
             add face_return -512
             and face_return 2047
 
             seta[].ang face_return
 
-
             shiftr move_v 1
-            state move_actor
+            cos move_xv face_return
+            sin move_yv face_return
+            mul move_xv move_v
+            mul move_yv move_v
+			shiftr move_xv 4
+			shiftr move_yv 4
+			ifn playervar.cyclone_mod_xv 0
+			{
+				add move_xv playervar.cyclone_mod_xv
+				setpv .cyclone_mod_xv 0
+			}
+			ifn playervar.cyclone_mod_yv 0
+			{
+				add move_yv playervar.cyclone_mod_yv
+				setpv .cyclone_mod_yv 0
+			}
+			add move_xv player.posxv
+            add move_yv player.posyv
+			setp .posxv move_xv
+            setp .posyv move_yv
 
-            getav[temp].cyclone_mod_xv temp2
+            getpv .cyclone_mod_xv temp2
             sub temp2 move_xv
             clamp temp2 -50 50
-            setav[temp].cyclone_mod_xv temp2
+            setpv .cyclone_mod_xv temp2
 
-            getav[temp].cyclone_mod_yv temp2
+            getpv .cyclone_mod_yv temp2
             sub temp2 move_yv
             clamp temp2 -50 50
-            setav[temp].cyclone_mod_yv temp2
+            setpv .cyclone_mod_yv temp2
 
             seta[].ang temp4
         }
@@ -5540,11 +5457,12 @@ useractor notenemy A_FIRECYCLONE 0 AC_FIRECYCLONE_SPIN
             seta[].shade temp
         }
     }
-    hitradius 1280 1 2 3 4
+	ifand counter 1
+		hitradius 1444 2 3 4 5
     add counter 1
     ifg counter 120
         killit
-enda */
+enda
 // J.S NOTE: I just went ahead and used this as the base for everything and offset
 define LOVERBOY_X 220
 define LOVERBOY_Y 265
@@ -5593,15 +5511,15 @@ appendevent EVENT_GETAUTOAIMANGLE
 
     ife player[].curr_weapon WEAPON_LOVERBOY
     {
-        rand WEAPON1_FIRESOUND 6
-        add WEAPON1_FIRESOUND S_TRIFIRE1
+        rand WEAPON1_FIRESOUND AM_S_TRI_RAND
+        add WEAPON1_FIRESOUND AM_S_TRIFIRE_1
         ifn fuckup_aim 0
             set AUTOAIMANGLE 0
     }
     else ife player[].curr_weapon WEAPON_SHOTGUN
     {
-            rand WEAPON2_FIRESOUND 1
-            add WEAPON2_FIRESOUND S_SHOTGUN_FIRE1
+            rand WEAPON2_FIRESOUND AM_S_SHOTGUN_RAND
+            add WEAPON2_FIRESOUND AM_S_SHOTGUNFIRE_1
 
         ife weapon2_realclip SHOTGUN_CLIP
             set WEAPON2_SOUND2SOUND 0
@@ -6406,10 +6324,10 @@ defstate player_weapon_mods
     }
 
     setp[].runspeed RUNNINGSPEED
-    ifg sprite.extra MAXPLAYERHEALTH
+    ifg sprite.extra player.max_player_health
     {
         set temp sprite.extra
-        sub temp MAXPLAYERHEALTH
+        sub temp player.max_player_health
         shiftl temp 4
         add temp RUNNINGSPEED
         setp .runspeed temp

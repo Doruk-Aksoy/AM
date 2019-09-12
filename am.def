@@ -1,0 +1,55 @@
+// pickups
+// backpack -- SPRITES BY PILLOWBLASTER
+tilefromtexture 100 { file /sprites/am/pickups/am_bpak.png }
+
+// enemies
+// seeker drone -- SPRITES BY SHADESMASTER
+tilefromtexture 11744 { file /sprites/am/enemies/seekerdrone/DRFXA1.png }
+tilefromtexture 11745 { file /sprites/am/enemies/seekerdrone/DRFXA2A8.png }
+tilefromtexture 11746 { file /sprites/am/enemies/seekerdrone/DRFXA3A7.png }
+tilefromtexture 11747 { file /sprites/am/enemies/seekerdrone/DRFXA4A6.png }
+tilefromtexture 11748 { file /sprites/am/enemies/seekerdrone/DRFXA5.png }
+tilefromtexture 11749 { file /sprites/am/enemies/seekerdrone/DRFXB1.png }
+tilefromtexture 11750 { file /sprites/am/enemies/seekerdrone/DRFXB2B8.png }
+tilefromtexture 11751 { file /sprites/am/enemies/seekerdrone/DRFXB3B7.png }
+tilefromtexture 11752 { file /sprites/am/enemies/seekerdrone/DRFXB4B6.png }
+tilefromtexture 11753 { file /sprites/am/enemies/seekerdrone/DRFXC0.png }
+tilefromtexture 11754 { file /sprites/am/enemies/seekerdrone/DRFXD0.png }
+tilefromtexture 11755 { file /sprites/am/enemies/seekerdrone/DRFXE0.png }
+tilefromtexture 11756 { file /sprites/am/enemies/seekerdrone/DRFXF0.png }
+tilefromtexture 11757 { file /sprites/am/enemies/seekerdrone/DRFXG0.png }
+tilefromtexture 11758 { file /sprites/am/enemies/seekerdrone/DRFXH0.png }
+
+tilefromtexture 11759 { file /sprites/am/enemies/seekerdrone/HDRNA1.png }
+tilefromtexture 11760 { file /sprites/am/enemies/seekerdrone/HDRNA2A8.png }
+tilefromtexture 11761 { file /sprites/am/enemies/seekerdrone/HDRNA3A7.png }
+tilefromtexture 11762 { file /sprites/am/enemies/seekerdrone/HDRNA4A6.png }
+tilefromtexture 11763 { file /sprites/am/enemies/seekerdrone/HDRNA5.png }
+tilefromtexture 11764 { file /sprites/am/enemies/seekerdrone/HDRNB1.png }
+tilefromtexture 11765 { file /sprites/am/enemies/seekerdrone/HDRNB2B8.png }
+tilefromtexture 11766 { file /sprites/am/enemies/seekerdrone/HDRNB3B7.png }
+tilefromtexture 11767 { file /sprites/am/enemies/seekerdrone/HDRNB4B6.png }
+tilefromtexture 11768 { file /sprites/am/enemies/seekerdrone/HDRNB5.png }
+tilefromtexture 11769 { file /sprites/am/enemies/seekerdrone/HDRNC1.png }
+tilefromtexture 11770 { file /sprites/am/enemies/seekerdrone/HDRNC2C8.png }
+tilefromtexture 11771 { file /sprites/am/enemies/seekerdrone/HDRNC3C7.png }
+tilefromtexture 11772 { file /sprites/am/enemies/seekerdrone/HDRNC4C6.png }
+tilefromtexture 11773 { file /sprites/am/enemies/seekerdrone/HDRNC5.png }
+tilefromtexture 11774 { file /sprites/am/enemies/seekerdrone/HDRND1.png }
+tilefromtexture 11775 { file /sprites/am/enemies/seekerdrone/HDRND2D8.png }
+tilefromtexture 11776 { file /sprites/am/enemies/seekerdrone/HDRND3D7.png }
+tilefromtexture 11777 { file /sprites/am/enemies/seekerdrone/HDRND4D6.png }
+tilefromtexture 11778 { file /sprites/am/enemies/seekerdrone/HDRND5.png }
+
+tilefromtexture 11779 { file /sprites/am/enemies/seekerdrone/DRONE0.png }
+tilefromtexture 11780 { file /sprites/am/enemies/seekerdrone/DRONF0.png yoff -8 }
+tilefromtexture 11781 { file /sprites/am/enemies/seekerdrone/DRONG0.png yoff -8 }
+tilefromtexture 11782 { file /sprites/am/enemies/seekerdrone/DRONH0.png yoff -8 }
+tilefromtexture 11783 { file /sprites/am/enemies/seekerdrone/DRONI0.png yoff -8 }
+tilefromtexture 11784 { file /sprites/am/enemies/seekerdrone/DRONJ0.png yoff 2 }
+tilefromtexture 11785 { file /sprites/am/enemies/seekerdrone/DRONK0.png yoff 4 }
+
+tilefromtexture 11786 { file /sprites/am/enemies/seekerdrone/SDFXA0.png yoff 6 }
+tilefromtexture 11787 { file /sprites/am/enemies/seekerdrone/SDFXB0.png yoff 5  }
+tilefromtexture 11788 { file /sprites/am/enemies/seekerdrone/SDFXC0.png yoff 5  }
+tilefromtexture 11789 { file /sprites/am/enemies/seekerdrone/SDFXD0.png yoff 5  }

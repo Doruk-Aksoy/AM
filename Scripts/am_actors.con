@@ -1,0 +1,214 @@
+/*
+THIS IS THE ACTOR DECLARATION FILE OF ANGER MANAGEMENT
+*/
+
+defstate am_increase_ammocaps
+	for am_iter range 8 {
+		switch am_iter
+			case 1
+				setvar am_tmp WEAPON1_MAXAMMO
+			break
+			case 2
+				setvar am_tmp WEAPON2_MAXAMMO
+			break
+			case 3
+				setvar am_tmp WEAPON3_MAXAMMO
+			break
+			case 4
+				setvar am_tmp WEAPON4_MAXAMMO
+			break
+			case 5
+				setvar am_tmp WEAPON5_MAXAMMO
+			break
+			case 6
+				setvar am_tmp GRENADE_MAXAMMO
+			break
+			case 7
+				setvar am_tmp WEAPON7_MAXAMMO
+			break
+			case 8
+				setvar am_tmp WEAPON8_MAXAMMO
+			break
+			default
+				// do nothing for the baton
+			break
+		endswitch
+		
+		getp .max_ammo_amount am_iter am_tmp2
+		divvar am_tmp AM_AMMOBONUS_FACTOR
+		addvarvar am_tmp2 am_tmp
+		setp .max_ammo_amount am_iter am_tmp2
+	}
+ends
+
+spritenopal I_AMMOBOOST
+spriteshadow I_AMMOBOOST
+spritenoshade I_AMMOBOOST
+useractor notenemy I_AMMOBOOST
+    state item_initflags
+    geta[].ang temp
+    add temp 32
+    and temp 2047
+    seta[].ang temp
+    state item_stupidwater_fall
+    cstat 16
+    sizeat 32 32
+    spritepal 0
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 15 25
+    
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 12
+    {
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 24
+        abs temp2
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ife counter 24
+            set counter 0
+        set shardblink 0
+    }
+	
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+		ifvarl p_ammocap_bonus AM_MAX_AMMOBONUS_CAP {
+			state item_secret
+			add p_ammocap_bonus 1
+			set p_update_ammocap 1
+			
+			// increase the ammo capacities
+			state am_increase_ammocaps
+			
+            ife se_lotag 32767
+                set se_lotag 0
+				
+			quote 1000
+            palfrom 15 25 32 5
+			
+			or p_wantline TALK_PICKUP
+			globalsound AM_S_AMMOBONUS
+			
+			cstat 32768
+            set counter 300
+            ifg se_hitag 0
+            {
+                operateactivators se_hitag THISACTOR
+                operatemasterswitches se_hitag
+                operaterespawns se_hitag
+                setarray preloadactivations[se_hitag] 1
+            }
+            killit
+		}
+    }
+enda
+
+spritenoshade AM_BRUTE_MUZZLEFLASH
+spritenopal AM_BRUTE_MUZZLEFLASH
+
+action AM_A_BRUTEMUZZLE 0 2 1 1 3 1
+useractor notenemy AM_BRUTE_MUZZLEFLASH
+	ifaction 0 {
+		action AM_A_BRUTEMUZZLE
+		geta .cstat am_tmp
+		xor am_tmp 32768
+		seta .cstat am_tmp
+	}
+	
+	ifn tp_owner -1 {
+		geta[tp_owner].x am_x
+		geta[tp_owner].y am_y
+		geta[tp_owner].ang am_ang
+		seta .x am_x
+		seta .y am_y
+		seta .ang am_ang
+		add am_y 208
+		add am_x 96
+		rotatepoint sprite.x sprite.y am_x am_y am_ang am_x2 am_y2
+		
+		seta .x am_x2
+		seta .y am_y2
+	}
+	
+	geta[].shade am_tmp
+	add am_tmp 8
+	seta[].shade am_tmp
+	
+	ifactioncount 2
+		killit
+enda
+
+defstate make_frame_effect
+	seta[RETURN].owner THISACTOR
+	seta[RETURN].mdflags 16
+	seta[RETURN].extra am_frame_counter
+	setav[RETURN].am_blendswitch 0
+	setav[RETURN].enemy_init sprite.picnum
+	setav[RETURN].am_estate am_frame_settings
+ends
+
+// Uses extra passed to this to determine how long it should last
+action AM_NOACTION 0 1 1 1 35
+useractor notenemy AM_FRAMEEFFECT 0 AM_NOACTION
+	/*
+		am_frame_settings
+		1 - fade out by 1
+		2 - fade out by 2 (can combine with 1 for 3 fade out)
+	*/
+	seta .xrepeat sprite[sprite.owner].xrepeat
+	seta .yrepeat sprite[sprite.owner].yrepeat
+	
+	set temp 0
+	ifand am_estate 1
+		set temp 2
+	ifand am_estate 2
+		add temp 3
+	set am_tmp am_estate
+	xor am_tmp 3
+	// has at least 1 or 2 in it
+	ifn am_tmp 3 {
+		geta .blend temp2
+		ife am_blendswitch 1
+			inv temp
+		add temp2 temp
+		clamp temp2 1 31
+		ife temp2 31 ifand sprite.cstat 2 {
+			seta .cstat 514
+			set am_blendswitch 1
+		}
+		seta .blend temp2
+	}
+	ifge sprite.htg_t 0 sprite.extra
+		killit
+enda
+
+appendevent EVENT_ANIMATESPRITES
+	ifactor AM_FRAMEEFFECT {
+		gettspr .tsprowner am_ang // the actor that is the world version of this
+		// make it use the picnum of the spawner
+		settspr .tsprpicnum actorvar[am_ang].enemy_init
+	}
+endevent
+
+include scripts/am_enemies.con

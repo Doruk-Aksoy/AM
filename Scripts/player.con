@@ -2276,7 +2276,7 @@ enda
 action NOPLAYER             5 1 5 1 1
 action PLAYER_STAND         5 1 5 1 1
 action PLAYER_WALK          15 4 5 1 24
-action PLAYER_RUN           15 4 5 1 16
+action PLAYER_RUN           15 4 5 1 14
 action PLAYER_JUMP          40 1 5 1 1
 action PLAYER_FALL          45 1 5 1 1
 action PLAYER_CROUCH        60 1 5 1 1
@@ -2639,6 +2639,10 @@ defstate reset_131072
     set yahahayoufoundme2 0
     set other_smg_toggle 0
     set other_smg 0
+	
+	// am stuff
+	set p_ammocap_bonus 0
+	set p_update_ammocap 0
 ends
 
 array tempwall 262144
@@ -3973,8 +3977,10 @@ defstate bbomb_mode_hpammo
         ifg sprite[].extra 25
             seta[].extra 25
     }
-    else
-        setp[].max_player_health MAXPLAYERHEALTH
+    else {
+		// update player's current health max
+		state update_p_maxhp
+	}
 ends
 
 defstate kills_secrets_discards
@@ -4869,7 +4875,7 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
                         sub temp SLIMEDMG
                     else
                         sound S_ITEM_HAZMAT_GEIGER
-                    clamp temp 0 MAXPLAYERHEALTH
+                    clamp temp 0 player.max_player_health
                     seta[].extra temp
                     seta[].htpicnum P_ACIDYSPIT
                 }
@@ -4932,7 +4938,7 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
                             sub temp SLIMEDMG
                         else
                             sound S_ITEM_HAZMAT_GEIGER
-                        clamp temp 0 MAXPLAYERHEALTH
+                        clamp temp 0 player.max_player_health
                         seta[].extra temp
                         seta[].htpicnum P_ACIDYSPIT
                     }
@@ -5010,7 +5016,7 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
             {
                 geta[].extra temp
                 sub temp 1
-                clamp temp 0 MAXPLAYERHEALTH
+                clamp temp 0 player.max_player_health
                 seta[].extra temp
             }
             else
@@ -5069,8 +5075,8 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
 
         // different red intensity based on health
         geta[].extra temp
-        clamp temp -65536 MAXPLAYERHEALTH
-        sub temp MAXPLAYERHEALTH
+        clamp temp -65536 player.max_player_health
+        sub temp player.max_player_health
         abs temp
         shiftr temp 1
         ifl temp 10
@@ -5137,7 +5143,7 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
                 set p_dead_face 2
             else
             {
-                set temp MAXPLAYERHEALTH
+                set temp player.max_player_health
                 shiftr temp 2
                 ifg temp5 temp
                     set p_dead_face 1
@@ -5155,7 +5161,7 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
         }
         else
         {
-            set temp MAXPLAYERHEALTH
+            set temp player.max_player_health
             shiftr temp 1
             ifl sprite[].extra temp
             {
@@ -5196,10 +5202,11 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
     {
         geta .extra temp
         set temp3 temp
-        clamp temp 0 MAXPLAYERHEALTH
+        clamp temp 0 player.max_player_health
         set temp2 temp
         add temp p_pizza_health
-        ifg temp MAXPLAYERHEALTH
+		// just make it go over the cap
+        /*ifg temp MAXPLAYERHEALTH
         {
             sub temp MAXPLAYERHEALTH
             sub temp3 p_last_hp
@@ -5221,14 +5228,14 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
                     set p_pizza_health -1
             }
         }
-        else
-        {
+        else*/
+        //{
             geta .extra temp
             add temp p_pizza_health
             seta .extra temp
             set p_pizza_health 0
             set p_pizza_count 0
-        }
+        //}
     }
     geta[].extra p_last_hp
 
@@ -7773,8 +7780,52 @@ defstate draw_hud_ammo
             }
             else
             {
-                redefinequote 190 %ld
-                qsprintf 190 190 hud_ammo
+				switch player[].curr_weapon
+					case WEAPON_LOVERBOY
+						redefinequote 190 %ld / %ld
+						set am_p_tmp2 PISTOL_CLIP
+						sub am_p_tmp2 weapon1_realclip
+						ifl hud_ammo am_p_tmp2 
+							set am_p_tmp2 hud_ammo
+						qsprintf 190 190 am_p_tmp2 hud_ammo
+					break
+					case WEAPON_SHOTGUN
+						redefinequote 190 %ld / %ld
+						set am_p_tmp2 SHOTGUN_CLIP
+						sub am_p_tmp2 weapon2_realclip
+						ifl hud_ammo am_p_tmp2 
+							set am_p_tmp2 hud_ammo
+						qsprintf 190 190 am_p_tmp2 hud_ammo
+					break
+					case WEAPON_SMG
+						redefinequote 190 %ld / %ld
+						set am_p_tmp2 SMG_CLIP
+						sub am_p_tmp2 weapon3_realclip
+						ifl hud_ammo am_p_tmp2 
+							set am_p_tmp2 hud_ammo
+						qsprintf 190 190 am_p_tmp2 hud_ammo
+					break
+					case WEAPON_GRENADE
+						redefinequote 190 %ld / %ld
+						set am_p_tmp2 SHOTGUN_CLIP
+						sub am_p_tmp2 weapon6_realclip
+						ifl hud_ammo am_p_tmp2 
+							set am_p_tmp2 hud_ammo
+						qsprintf 190 190 am_p_tmp2 hud_ammo
+					break
+					case WEAPON_CROSSBOW
+						redefinequote 190 %ld / %ld
+						set am_p_tmp2 CROSSBOW_CLIP
+						sub am_p_tmp2 weapon7_realclip
+						ifl hud_ammo am_p_tmp2 
+							set am_p_tmp2 hud_ammo
+						qsprintf 190 190 am_p_tmp2 hud_ammo
+					break
+					default
+						redefinequote 190 %ld
+						qsprintf 190 190 hud_ammo
+					break
+				endswitch
             }
         }
         else
@@ -7829,8 +7880,10 @@ defstate draw_hud_ammo
                         add hudx_x 20
                         sub hudx_y 24
 
-                        redefinequote 190 %ld
-                        qsprintf 190 190 player.ammo_amount WEAPON_GRENADE
+                        redefinequote 190 %ld / %ld
+						set am_p_tmp2 SHOTGUN_CLIP
+						subvarvar am_p_tmp2 weapon6_realclip
+                        qsprintf 190 190 am_p_tmp2 player.ammo_amount WEAPON_GRENADE
                         set hudx_quote 190
                         set hudx_tilenum BIGALPHANUM
                         set hudx_orientation 528
@@ -7875,8 +7928,10 @@ defstate draw_hud_ammo
                     add hudx_x 20
                     sub hudx_y 24
 
-                    redefinequote 190 %ld
-                    qsprintf 190 190 player.ammo_amount WEAPON_SHOTGUN
+                    redefinequote 190 %ld / %ld
+					set am_p_tmp2 SHOTGUN_CLIP
+					subvarvar am_p_tmp2 weapon2_realclip
+                    qsprintf 190 190 am_p_tmp2 player.ammo_amount WEAPON_SHOTGUN
                     set hudx_quote 190
                     set hudx_tilenum BIGALPHANUM
                     set hudx_orientation 528
@@ -10805,11 +10860,17 @@ appendevent EVENT_WORLD
     ifg temp 0
     {
         sub temp 1
-        ife temp 150
+		ife temp 150
+			setvar am_p_tmp 1
+		ife temp 300
+			setvar am_p_tmp 1
+		
+        ife am_p_tmp 1
         {
             setp[myconnectindex].sound_pitch -128
             globalsound S_MINIGUN_PULSE
             setp[myconnectindex].sound_pitch 0
+			setvar am_p_tmp 0
         }
         setpv[myconnectindex].p_pup_radar_time temp
     }

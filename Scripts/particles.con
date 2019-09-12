@@ -1118,7 +1118,13 @@ actor A_EXPLOSION 0 AC_EXPLOSIONBASE
     geta[].htflags temp
     or temp 2048
     seta[].htflags temp
-    ife sprite[].htg_t 2 1 // ifactioncount
+	
+	ifspawnedby P_FLAMER
+		nullop
+	else
+		set db_once 1
+	
+    ife sprite[].htg_t 2 1 ife db_once 1 // ifactioncount
     {
         ife explosion_silent 0
         {
@@ -1342,66 +1348,64 @@ actor A_EXPLOSION 0 AC_EXPLOSIONBASE
         seta[].shade 2
         ife counter 0
         {
-            rand temp 8
+            rand temp 16
             ifrnd 127
                 inv temp
             add temp sprite[].x
             seta[].x temp
 
-            rand temp 8
+            rand temp 16
             ifrnd 127
                 inv temp
             add temp sprite[].y
             seta[].y temp
 
-            rand temp 128
+            rand temp 16
             ifrnd 127
                 inv temp
             add temp sprite[].z
             seta[].z temp
-        }
-        ife sprite[].xrepeat 127 ife counter 0
-        {
-            sizeat 2 2
-            ldist temp player[].i THISACTOR
-            shiftr temp 7
-            mul temp sprite[].xrepeat
-            seta[].xrepeat temp
-            seta[].yrepeat temp
-            add counter 1
-            findnearactor A_EXPLOSION 256 temp
-            ifn temp -1
-                killit
+			
+			ife sprite[].xrepeat 127 {
+				sizeat 2 2
+				ldist temp player[].i THISACTOR
+				shiftr temp 7
+				mul temp sprite[].xrepeat
+				seta[].xrepeat temp
+				seta[].yrepeat temp
+				add counter 1
+				findnearactor A_EXPLOSION 256 temp
+				ifn temp -1
+					killit
+			}
+			else {
+				sizeat 2 2
+				ldist temp player[].i THISACTOR
+				div temp 96
+				mul temp sprite[].xrepeat
+				seta[].xrepeat temp
+				seta[].yrepeat temp
+				seta[].cstat 642
+				set counter 10
 
-        }
-        else ife counter 0
-        {
-            sizeat 2 2
-            ldist temp player[].i THISACTOR
-            div temp 96
-            mul temp sprite[].xrepeat
-            seta[].xrepeat temp
-            seta[].yrepeat temp
-            seta[].cstat 642
-            set counter 10
+				rand temp 64
+				ifrnd 127
+					inv temp
+				add temp sprite[].x
+				seta[].x temp
 
-            rand temp 64
-            ifrnd 127
-                inv temp
-            add temp sprite[].x
-            seta[].x temp
+				rand temp 64
+				ifrnd 127
+					inv temp
+				add temp sprite[].y
+				seta[].y temp
 
-            rand temp 64
-            ifrnd 127
-                inv temp
-            add temp sprite[].y
-            seta[].y temp
-
-            rand temp 1024
-            ifrnd 127
-                inv temp
-            add temp sprite[].z
-            seta[].z temp
+				rand temp 1024
+				ifrnd 127
+					inv temp
+				add temp sprite[].z
+				seta[].z temp
+			}
         }
 
         add counter 1
@@ -1449,7 +1453,7 @@ actor A_EXPLOSION 0 AC_EXPLOSIONBASE
         cstat 32768
     else ifspawnedby P_FLAMINGSKULL
     {
-        spritepal 0
+       // spritepal 0
         geta[].htg_t 2 temp
         ifg temp 1 ifl temp 10
         {

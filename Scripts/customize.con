@@ -113,7 +113,7 @@ define MINIMISSILE_DMG                  32 // ++ random
 define GRENADE_RADIUS                   2048
 define BOWLINGBOMB_RADIUS               1024 // ++ variable
 define BOMBETTE_RADIUS                  1536
-define NAPALM_BALL_RADIUS               1024
+define NAPALM_BALL_RADIUS               1600
 define FLAMINGSKULL_RADIUS              1024
 define MINIMISSILE_RADIUS               1024
 

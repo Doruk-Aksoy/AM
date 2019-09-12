@@ -1,0 +1,83 @@
+/*
+THIS IS THE DEFINITIONS FILE OF ANGER MANAGEMENT
+*/
+
+include scripts/am_sounds.con
+
+// ACTOR DEFS
+define I_AMMOBOOST 				100
+define AM_FRAMEEFFECT			1246
+
+// ENEMY DEFS
+define AM_P_SEEKERDRONE_MISSILE		11744
+define AM_T_SEEKERDRONE_MTRAIL		11786
+define AM_SEEKERDRONE_MISSILEHIT 	11753
+define AM_SEEKERDRONE				11759
+define AM_SEEKERDRONE_HEALTH		20
+
+// QUOTE DEFS
+definequote 1000      ^15AMMO BOOSTER! ^92Ammo capacities increased by 10%.
+definequote 1001      ^15STAMINA BOOST! ^92Health capacity increased by 5.
+
+// CONSTANTS
+define AM_MAX_AMMOBONUS_CAP		10
+define AM_AMMOBONUS_FACTOR 		10
+define AM_AMMOBONUS_SPAWNCHANCE 86
+
+define AM_STAMINA_BOOST			5
+define AM_MAX_STAMINA_BOOST   	300
+define AM_STAMINA_SPAWNCHANCE	52 // around 20%
+
+define AM_DEFAULT_WEIGHTMAX					999 // -1 of 1000, because we map rand range of 0 - 999 to 1 - 1000
+define AM_REGULARCULTIST_WEIGHT				600
+
+define PAL_FIRECULTIST 						16
+define AM_FIRECULTIST_WEIGHT 				300
+define AM_FIRECULTIST_SHOTPAL				15
+define AM_FIRECULTIST_SHOTDMG				3
+define AM_FIRECULTIST_SHOTRAND				2
+
+define PAL_AUTOCULTIST						78
+define AM_AUTOCULTIST_WEIGHT				100
+define AM_AUTOCULTIST_HEALTH 				60
+
+define AM_CULTIST_TYPES						3 // regular, fire, auto
+
+define PAL_DIOPEDE_YELLOW					137
+define AM_DIOPEDE_YELLOW_HEALTH				125
+define AM_DIOPEDE_YELLOW_BUTT_HEALTH		30
+define AM_DIOPEDE_YELLOW_DIST				160
+
+define AM_BRUTE_MUZZLEFLASH					6003
+
+define AM_FIRECYCLONE_PULLDIST				8192
+
+// VARIABLES
+var am_tmp
+var am_tmp2
+var am_weight // the result of weight roll for mutator
+var am_weight_comp // comparison of weight
+var am_rolled // class roll done
+var am_resetpicnum
+var am_hitang
+var am_angtemp
+var am_iter
+var am_p_tmp 0 1 // used for radar beep
+var am_p_tmp2 0 1 // used for weapon hud stuff
+var am_x
+var am_y
+var am_z
+var am_x2
+var am_y2
+var am_z2
+var am_ang
+var am_frame_counter // used to determine lifetime of frame effect
+var am_frame_settings // flags
+var am_blendswitch 0 2
+var am_estate 0 2
+// hold amount of ammo bonus pickups player has
+var p_ammocap_bonus 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+// do we need to update the ammo cap?
+var p_update_ammocap 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+// hold how many stamina boosts the player picked up
+var p_stamina_boosts 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE

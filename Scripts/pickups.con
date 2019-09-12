@@ -402,7 +402,7 @@ useractor notenemy I_LOVERBOY
         state item_secret
         ife player[].gotweapon WEAPON_LOVERBOY 0
             set p_face_grin 30
-        ifn player[].ammo_amount 1 WEAPON1_MAXAMMO
+        ifn player[].ammo_amount 1 player[].max_ammo_amount WEAPON_LOVERBOY
             set flash_wasweaponammo 1
         ife player[].curr_weapon 0
         {
@@ -410,7 +410,7 @@ useractor notenemy I_LOVERBOY
             ife player[].gotweapon WEAPON_LOVERBOY 1
             {
                 setp[].weaponswitch 0
-                ife player[].ammo_amount WEAPON_LOVERBOY WEAPON1_MAXAMMO
+                ife player[].ammo_amount WEAPON_LOVERBOY player[].max_ammo_amount WEAPON_LOVERBOY
                     setp[].weaponswitch temp6
             }
             addweapon WEAPON_LOVERBOY WEAPON1_AMMOAMOUNT
@@ -445,8 +445,9 @@ defstate loverboy_ammorand
     }
 
     getp[].ammo_amount WEAPON_LOVERBOY temp4
+	getp[].max_ammo_amount WEAPON_LOVERBOY am_tmp
     add temp4 temp5
-    clamp temp4 0 WEAPON1_MAXAMMO
+    clamp temp4 0 am_tmp
     setp[].ammo_amount WEAPON_LOVERBOY temp4
 ends
 defstate loverboy_ammo
@@ -457,13 +458,13 @@ defstate loverboy_ammo
     ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
     {
         state item_secret
-        ifn player[].ammo_amount 1 WEAPON1_MAXAMMO
+        ifn player[].ammo_amount 1 player[].max_ammo_amount WEAPON_LOVERBOY
             set flash_wasweaponammo 1
         ife player[].curr_weapon 0
         {
             getp[].weaponswitch temp6
             setp[].weaponswitch 0
-            ife player[].ammo_amount WEAPON_LOVERBOY WEAPON1_MAXAMMO
+            ife player[].ammo_amount WEAPON_LOVERBOY player[].max_ammo_amount WEAPON_LOVERBOY
                 setp[].weaponswitch temp6
             ifactor I_LOVERBOY_AMMO
                 addammo WEAPON_LOVERBOY AMMOBOX_AMMOAMOUNT
@@ -471,7 +472,7 @@ defstate loverboy_ammo
             {
                 ifspawnedby A_CULTIST
                 {
-                    ife player[].ammo_amount WEAPON_LOVERBOY WEAPON1_MAXAMMO
+                    ife player[].ammo_amount WEAPON_LOVERBOY player[].max_ammo_amount WEAPON_LOVERBOY
                         break
                     state loverboy_ammorand
                 }
@@ -488,7 +489,7 @@ defstate loverboy_ammo
             {
                 ifspawnedby A_CULTIST
                 {
-                    ife player[].ammo_amount WEAPON_LOVERBOY WEAPON1_MAXAMMO
+                    ife player[].ammo_amount WEAPON_LOVERBOY player[].max_ammo_amount WEAPON_LOVERBOY
                         break
                     state loverboy_ammorand
                 }
@@ -553,7 +554,7 @@ useractor notenemy I_PLASMACROSSBOW
             ife player[].gotweapon WEAPON_CROSSBOW 1
             {
                 setp[].weaponswitch 0
-                ife player[].ammo_amount WEAPON_CROSSBOW WEAPON7_MAXAMMO
+                ife player[].ammo_amount WEAPON_CROSSBOW player[].max_ammo_amount WEAPON_CROSSBOW
                     setp[].weaponswitch temp6
             }
             addweapon WEAPON_CROSSBOW WEAPON7_AMMOAMOUNT
@@ -598,8 +599,9 @@ defstate crossbow_ammorand
     }
 
     getp[].ammo_amount WEAPON_CROSSBOW temp4
+	getp[].max_ammo_amount WEAPON_CROSSBOW am_tmp
     add temp4 temp5
-    clamp temp4 0 WEAPON7_MAXAMMO
+    clamp temp4 0 am_tmp
     setp[].ammo_amount WEAPON_CROSSBOW temp4
 ends
 
@@ -614,7 +616,7 @@ useractor notenemy I_PLASMACROSSBOW_AMMO
         state item_secret
         ifspawnedby A_GREATER
         {
-            ife player[].ammo_amount WEAPON_CROSSBOW WEAPON7_MAXAMMO
+            ife player[].ammo_amount WEAPON_CROSSBOW player[].max_ammo_amount WEAPON_CROSSBOW
                 break
             state crossbow_ammorand
         }
@@ -624,7 +626,7 @@ useractor notenemy I_PLASMACROSSBOW_AMMO
             ife player[].gotweapon WEAPON_CROSSBOW 1
             {
                 setp[].weaponswitch 0
-                ife player[].ammo_amount WEAPON_CROSSBOW WEAPON7_MAXAMMO
+                ife player[].ammo_amount WEAPON_CROSSBOW player[].max_ammo_amount WEAPON_CROSSBOW
                     setp[].weaponswitch temp6
             }
             addammo WEAPON_CROSSBOW WEAPON7_AMMOAMOUNT
@@ -673,7 +675,7 @@ useractor notenemy I_MINIGUN
             set p_face_grin 60
             set myfavoriteguns 1
         }
-        ifn player[].ammo_amount WEAPON_MINIGUN WEAPON3_MAXAMMO
+        ifn player[].ammo_amount WEAPON_MINIGUN player[].max_ammo_amount WEAPON_MINIGUN
             set flash_wasweaponammo 3
         ifspawnedby A_MECHBOSS_TOP
         {
@@ -709,7 +711,7 @@ useractor notenemy I_MINIGUN
                 ife player[].gotweapon WEAPON_MINIGUN 1
                 {
                     setp[].weaponswitch 0
-                    ife player[].ammo_amount WEAPON_MINIGUN WEAPON4_MAXAMMO
+                    ife player[].ammo_amount WEAPON_MINIGUN player[].max_ammo_amount WEAPON_MINIGUN
                         setp[].weaponswitch temp6
                 }
                 ife VOLUME EP_PREVIEW
@@ -736,7 +738,7 @@ useractor notenemy I_MINIGUN
                 ife player[].gotweapon WEAPON_MINIGUN 1
                 {
                     setp[].weaponswitch 0
-                    ife player[].ammo_amount WEAPON_MINIGUN WEAPON4_MAXAMMO
+                    ife player[].ammo_amount WEAPON_MINIGUN player[].max_ammo_amount WEAPON_MINIGUN
                         setp[].weaponswitch temp6
                 }
                 addweapon WEAPON_MINIGUN WEAPON4_AMMOAMOUNT
@@ -837,7 +839,7 @@ useractor notenemy I_MINIGUN_AMMO
             ife player[].gotweapon WEAPON_MINIGUN 1
             {
                 setp[].weaponswitch 0
-                ife player[].ammo_amount WEAPON_MINIGUN WEAPON4_MAXAMMO
+                ife player[].ammo_amount WEAPON_MINIGUN player[].max_ammo_amount WEAPON_MINIGUN
                     setp[].weaponswitch temp6
             }
             addammo WEAPON_MINIGUN 50
@@ -875,8 +877,9 @@ defstate shotgun_ammorand
     }
 
     getp[].ammo_amount WEAPON_SHOTGUN temp4
+	getp[].max_ammo_amount WEAPON_SHOTGUN am_tmp
     add temp4 temp5
-    clamp temp4 0 WEAPON2_MAXAMMO
+    clamp temp4 0 am_tmp
     setp[].ammo_amount WEAPON_SHOTGUN temp4
 ends
 
@@ -896,7 +899,7 @@ useractor notenemy I_SHOTGUN
             set p_face_grin 45
             set myfavoriteguns 1
         }
-        ifn player.ammo_amount WEAPON_SHOTGUN WEAPON2_MAXAMMO
+        ifn player.ammo_amount WEAPON_SHOTGUN player[].max_ammo_amount WEAPON_SHOTGUN
         {
             ife player.curr_weapon WEAPON_SHOTGUN
                 set flash_wasweaponammo 2
@@ -916,7 +919,7 @@ useractor notenemy I_SHOTGUN
             ife player[].gotweapon WEAPON_SHOTGUN 1
             {
                 setp[].weaponswitch 0
-                ife player[].ammo_amount WEAPON_SHOTGUN WEAPON2_MAXAMMO // missing check for w2alt?
+                ife player[].ammo_amount WEAPON_SHOTGUN player[].max_ammo_amount WEAPON_SHOTGUN // missing check for w2alt?
                 ife temp7 WEAPON2_AMMOAMOUNT
                 {
                     setp[].weaponswitch temp6
@@ -960,7 +963,7 @@ useractor notenemy I_SHOTGUN_AMMO
         state item_secret
         ifspawnedby A_SHOTGUNNER
         {
-            ife player[].ammo_amount WEAPON_SHOTGUN WEAPON2_MAXAMMO
+            ife player[].ammo_amount WEAPON_SHOTGUN player[].max_ammo_amount WEAPON_SHOTGUN
                 break
             state shotgun_ammorand
         }        
@@ -968,14 +971,14 @@ useractor notenemy I_SHOTGUN_AMMO
         {
             getp[].weaponswitch temp6
             setp[].weaponswitch 0
-            ifn player.ammo_amount WEAPON_SHOTGUN WEAPON2_MAXAMMO
+            ifn player.ammo_amount WEAPON_SHOTGUN player[].max_ammo_amount WEAPON_SHOTGUN
             {
                 ife player.curr_weapon WEAPON_GRENADE
                     set flash_wasweaponammo 6
                 else
                     set flash_wasweaponammo 2
             }
-            ifl player.ammo_amount WEAPON_SHOTGUN WEAPON2_MAXAMMO
+            ifl player.ammo_amount WEAPON_SHOTGUN player[].max_ammo_amount WEAPON_SHOTGUN
                 addammo WEAPON_SHOTGUN WEAPON2_AMMOAMOUNT
             else
             {
@@ -1027,7 +1030,7 @@ useractor notenemy I_GRENADELAUNCHER
             set p_face_grin 45
             set myfavoriteguns 1
         }
-        ifn player.ammo_amount WEAPON_GRENADE GRENADE_MAXAMMO
+        ifn player.ammo_amount WEAPON_GRENADE player[].max_ammo_amount WEAPON_GRENADE
         {
             ife player.curr_weapon WEAPON_GRENADE
                 set flash_wasweaponammo 6
@@ -1040,7 +1043,7 @@ useractor notenemy I_GRENADELAUNCHER
             ife player[].gotweapon WEAPON_GRENADE 1
             {
                 setp[].weaponswitch 0
-                ife player[].ammo_amount WEAPON_GRENADE GRENADE_MAXAMMO
+                ife player[].ammo_amount WEAPON_GRENADE player[].max_ammo_amount WEAPON_GRENADE
                 {
                     setp[].weaponswitch temp6
                     break
@@ -1110,7 +1113,7 @@ useractor notenemy I_GRENADELAUNCHER_AMMO
                     or c_256 32
                     set w2alt 30
                 }
-                ifl player.ammo_amount WEAPON_GRENADE GRENADE_MAXAMMO
+                ifl player.ammo_amount WEAPON_GRENADE player[].max_ammo_amount WEAPON_GRENADE
                 {   
                     ifge w2alt 0 ifn w2alt 30
                     {
@@ -1127,14 +1130,14 @@ useractor notenemy I_GRENADELAUNCHER_AMMO
         {
             getp[].weaponswitch temp6
             setp[].weaponswitch 0
-            ifn player.ammo_amount WEAPON_GRENADE GRENADE_MAXAMMO
+            ifn player.ammo_amount WEAPON_GRENADE player[].max_ammo_amount WEAPON_GRENADE
             {
                 ife player.curr_weapon WEAPON_GRENADE
                     set flash_wasweaponammo 6
                 else
                     set flash_wasweaponammo 2
             }
-            ifl player.ammo_amount WEAPON_GRENADE GRENADE_MAXAMMO
+            ifl player.ammo_amount WEAPON_GRENADE player[].max_ammo_amount WEAPON_GRENADE
                 addammo WEAPON_GRENADE GRENADE_AMMOAMOUNT
             else
             {
@@ -1189,7 +1192,7 @@ useractor notenemy I_SMG
             set p_face_grin 30
             set myfavoriteguns 1
         }
-        ifn player[].ammo_amount 3 WEAPON3_MAXAMMO
+        ifn player[].ammo_amount 3 player[].max_ammo_amount WEAPON_SMG
             set flash_wasweaponammo 3
         set temp3 0
         set temp8 0
@@ -1206,7 +1209,7 @@ useractor notenemy I_SMG
                 else
                     set other_smg_toggle 12
                 set other_smg 1
-                ife player[].ammo_amount WEAPON_SMG WEAPON3_MAXAMMO
+                ife player[].ammo_amount WEAPON_SMG player[].max_ammo_amount WEAPON_SMG
                     set temp3 1
                 set myfavoriteguns 1
                 set temp8 1
@@ -1218,7 +1221,7 @@ useractor notenemy I_SMG
             ife player[].gotweapon WEAPON_SMG 1
             {
                 setp[].weaponswitch 0
-                ife player[].ammo_amount WEAPON_SMG WEAPON3_MAXAMMO
+                ife player[].ammo_amount WEAPON_SMG player[].max_ammo_amount WEAPON_SMG
                     setp[].weaponswitch temp6
             }
             ife temp3 0
@@ -1285,13 +1288,13 @@ useractor notenemy I_SMG_AMMO
     ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
     {
         state item_secret
-        ifn player[].ammo_amount 1 WEAPON3_MAXAMMO
+        ifn player[].ammo_amount 1 player[].max_ammo_amount WEAPON_SMG
             set flash_wasweaponammo 3
         ife player[].curr_weapon 0
         {
             getp[].weaponswitch temp6
             setp[].weaponswitch 0
-            ife player[].ammo_amount WEAPON_SMG WEAPON3_MAXAMMO
+            ife player[].ammo_amount WEAPON_SMG player[].max_ammo_amount WEAPON_SMG
                 setp[].weaponswitch temp6
             addammo WEAPON_SMG WEAPON3_AMMOAMOUNT
             setp[].weaponswitch temp6
@@ -1371,7 +1374,7 @@ spritenoshade I_SYRINGE
 useractor notenemy I_SYRINGE
     state item_spin
     cstat 0
-    sizeat 14 12
+    sizeat 28 24
     fall
     spritepal 0
     gets[].floorshade temp
@@ -1414,7 +1417,7 @@ useractor notenemy I_SYRINGE
     state item_bob
     ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
     {
-        ifl sprite[player[].i].extra player[].max_player_health
+        ifl player[].max_player_health AM_MAX_STAMINA_BOOST
         {
             set temp2 1
             getp[].pals 0 temp5
@@ -1435,8 +1438,12 @@ useractor notenemy I_SYRINGE
                 stopactorsound player[].i S_SHELLY_SEARCHTALK2
                 ifl sprite[player[].i].extra temp
                     or p_wantline TALK_HEALTH
-                addphealth 5
-                quote 34
+                
+				add p_stamina_boosts 1
+				// so it correctly recognizes the lim
+				add p_pizza_health 5
+				
+                quote 1001
                 palfrom 15 5 32 5
                 globalsound S_BOOSTER
                 sub enemy_medkit_count 1
@@ -1476,7 +1483,7 @@ useractor notenemy I_MEDICOMP
                 or p_wantline TALK_HEALTH
             else
                 or p_wantline TALK_PICKUP
-            addphealth MEDICOMP_AMOUNT
+			addphealth MEDICOMP_AMOUNT
             quote 57
             palfrom 15 5 32 5
             globalsound S_PICKUP01
@@ -2726,33 +2733,7 @@ useractor notenemy I_AMMOCRATE
             getp[].weaponswitch temp6
             setp[].weaponswitch 0
                 
-            set temp 0
-            switch se_lotag
-                case 1
-                    set temp WEAPON1_MAXAMMO
-                    break
-                case 2
-                    set temp WEAPON2_MAXAMMO
-                    break
-                case 3
-                    set temp WEAPON3_MAXAMMO
-                    break
-                case 4
-                    set temp WEAPON4_MAXAMMO
-                    break
-                case 5
-                    set temp WEAPON5_MAXAMMO
-                    break
-                case 6
-                    set temp GRENADE_MAXAMMO
-                    break
-                case 7
-                    set temp WEAPON7_MAXAMMO
-                    break
-                case 8
-                    set temp WEAPON8_MAXAMMO
-                    break
-            endswitch
+            set temp player[].max_ammo_amount se_lotag
                     
             getp .ammo_amount se_lotag temp2
             ifl temp2 temp

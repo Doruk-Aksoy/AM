@@ -1,0 +1,104 @@
+/*
+THIS IS THE MAIN ANGER MANAGEMENT FILE
+*/
+
+include scripts/am_actors.con
+include scripts/am_mutator_i.con
+include scripts/am_mutator_e.con
+
+appendevent EVENT_LOADACTOR
+    switch sprite[].picnum
+		case I_AMMOBOOST
+		case I_SYRINGE
+			geta[].lotag se_lotag
+            seta[].lotag 0
+            geta[].hitag se_hitag
+            seta[].hitag 0
+            geta[].yvel se_yvel
+            seta[].yvel 0
+		break
+	endswitch
+endevent
+
+appendevent EVENT_SPAWN
+	switch sprite[].picnum
+		case A_SMOKE2
+			ifspawnedby P_DANCINGQUEEN {
+				ifn actorvar.ms_flashpal 0 {
+					seta .htflags 132 // noshade | noevent
+					seta .pal actorvar.ms_flashpal
+				}
+			}
+		break
+		case A_EXPLOSION
+			ifspawnedby P_FLAMINGSKULL {
+				ifn actorvar.ms_flashpal 0
+					seta .pal actorvar.ms_flashpal
+			}
+		break
+		case A_NAPALM_BURST
+			ifspawnedby P_FLAMINGSKULL {
+				ifn actorvar.ms_flashpal 0
+					seta .pal actorvar.ms_flashpal
+			}
+		break
+		case AM_BRUTE_MUZZLEFLASH
+		    cstat 130
+			seta .blend 255
+			seta .shade 0
+			sizeat 11 11
+			geta .htflags temp
+			or temp SFLAG_NOCLIP
+			seta .htflags temp
+			
+			ifrnd 128
+				cstator 4
+			ifrnd 128
+				cstator 8
+			cstator 32768
+		break
+	endswitch
+endevent
+
+appendevent EVENT_EGS
+	switch sprite[].picnum
+		case A_SMOKE2
+			ifspawnedby P_DANCINGQUEEN
+				ifn sprite.owner -1 { // just in case
+						set ms_flashpal sprite.owner
+						geta[ms_flashpal].owner temp
+						geta[temp].picnum ms_flashpal
+						ife ms_flashpal A_CULTIST
+							setav .ms_flashpal 6
+					}
+		break
+		case A_EXPLOSION
+			ifspawnedby P_FLAMINGSKULL {
+				set ms_faller sprite.owner
+				geta[ms_faller].pal ms_faller
+				setav .ms_flashpal ms_faller
+			}
+			else ifspawnedby P_FLAMER {
+				set ms_faller sprite.owner
+				getav[ms_faller].db_once ms_faller
+				setav .db_once ms_faller
+			}
+		break
+		case A_NAPALM_BURST
+			ifspawnedby P_FLAMINGSKULL {
+				set ms_faller sprite.owner
+				geta[ms_faller].pal ms_faller
+				setav .ms_flashpal ms_faller
+			}
+		break
+	endswitch
+endevent
+
+appendevent EVENT_GAME
+	switch sprite[].picnum
+		case P_FLAMER
+			// spawns a trail every other tic
+			xor db_once 1
+		break
+	endswitch
+endevent

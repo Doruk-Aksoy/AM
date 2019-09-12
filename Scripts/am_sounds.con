@@ -1,0 +1,53 @@
+/*
+THIS IS THE SOUND DEFINITION FILE FOR ANGER MANAGEMENT
+*/
+
+define AM_S_AMMOBONUS			3001
+
+define AM_S_DANCINGQUEENFIRE	3010
+
+// ENEMIES
+define AM_S_SEEKERDRONE_ACT		2833
+define AM_S_SEEKERDRONE_FIRE	2834
+define AM_S_SEEKERDRONE_DIE1	2835
+define AM_S_SEEKERDRONE_DIE2	2836
+define AM_S_SEEKERDRONE_DIE3	2837
+define AM_S_SEEKERDRONE_DIE4	2838
+define AM_S_SEEKERDRONE_HIT		2839
+
+// there are 4 these, and in IF it's also leaving the other 2 slots empty
+define AM_S_SHOTGUNFIRE_1		3002
+define AM_S_SHOTGUNFIRE_2		3003
+define AM_S_SHOTGUNFIRE_3		3004
+define AM_S_SHOTGUNFIRE_4		3005
+define AM_S_SHOTGUN_RAND		3
+
+define AM_S_TRIFIRE_1			3006
+define AM_S_TRIFIRE_2			3007
+define AM_S_TRIFIRE_3			3008
+define AM_S_TRIFIRE_4			3009
+define AM_S_TRI_RAND			3
+
+definesound AM_S_AMMOBONUS      	Sounds/AM/Pickups/ammo_bonus.ogg 		512     576     254     0       -6144
+
+
+definesound AM_S_SHOTGUNFIRE_1      Sounds/AM/Weapons/Shotgun/fire1.ogg 	-64     64      255     144       0
+definesound AM_S_SHOTGUNFIRE_2      Sounds/AM/Weapons/Shotgun/fire2.ogg 	-64     64      255     144       0
+definesound AM_S_SHOTGUNFIRE_3      Sounds/AM/Weapons/Shotgun/fire3.ogg 	-64     64      255     144       0
+definesound AM_S_SHOTGUNFIRE_4      Sounds/AM/Weapons/Shotgun/fire4.ogg 	-64     64      255     144       0
+
+definesound AM_S_TRIFIRE_1      	Sounds/AM/Weapons/Pistol/fire1.ogg 		-64     64      255     144       0
+definesound AM_S_TRIFIRE_2      	Sounds/AM/Weapons/Pistol/fire2.ogg 		-64     64      255     144       0
+definesound AM_S_TRIFIRE_3      	Sounds/AM/Weapons/Pistol/fire3.ogg 		-64     64      255     144       0
+definesound AM_S_TRIFIRE_4      	Sounds/AM/Weapons/Pistol/fire4.ogg 		-64     64      255     144       0
+
+definesound AM_S_DANCINGQUEENFIRE	Sounds/AM/Enemies/dqfire.ogg			-190	190		192		0		  0
+
+// ENEMIES
+definesound AM_S_SEEKERDRONE_ACT	Sounds/AM/Enemies/SeekerDrone/DRONSND.ogg	-224	224		100		0		  8192
+definesound AM_S_SEEKERDRONE_FIRE	Sounds/AM/Enemies/SeekerDrone/DRONFIRE.ogg	-224	224		100		0		  6400
+definesound AM_S_SEEKERDRONE_DIE1	Sounds/AM/Enemies/SeekerDrone/DRONDIE1.ogg	-224	224		100		0		  0
+definesound AM_S_SEEKERDRONE_DIE2	Sounds/AM/Enemies/SeekerDrone/DRONDIE2.ogg	-224	224		100		0		  0
+definesound AM_S_SEEKERDRONE_DIE3	Sounds/AM/Enemies/SeekerDrone/DRONDIE3.ogg	-224	224		100		0		  0
+definesound AM_S_SEEKERDRONE_DIE4	Sounds/AM/Enemies/SeekerDrone/DRONDIE4.ogg	-224	224		100		0		  0
+definesound AM_S_SEEKERDRONE_HIT	Sounds/AM/Enemies/SeekerDrone/DRONHIT.ogg	-224	224		100		0		  9576

@@ -1,0 +1,1303 @@
+var LOGO_FLAGS 73399301 0
+var hudx_quit
+var hudx_quit_last -1 0
+var last_face
+var face_static
+var face_static_c
+// customize menu appearance
+// orange (10) for menu items, blue (7) for disabled, red (9) for title, yellow (11) for the rest
+
+appendevent EVENT_SETDEFAULTS
+    // disable hard-coded screen fading
+    setuserdef[].screenfade 0
+
+/*
+    // already hard-coded in Eduke32
+    setuserdef[].menu_shadedeselected 10
+    setuserdef[].menu_shadedisabled 10
+*/
+
+    setuserdef[].menutext_zoom 16384
+    setuserdef[].menutext_xspace BIGFONT_XSPACE_FULL16
+    setuserdef[].menutext_tracking BIGFONT_XBETWEEN_FULL16
+    setuserdef[].menutext_pal 11
+    setuserdef[].menutext_palselected 10
+    setuserdef[].menutext_paldeselected 10
+    setuserdef[].menutext_paldisabled 7
+    setuserdef[].menutext_palselected_right 11
+    setuserdef[].menutext_paldeselected_right 11
+    setuserdef[].menutext_paldisabled_right 7
+
+    setuserdef[].gametext_zoom 16384
+    setuserdef[].gametext_xspace MEDFONT_XSPACE_FULL16
+    // setuserdef[].gametext_tracking MEDFONT_XBETWEEN_FULL16
+    setuserdef[].gametext_pal 11
+    setuserdef[].gametext_palselected 10
+    setuserdef[].gametext_paldeselected 10
+    setuserdef[].gametext_paldisabled 7
+    setuserdef[].gametext_palselected_right 11
+    setuserdef[].gametext_paldeselected_right 11
+    setuserdef[].gametext_paldisabled_right 7
+
+/*
+    // minitext is unusued and replaced by gametext in the menu
+    setuserdef[].minitext_zoom 16384
+    setuserdef[].minitext_xspace 262144
+    setuserdef[].minitext_pal 11
+    setuserdef[].minitext_palselected 10
+    setuserdef[].minitext_paldeselected 10
+    setuserdef[].minitext_paldisabled 7
+    setuserdef[].minitext_palselected_right 11
+    setuserdef[].minitext_paldeselected_right 11
+    setuserdef[].minitext_paldisabled_right 7
+*/
+
+    setuserdef[].menutitle_pal 9
+
+    setuserdef[].menu_slidebarz 32768
+    setuserdef[].menu_slidecursorz 32768
+    setuserdef[].menu_slidebarmargin 1048576
+    // setuserdef[].slidebar_palselected 0
+    setuserdef[].slidebar_paldisabled 7
+
+    setuserdef[].menu_scrollbartilenum 5450
+    setuserdef[].menu_scrollbarz 16384
+    setuserdef[].menu_scrollcursorz 16384
+
+    /* setuserdef[].default_skill 0 */
+endevent
+
+/* already hard-coded in Eduke32
+appendevent EVENT_MENUSHADESELECTED
+  set RETURN 0
+endevent
+
+appendevent EVENT_MENUCURSORLEFT
+  set RETURN -1
+endevent
+
+appendevent EVENT_MENUCURSORRIGHT
+  set RETURN -1
+endevent
+*/
+
+// Cursor
+
+appendevent EVENT_DISPLAYCURSOR
+    set RETURN -1
+
+    state ResetTile
+    set hudx_x userdef[].return 1
+    set hudx_y userdef[].return 2
+    shiftl hudx_x 1 // 640 x 480
+    shiftl hudx_y 1 // 640 x 480
+    set hudx_alpha userdef[].return 3
+    sub hudx_alpha 85
+    mul hudx_alpha 3
+    shiftr hudx_alpha 1
+    set hudx_tilenum 5880
+    // set hudx_pal CROSSHAIR_PAL
+    set hudx_orientation 2048
+    state DrawTile640x480Screen
+endevent
+
+// Menu sounds
+
+appendevent EVENT_SOUND
+    ifand player[].gm MODE_MENU
+    {
+        switch current_menu
+            case 800
+            case 801
+            case 802
+            case 803
+                ife RETURN 210
+                    set RETURN S_PICKUP04
+                break
+        endswitch
+    }
+endevent
+
+// Game paused
+
+var mark_pause_on
+
+appendevent EVENT_DISPLAYSTART
+    ife userdef[].pause_on 1
+    {
+        set mark_pause_on 1
+        setuserdef[].pause_on 2
+    }
+    else
+    ife userdef[].pause_on 0
+        set mark_pause_on 0
+endevent
+
+appendevent EVENT_DISPLAYREST
+/*
+    ifand player[].gm MODE_MENU
+        nullop
+    else
+*/
+    ife mark_pause_on 1
+    {
+        set hudx_x 320
+        set hudx_y 10
+        set hudx_scale 32768
+        set hudx_pal 11
+        set hudx_tilenum STARTALPHANUM
+        set hudx_orientation 16
+        set hudx_quote 12
+        redefinequote 12 Paused
+        set hudx_txtflags 2
+        state DrawText640x480Screen
+    }
+endevent
+
+// Menu background (title screen)
+
+appendevent EVENT_GETMENUTILE
+    set RETURN -1
+    ifn main_menu_set 3
+        break
+    state title_background
+endevent
+
+// Menu background (texture)
+
+appendevent EVENT_DISPLAYMENU
+    switch current_menu
+        case MENU_LOAD
+        case MENU_SAVE
+        case MENU_LOADVERIFY
+        case MENU_SAVEVERIFY
+            // save/load screen background
+            state ResetTile
+            set hudx_x 320
+            set hudx_y 240
+            set hudx_tilenum 5474
+            state DrawTile640x480Screen
+
+            break
+    endswitch
+endevent
+
+define QUITMESSAGECOUNT 12
+
+appendevent EVENT_DISPLAYMENUREST
+    switch current_menu
+        case 500
+        case 501
+        case 502
+            state ResetTile
+            set hudx_scale 98304
+            set hudx_x 320
+            set hudx_y 240
+            set hudx_tilenum 5525
+            set hudx_shade 10
+            state DrawTile640x480Screen
+            
+            set hudx_shade 0
+            set hudx_scale 65536
+            set hudx_x 210
+            set hudx_y 240
+            set hudx_tilenum 5538
+            state DrawTile640x480Screen
+            
+            switch hudx_quit
+                case 0
+                    qputs 11 Trying to quit?
+                    qputs 12 [ Everyone disliked that. ]
+                    break
+                case 1
+                    qputs 11 Going somewhere?
+                    qputs 12 Press (Y) if you're a llama!
+                    break
+                case 2
+                    qputs 11 Don't leave yet!
+                    qputs 12 We're still spending your money!
+                    break
+                case 3
+                    qputs 11 Whoops--you pressed quit!
+                    qputs 12 I'm sure it was just an accident.
+                    break
+                case 4
+                    qputs 11 Press (N) for victory.
+                    qputs 12 Press (Y) to die alone.
+                    break
+                case 5
+                    qputs 11 Greatness awaits...
+                    qputs 12 ...but not for wimps who quit!
+                    break
+                case 6
+                    qputs 11 I understand why you wanna quit.
+                    qputs 12 With aim like that, I would too.
+                    break
+                case 7
+                    qputs 11 What are you trying to do,
+                    qputs 12 sign your own death warrant?
+                    break
+                case 8
+                    qputs 11 Press (N) to peel their caps back.
+                    qputs 12 Press (Y) to go hug a tree.
+                    break
+                case 9
+                    qputs 11 What are you doing?
+                    ifand player.gm MODE_GAME
+                        qputs 12 'RESUME GAME' is up there, bud.
+                    else
+                        qputs 12 'NEW GAME' is up there, bud.
+                    break
+                case 10
+                    qputs 11 Press (N) to fight for justice.
+                    qputs 12 Press (Y) to be a sissy.
+                    break
+                case 11
+                    qputs 11 Heroes press (N) to save the day.
+                    qputs 12 Losers press (Y) to bleed out.
+                    break
+                case 12
+                    qputs 11 Players in mirror are less
+                    qputs 12 skilled than they appear.
+                    break
+            endswitch
+            
+            state ResetText // 32 chars per line
+            set hudx_quote 11
+            set hudx_x 255
+            set hudx_y 220
+            set hudx_scale 32768
+            set hudx_shade 5
+            set hudx_pal 28
+            set hudx_tilenum STARTALPHANUM
+            set hudx_orientation 16
+            set hudx_txtflags 0
+            state DrawText640x480Screen_WithShadow
+
+            set hudx_y 234
+            set hudx_quote 12
+            state DrawText640x480Screen_WithShadow
+            
+            state ResetText
+            redefinequote 12 QUIT (Y/N)
+            set hudx_quote 12
+            set hudx_x 340
+            set hudx_y 250
+            set hudx_scale 32768
+            set hudx_shade 5
+            set hudx_pal 1
+            set hudx_tilenum STARTALPHANUM
+            set hudx_orientation 16
+            set hudx_txtflags 2
+            state DrawText640x480Screen_WithShadow
+            
+            
+            displayrandvar hudx_alpha 255
+            ifand totalclock 64 ifl hudx_alpha 32
+            {
+                state ResetTile
+                set hudx_x 320
+                set hudx_y 240
+                set hudx_scale 98304
+                set hudx_tilenum 5526
+                or hudx_orientation 1
+                set hudx_alpha 200
+                ifand totalclock 4
+                    set hudx_angle 1024
+                ifand totalclock 16
+                    or hudx_orientation 4
+                state DrawTile640x480Screen
+            }
+            
+            break
+    endswitch
+endevent
+
+// Menus
+
+defstate menu_title_bar
+    set hudx_x 320
+    set hudx_y 78
+    set hudx_shade 16
+    set hudx_tilenum 2457
+    set hudx_orientation 0
+    state DrawTile640x480Screen
+    set hudx_quote 12
+    set hudx_y 71
+    set hudx_scale 32768
+    set hudx_shade 0
+    set hudx_pal userdef[].menutitle_pal
+    set hudx_tilenum BIGALPHANUM
+    set hudx_orientation 16
+    set hudx_txtflags 2
+    state DrawText640x480Screen
+ends
+
+defstate show_resolution_warning
+    switch current_menu
+        case 203
+        case 230
+            ife rendmode 0
+            {
+                
+                ifand player[].gm MODE_GAME
+                {
+                    set hudx_alpha 128
+                    set hudx_x1 0
+                    set hudx_x2 xdim
+                    set hudx_y2 ydim
+                    set GetWindowY 465
+                    shiftl GetWindowY 16
+                    state 480Full16_to_ydim
+                    set hudx_y1 GetWindowY
+                    state black_square_alpha
+                }
+                state ResetTile
+                state ResetText
+                set hudx_x 5
+                set hudx_y 469
+                set hudx_scale 25600
+                set hudx_tilenum STARTALPHANUM
+                set hudx_orientation 272
+                set hudx_quote 6
+                // set hudx_txtflags 1
+                redefinequote 6 ^11Use of Classic mode disables all GPU acceleration.
+                ifg ydim 720
+                    ifg xdim 1280
+                        redefinequote 6 ^11Use of Classic mode disables all GPU acceleration. Performance may be impacted at this resolution.
+                
+                state DrawText640x480Screen
+                
+            }
+            break
+    endswitch
+ends
+
+appendevent EVENT_DISPLAYMENUREST
+    ifand player[].gm MODE_GAME
+    {
+        state show_resolution_warning
+    }
+    else
+    {
+/*
+        state ResetTile
+        set hudx_x 521
+        set hudx_y 458
+        set hudx_scale 98304
+        set hudx_shade 24
+        set hudx_tilenum 5454
+        set hudx_orientation 513
+        state DrawTile640x480Screen
+
+        state ResetText
+        set hudx_x 571
+        set hudx_y 450
+        set hudx_scale 40960
+        set hudx_shade 0
+        set hudx_tilenum MINIFONT
+        set hudx_orientation 528
+        set hudx_quote 6
+        set hudx_txtflags 1
+        redefinequote 6 ^11PREVIEW CAMPAIGN
+        state DrawText640x480Screen
+        add hudx_y 9
+        set hudx_shade 15
+        redefinequote 6 ^11UPDATE 2
+        state DrawText640x480Screen
+*/
+
+        set hudx_alpha 128
+        set hudx_x1 0
+        set hudx_x2 xdim
+        set hudx_y2 ydim
+        set GetWindowY 465
+        shiftl GetWindowY 16
+        state 480Full16_to_ydim
+        set hudx_y1 GetWindowY
+        state black_square_alpha
+
+        state show_resolution_warning
+        state ResetTile
+        state ResetText
+        set hudx_x 635
+        set hudx_y 469
+        set hudx_scale 24576
+        set hudx_tilenum STARTALPHANUM
+        set hudx_orientation 528
+        set hudx_quote 6
+        set hudx_txtflags 1
+        redefinequote 6 ^11FULL VERSION 1.00^10, (c) 2019 VOIDPOINT, LLC
+        state DrawText640x480Screen
+    }
+
+    ifn logo_glow_time totalclock
+    {
+        set logo_glow_time totalclock
+        add logo_glow_cnt 1
+        ifg didmenubg_fade 0
+            sub didmenubg_fade 1
+        ifg logo_glow_cnt 10
+        {
+            add logo_glow_shade 1
+            set logo_glow_cnt 0
+        }
+        ifg logo_glow_shade 7
+            inv logo_glow_shade
+    }
+    switch current_menu
+        case MENU_MAIN
+        case MENU_MAIN_INGAME
+            state ResetTile
+            set hudx_x HUD_LOGO_X
+            set hudx_y HUD_LOGO_Y
+            set hudx_scale HUD_LOGO_Z
+            state menu_title
+            break
+        case MENU_EPISODE
+        case MENU_USERMAP
+            state ResetTile
+            set hudx_x 574
+            set hudx_y 448
+            set hudx_scale 27648
+            set hudx_shade 10
+            set hudx_orientation 512
+            state menu_title
+
+            set hudx_scale 65536
+            set hudx_alpha 0
+
+            ife current_menu MENU_EPISODE
+                redefinequote 12 GAME MODE
+            else
+                redefinequote 12 SELECT SKILL
+            state menu_title_bar
+            ife current_menu MENU_EPISODE
+            {
+                switch userdef.m_volume_number
+                    case EP_MAIN
+                        redefinequote 6 ^11The full 28 level campaign.
+                        break
+                    case EP_PREVIEW
+                        redefinequote 6 ^11A special short preview zone. 
+                        break
+                    case EP_HORDE
+                        set hudx_tilenum 5557
+                        redefinequote 6 ^11A multiple wave arena arcade mode.
+                        break
+                    case EP_BOMB
+                        set hudx_tilenum 5557
+                        redefinequote 6 ^11Play the preview in a special bombs-only mode.
+                        break
+                    default
+                        redefinequote 6 ^11
+                        break
+                endswitch
+
+                
+                state ResetText
+                set hudx_x 5
+                set hudx_y 469
+                set hudx_scale 25600
+                set hudx_tilenum STARTALPHANUM
+                set hudx_orientation 272
+                set hudx_quote 6
+                state DrawText640x480Screen
+            }
+            break
+        case MENU_STORY
+            state ResetTile
+            set hudx_x 320
+            set hudx_y 240
+            set hudx_shade 15
+            set hudx_tilenum 5473
+            state DrawTile640x480Screen
+
+            redefinequote 12 THE STORY SO FAR
+            state menu_title_bar // hudx_quote is set here
+
+
+
+            set hudx_tilenum STARTALPHANUM
+            set hudx_orientation 16
+
+            set hudx_x 60
+            set hudx_y 106
+            set hudx_scale 40960
+            set hudx_pal 11
+            set hudx_shade 5
+            set hudx_txtflags 0
+            redefinequote 12 ^88In the near future...
+            state DrawText640x480Screen
+
+            set hudx_scale 30720 // 32768
+            add hudx_y 18
+            set hudx_txtflags 512
+            set hudx_xbetween 512
+            redefinequote 12 The streets of ^10Neo D.C.^11 are wrought with crime. You are ^10Cpl. Shelly ^15"Bombshell" ^10Harrison^11,
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 leader of the ^10GDF's Domestic Task Force^11 and ^10the baddest bitch ^11bringing it to ^10augmented criminals
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 that dare to defy the longstanding order of ^10permanent martial law^11. You've earned your nickname through
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^10proficiency with ^10explosives ^11and kept it with your ^10femme fatale looks^11. ^10D.C. is your town ^11and you
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 aren't going to let ^10cracked-out cyborg punks^11 drag it any further down the drain without a ^10fight^11.
+            state DrawText640x480Screen
+
+            add hudx_y 24
+            set hudx_txtflags 512
+            set hudx_xbetween 512
+            redefinequote 12 Though it has only been ^106 months ^11since you ^10assumed the position^11, you're already the longest serving
+            state DrawText640x480Screen
+            add hudx_y 12
+            set hudx_txtflags 0
+            set hudx_xbetween 0            
+            redefinequote 12 ^10head of the unit^11--a dubious honor, as all your predecessors were ^10killed in the line of duty^11.
+            state DrawText640x480Screen
+
+            add hudx_y 24
+            set hudx_txtflags 512
+            set hudx_xbetween 512
+            redefinequote 12 As you fruitlessly ^11attempt to ^10get sloshed ^11after ^10another horrible day in urban hell^11, an
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^10explosion ^11rings out and your ^10overpriced, watered-down drink ^11becomes ^10one with the ground. 
+            state DrawText640x480Screen
+            add hudx_y 12
+            set hudx_txtflags 0
+            set hudx_xbetween 0
+//            redefinequote 12 beep boop I'm a fucking robot
+//            state DrawText640x480Screen
+
+            add hudx_y 12
+//            set hudx_scale 34816
+            redefinequote 12 It's time to get ^15furious!
+            state DrawText640x480Screen
+
+
+
+            set hudx_xbetween 0
+
+            set hudx_x 480
+            set hudx_y 274
+            set hudx_scale 35840
+            set hudx_pal 5
+            redefinequote 12 Just the Tip(s)
+            set hudx_txtflags 2
+            state DrawText640x480Screen
+
+            set hudx_x 400
+            add hudx_y 18
+            set hudx_scale 26140
+            set hudx_pal 4
+            set hudx_txtflags 512
+            set hudx_xbetween 160
+            redefinequote 12 * The ^5LOVERBOY ^4fires faster if
+            state DrawText640x480Screen
+            add hudx_y 9
+            set hudx_txtflags 0
+            set hudx_xbetween 0
+            redefinequote 12 ^4   you tap instead of hold ^5FIRE^4.
+            state DrawText640x480Screen
+            add hudx_y 13
+            set hudx_txtflags 512
+            set hudx_xbetween 160
+            redefinequote 12 * Holding ^5FIRE ^4increases the
+            state DrawText640x480Screen
+            add hudx_y 9
+            set hudx_txtflags 0
+            set hudx_xbetween 0
+            redefinequote 12 ^4   intensity of ^5BOWLING BOMBS^4.
+            state DrawText640x480Screen
+            add hudx_y 13
+            set hudx_txtflags 512
+            set hudx_xbetween 160
+            redefinequote 12 * ^5BOWLING BOMBS ^4lock on when 
+            state DrawText640x480Screen
+            add hudx_y 9
+            set hudx_txtflags 0
+            set hudx_xbetween 0
+            redefinequote 12 ^4   charged. Use them wisely!
+            state DrawText640x480Screen
+            add hudx_y 13
+            set hudx_txtflags 512
+            set hudx_xbetween 160
+            redefinequote 12 * Tap ^5FIRE ^4for combo strikes
+            state DrawText640x480Screen
+            add hudx_y 9
+            set hudx_txtflags 0
+            set hudx_xbetween 0
+            redefinequote 12 ^4   with the ^5ELECTRIFRYER^4.
+            state DrawText640x480Screen
+            add hudx_y 13
+            set hudx_txtflags 512
+            set hudx_xbetween 160
+            redefinequote 12 * ^5PRESS USE ^4to climb ladders
+            state DrawText640x480Screen
+            add hudx_y 9
+            set hudx_txtflags 0
+            set hudx_xbetween 0
+            redefinequote 12 ^4   and open most grates.
+            state DrawText640x480Screen
+            add hudx_y 13
+            redefinequote 12 * ^5SHOOT ^4enemies in the ^5FACE^4.
+            state DrawText640x480Screen
+            add hudx_y 13
+            redefinequote 12 * Don't get ^5WASTED ^4by cultists.
+            state DrawText640x480Screen
+            add hudx_y 13
+            redefinequote 12 * ^5SECRETS ^4are everywhere!
+            state DrawText640x480Screen
+
+
+
+            /*
+            F1 = help
+            F2 = save dialog
+            F3 = load dialog
+            F4 = sound setup
+            F6 = quick save
+            f8 = disable messages
+            f9 = quick load
+            f10 = quit game
+            f11 = gamma setup
+            f12 = screenshot
+            */
+
+            set hudx_x 64
+            set hudx_y 344
+            set hudx_scale 35840
+            set hudx_pal 0
+            set hudx_shade 2
+            redefinequote 12 ^8Special Keys
+            state DrawText640x480Screen
+
+            set hudx_y 362
+            set hudx_scale 26140
+            redefinequote 12 ^8F1 ^0This Screen
+            state DrawText640x480Screen
+            add hudx_y 8
+            redefinequote 12 ^8F2 ^0Save Game
+            state DrawText640x480Screen
+            add hudx_y 8
+            redefinequote 12 ^8F3 ^0Load Game
+            state DrawText640x480Screen
+
+            set hudx_x 160
+            set hudx_y 362
+            redefinequote 12 ^8F4 ^0Sound Setup
+            state DrawText640x480Screen
+            add hudx_y 8
+            redefinequote 12 ^8F6 ^0Quick Save
+            state DrawText640x480Screen
+            add hudx_y 8
+            redefinequote 12 ^8F9 ^0Quick Load
+            state DrawText640x480Screen
+
+            set hudx_x 256
+            set hudx_y 362
+            redefinequote 12 ^8F10 ^0Quit Game
+            state DrawText640x480Screen
+            add hudx_y 8
+            redefinequote 12 ^8F11 ^0Gamma Setup
+            state DrawText640x480Screen
+            add hudx_y 8
+            redefinequote 12 ^8F12 ^0Screenshot
+            state DrawText640x480Screen
+
+
+
+            set hudx_x 320
+            set hudx_y 467
+            set hudx_scale 24576
+            set hudx_shade 15
+            redefinequote 12 ^92Page 1 of 2
+            set hudx_txtflags 2
+            state DrawText640x480Screen
+
+
+
+            break
+        case MENU_F1HELP
+            state ResetTile
+            set hudx_x 320
+            set hudx_y 240
+            set hudx_shade 15
+            set hudx_tilenum 5471
+            state DrawTile640x480Screen
+
+            redefinequote 12 CREDITS
+            state menu_title_bar // hudx_quote is set here
+
+            set hudx_x 320
+            shiftl hudx_x 16
+            set hudx_y 113
+            shiftl hudx_y 16
+            set hudx_scale 49152
+            set hudx_pal 0
+            set hudx_shade 5
+            set hudx_tilenum STARTALPHANUM
+            set hudx_orientation 2064
+            redefinequote 12 ^88DESIGNED AND DEVELOPED BY
+            set hudx_txtflags 0
+
+            // calculate the position of the text + logo
+            state GetQuoteLength
+            set temp GetTextWidth
+            add temp userdef[].gametext_xspace
+            shiftr temp 1
+            sub hudx_x temp
+            set temp tilesizx[5465]
+            shiftl temp 14
+            sub hudx_x temp
+
+            state DrawText640x480Screen
+            add hudx_x GetTextWidth
+            add hudx_x userdef[].gametext_xspace
+            set hudx_y 108
+            shiftl hudx_y 16
+            set hudx_scale 32768
+            set hudx_shade 0
+            set hudx_tilenum 5465
+            state DrawTile640x480Screen
+
+            set hudx_scale 30720
+            set hudx_tilenum STARTALPHANUM
+            set hudx_shade 5
+            set hudx_pal 8
+            set hudx_orientation 16
+            set hudx_txtflags 2
+
+
+
+            set hudx_x 160
+            set hudx_y 144
+            redefinequote 12 Directed by
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Richard Gobeille
+            state DrawText640x480Screen
+
+
+            add hudx_y 18
+            redefinequote 12 Programming
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Richard Gobeille
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Evan Ramos
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Jonathan Strander
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Alex Dawson
+            state DrawText640x480Screen
+
+
+            add hudx_y 18
+            redefinequote 12 Level Design
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Max Ylitalo
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Leonardo Pellegrini
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Jarmo Kylmaaho
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Corentin Dallay
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Vitaliy Bondarenko
+            state DrawText640x480Screen
+
+
+
+            set hudx_x 320
+            set hudx_y 144
+            redefinequote 12 Art Design
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Aleksander Kowalczyk
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Arturo Pahua
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Fox Martins
+            state DrawText640x480Screen
+
+
+            add hudx_y 20
+            redefinequote 12 Sound Design
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Jonathan Hyde ^61(Venn Audio)
+            state DrawText640x480Screen
+
+
+            add hudx_y 20
+            redefinequote 12 Music
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Jarkko Rotsten
+            state DrawText640x480Screen
+
+
+            add hudx_y 20
+            redefinequote 12 Additional Art Design
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Michael Gallagher
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Isabel Alonso
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Oleg Golomolzin
+            state DrawText640x480Screen
+
+
+
+            set hudx_x 480
+            set hudx_y 144
+            /* redefinequote 12 Additional Level Design
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Corentin Dallay
+            state DrawText640x480Screen
+
+
+            add hudx_y 20 */
+            redefinequote 12 Special Thanks to
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Jonathon Fowler
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Artem Brullov
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^0Esko Ahonen ^61(uniquefx)
+            state DrawText640x480Screen
+            add hudx_y 12
+            redefinequote 12 ^61and all BETA testers
+            state DrawText640x480Screen
+
+
+            add hudx_y 30
+            redefinequote 12 BUILD Engine by
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Ken Silverman
+            state DrawText640x480Screen
+
+
+            add hudx_y 30
+            redefinequote 12 Voice Acting
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Valerie Arem ^61as Shelly
+            state DrawText640x480Screen
+            
+            add hudx_y 12
+            redefinequote 12 ^0Jon St. John ^61as Dr. Heskel
+            state DrawText640x480Screen
+
+
+
+            set hudx_x 160
+            set hudx_y 368
+            set hudx_scale 36864
+            set hudx_shade 0
+            set hudx_pal 0
+            set hudx_tilenum 5467
+            set hudx_orientation 0
+            state DrawTile640x480Screen
+
+
+
+            set hudx_x 380
+            set hudx_y 340
+            set hudx_scale 40960
+            set hudx_shade 5
+            set hudx_tilenum STARTALPHANUM
+            set hudx_orientation 16
+            redefinequote 12 ^88PUBLISHED BY ^113D REALMS ENTERTAINMENT
+            set hudx_txtflags 2
+            state DrawText640x480Screen
+
+            set hudx_scale 30720
+            set hudx_tilenum STARTALPHANUM
+            set hudx_pal 8
+            set hudx_orientation 16
+
+
+            set hudx_y 355
+            redefinequote 12 Chief Executive Officer
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Mike Nielsen
+            state DrawText640x480Screen
+
+
+            set hudx_x 300
+            set hudx_y 380
+            redefinequote 12 VP & Executive Producer
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Frederik Schreiber
+            state DrawText640x480Screen
+
+
+            set hudx_x 460
+            set hudx_y 380
+            redefinequote 12 Founder & Creative Director
+            state DrawText640x480Screen
+
+            add hudx_y 12
+            redefinequote 12 ^0Scott Miller
+            state DrawText640x480Screen
+
+
+
+            set hudx_x 320
+            set hudx_y 467
+            set hudx_scale 24576
+            set hudx_shade 15
+            redefinequote 12 ^92Page 2 of 2
+            set hudx_txtflags 2
+            state DrawText640x480Screen
+
+
+
+            break
+        case MENU_SKILL
+            state ResetTile
+            set hudx_x 574
+            set hudx_y 448
+            set hudx_scale 27648
+            set hudx_shade 15
+            set hudx_orientation 512
+            state menu_title
+            state ResetTile
+            set hudx_x 240
+            /* set hudx_y 122
+            set hudx_scale 32768 */
+            ifn last_face userdef.m_player_skill
+            {
+                set last_face userdef.m_player_skill
+                set face_static 0
+            }
+            ifl face_static 8
+            {
+                set last_face userdef.m_player_skill
+                set temp totalclock
+                sub temp face_static_c
+                abs temp
+                mod temp 4
+                ife temp 0
+                {
+                    set face_static_c totalclock
+                    add face_static 1
+                }
+                rand temp 3
+                set hudx_tilenum A_MONITOR_STATIC_LG
+                add hudx_tilenum temp
+            }
+            else
+                set hudx_tilenum A_MONITOR_3_LG
+            set temp tilesizy[hudx_tilenum]
+            mul temp hudx_scale
+            shiftr temp 16
+            set hudx_y 320
+            sub hudx_y temp
+            set hudx_pal 62
+            state DrawTile640x480Screen
+            set hudx_pal 0
+            set hudx_alpha -30
+            state DrawTile640x480Screen
+            set hudx_alpha 0
+            switch userdef.m_player_skill
+                case 1
+                    set hudx_tilenum HUD_FACE
+                    redefinequote 6 ^10Easy difficulty. ^11Great for new players or those who just want to have fun.
+                    break
+                case 2
+                    set hudx_tilenum 5540
+                    redefinequote 6 ^10Normal difficulty. ^11The intended experience for the average player.
+                    break
+                case 3
+                    set hudx_tilenum 5551
+                    redefinequote 6 ^10Hard difficulty. ^11A highly challenging mode for veterans.
+                    break
+                case 4
+                    set hudx_tilenum 5555
+                    redefinequote 6 ^10Relentless difficulty. ^11You die a lot and then uninstall the game. Thanks for playing!
+                    break
+            endswitch
+            ifge face_static 8
+            {
+                set temp tilesizy[hudx_tilenum]
+                set hudx_scale 102400
+                mul temp hudx_scale
+                shiftr temp 16
+                shiftr temp 4
+                sub hudx_y temp
+                or hudx_orientation 1
+                set hudx_alpha -129
+                set hudx_pal 62
+                state DrawTile640x480Screen
+                set hudx_alpha 0
+            }
+            state ResetText
+            set hudx_x 5
+            set hudx_y 469
+            set hudx_scale 25600
+            set hudx_tilenum STARTALPHANUM
+            set hudx_orientation 272
+            set hudx_quote 6
+            state DrawText640x480Screen
+            break
+        default
+            state ResetTile
+            set hudx_x 574
+            set hudx_y 448
+            set hudx_scale 27648
+            set hudx_shade 10
+            set hudx_orientation 512
+            state menu_title
+            break
+    endswitch
+
+    ifg didmenubg_fade 0
+    {
+        state ResetTile
+        set hudx_x 320
+        set hudx_y 240
+        set hudx_tilenum 5463
+        ifn current_menu 0
+            set hudx_shade 5
+        ifl didmenubg_fade 10
+            or hudx_orientation 1
+        ifl didmenubg_fade 5
+            or hudx_orientation 32
+        state DrawTile640x480Screen
+    }
+endevent
+
+// Control menu changing
+var zone_unlock_val
+defstate read_zone_unlock_accounting
+    set zone_unlock_val gamestate_temp[2]
+    ifvarg zone_unlock_val 0
+    {
+        setu .newgamecustomopen 2
+        set temp6 1
+        shiftl temp6 zone_unlock_val
+        sub temp6 1
+        setu .newgamecustomsubopen 1 temp6
+    }
+ends
+
+
+var cancel_mode
+appendevent EVENT_CHANGEMENU
+    set face_static 4
+    redefinequote 115 gamestate.bin
+    readarrayfromfile gamestate_temp 115
+    state read_zone_unlock_accounting // handler, abusing the above existing op
+    set temp6 gamestate_temp[0]
+    ifand temp6 32768
+        set episode_skip 0
+    else
+        set episode_skip 1
+    ifand temp6 1
+        nullop
+    else
+    {
+        readarrayfromfile gamestate 115
+        or temp6 1
+        setarray gamestate[0] temp6
+        writearraytofile gamestate 115
+    }
+    set temp6 0
+    ifand player[myconnectindex].gm MODE_GAME
+        set temp6 1
+    else
+    {
+        readarrayfromfile gamestate_temp 115
+        set temp5 gamestate_temp[0]
+        ifand temp5 2
+            xor temp5 2
+        readarrayfromfile gamestate 115
+        setarray gamestate[0] temp5
+        writearraytofile gamestate 115
+    }
+    
+    switch RETURN
+        case 500
+        case 501
+        case 502
+            rand hudx_quit QUITMESSAGECOUNT
+            ife hudx_quit hudx_quit_last
+            {
+                add hudx_quit 1
+                set temp QUITMESSAGECOUNT
+                add temp 1
+                mod hudx_quit temp
+            }
+            set hudx_quit_last hudx_quit
+            break
+        case MENU_SKILL
+            set last_face 0
+            set face_static 0
+            break
+    endswitch
+    
+    switch current_menu
+        case MENU_EPISODE
+            ife RETURN MENU_SKILL
+            {
+                set bbomb_mode 0
+                setp[].max_player_health MAXPLAYERHEALTH
+                getu[].m_volume_number temp
+                ife temp EP_BOMB
+                {
+                    setu[].m_volume_number EP_PREVIEW
+                    set bbomb_mode 1
+                    setp[].max_player_health 25
+                }
+            }
+            break
+        case MENU_SKILL
+            ife RETURN MENU_EPISODE
+            {
+                ife userdef .m_volume_number EP_PREVIEW ife bbomb_mode 1
+                    setu[].m_volume_number EP_BOMB
+            }
+            else
+                set temp6 0
+            break
+    endswitch
+
+    ife episode_skip 1
+    {
+        switch current_menu
+            case MENU_MAIN
+            case MENU_MAIN_INGAME
+            case MENU_NEWVERIFY
+                ife RETURN MENU_EPISODE
+                {
+                    set RETURN MENU_SKILL
+                    ife current_menu MENU_NEWVERIFY
+                        setu[].m_level_number 0
+                    else ifand player[].gm MODE_GAME
+                        nullop
+                    else
+                        setu[].m_level_number 0
+                }
+                break
+            case MENU_SKILL
+                ife RETURN MENU_EPISODE
+                    set RETURN MENU_MAIN
+                break
+        endswitch
+        ife RETURN MENU_SKILL
+            setu[].m_volume_number EP_PREVIEW // demo only
+    }
+
+    ife current_menu MENU_STORY
+        ifg RETURN MENU_MAIN_INGAME
+            set RETURN MENU_F1HELP
+    else ife RETURN MENU_F1HELP
+         set RETURN MENU_STORY
+endevent
+
+appendevent EVENT_NEWGAMECUSTOM
+    set bbomb_mode 0
+    setp[].max_player_health MAXPLAYERHEALTH
+
+    ife userdef .return 1 -1
+    {
+        ife userdef .return 0 0
+        {
+            setu[].m_volume_number EP_MAIN
+            setu[].m_level_number 0
+        }
+    }
+    else ife userdef .return 2 -1
+    {
+        ife userdef.return 0 1
+        {
+            setu[].m_volume_number EP_MAIN
+            setu[].m_level_number 0
+            switch userdef .return 1
+                case 0
+                    setu[].m_level_number EP_MAIN_ZONE_1_START
+                    break
+                case 1
+                    setu[].m_level_number EP_MAIN_ZONE_2_START
+                    break
+                case 2
+                    setu[].m_level_number EP_MAIN_ZONE_3_START
+                    break
+                case 3
+                    setu[].m_level_number EP_MAIN_ZONE_4_START
+                    break
+                case 4
+                    setu[].m_level_number EP_MAIN_ZONE_5_START
+                    break
+                case 5
+                    setu[].m_level_number EP_MAIN_ZONE_6_START
+                    break
+                case 6
+                    setu[].m_level_number EP_MAIN_ZONE_7_START
+                    break
+            endswitch
+        }
+        else ife userdef.return 0 2
+        {
+            setu[].m_volume_number 0
+            setu[].m_level_number 0
+            switch userdef .return 1
+                case 0
+                    setu[].m_volume_number EP_PREVIEW
+                    setu[].m_level_number 0
+                    break
+                case 1
+                    setu[].m_volume_number EP_HORDE
+                    setu[].m_level_number 0
+                    break
+                case 2
+                    setu[].m_volume_number EP_PREVIEW
+                    setu[].m_level_number 0
+                    set bbomb_mode 1
+                    setp[].max_player_health 25
+                    break
+            endswitch
+        }
+    }
+endevent

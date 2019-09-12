@@ -1,0 +1,302 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:                                                   
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#  
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, and Evan Ramos
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+All non-programmatic text is defined here.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+definequote  1        cheater! show map off
+definequote  3        ^15PORTABLE MEDKIT! ^92Fix yourself up.
+definequote  5        cheater! very happy ammo added
+// definequote  4        RESERVED - LEAVE COMMENTED
+// definequote  8        RESERVED - LEAVE COMMENTED
+definequote  9        Dick's secret stash!
+
+definequote 13        PRESS USE TO RESTART LEVEL
+
+definequote 17        cheater! god mode on
+definequote 18        cheater! god mode off
+definequote 19        bring it on!
+definequote 20        crosshair on
+definequote 21        crosshair off
+definequote 23        status messages on
+definequote 24        status messages off
+
+definequote 26        RESERVED
+
+// pickup quotes
+definequote 34        emergency syringe
+definequote 35        ^15SUPER DAMAGE! ^92Now you're playing with power.
+definequote 36        ^15JUMP BOOTS! ^92Double jump to freedom.
+definequote 37        ^15ULTRASONIC RADAR! ^92See spots and run.
+definequote 38        pizza time!
+definequote 39        ^15BLAST ACCELERATOR! ^92So powerful, it's kind of ridiculous.
+definequote 40        liquid crack!
+definequote 41        COWABUNGA!
+definequote 42        Hazard Suit
+definequote 43        ^92got an ^80Access Card
+definequote 44        ^92got a ^62BLUE ^80Access Card
+definequote 45        ^92got a ^15RED ^80Access Card
+definequote 46        ^92got a ^90YELLOW ^80Access Card
+definequote 47        ^92got a ^87PURPLE ^80Access Card
+definequote 54        picked up Loverboy
+definequote 55        ammo for Loverboy
+definequote 56        stim pack: +10% HP
+definequote 57        health kit: +25% HP
+definequote 58        light armor
+definequote 59        medium armor
+definequote 60        heavy armor
+definequote 61        armor fragment
+definequote 69        Bowling Bomb
+
+definequote 70        you need the blue key!
+definequote 71        you need the red key!
+definequote 72        you need the yellow key!
+definequote 73        WEAPON LOWERED
+definequote 74        WEAPON RAISED
+
+definequote 83        map follow mode off
+definequote 84        map follow mode on
+definequote 85        run mode off
+definequote 86        run mode on
+
+definequote 87        ^92You need to find an ^14Access Card
+definequote 88        ^92You need a ^62BLUE ^80Access Card
+definequote 89        ^92You need a ^15RED ^80Access Card
+definequote 90        ^92You need a ^90YELLOW ^80Access Card
+definequote 91        ^92It needs a ^87PURPLE ^80Access Card?
+
+definequote 100       debug: locks toggled
+definequote 103       screenshot
+
+definequote 111       cheater! show map on
+definequote 112       debug: noclip off
+definequote 113       debug: noclip on
+definequote 114       BAD SAVEGAME VERSION!!!
+definequote 115       RESERVED
+definequote 116       RESERVED
+definequote 117       RESERVED
+definequote 118       we refuse to create the worst savegame ever
+definequote 119       cheater! got all weapons
+definequote 120       cheater! got all inventory
+definequote 121       cheater! got all keys
+definequote 122       RESERVED
+
+definequote 130       picked up Ion Bow
+definequote 131       quiver for Ion Bow
+
+definequote 132       picked up Chaingun
+definequote 133       bullets for Chaingun
+
+definequote 134       picked up Disperser
+definequote 135       shells for Disperser
+definequote 136       grenades for Disperser
+
+definequote 137       picked up Penetrator!
+definequote 138       flechettes for Penetrator
+definequote 139       Clusterpuck
+
+definequote 160       spawned a chair friend!
+definequote 161       debug: free flying on
+definequote 162       debug: free flying off
+definequote 163       debug: pause ai on
+definequote 164       debug: pause ai off
+definequote 165       map is now completely fucked - thank you for playing!
+definequote 166       ^64the feeling hit me like a point-blank shot straight to the face--
+
+definequote 190       RESERVED
+definequote 195       RESERVED
+definequote 196       ^15Disperser out of shells
+definequote 197       ^15Disperser out of grenades
+definequote 200       RESERVED FOR DIALOG
+definequote 201       RESERVED FOR COPY
+definequote 202       RESERVED FOR CUT
+definequote 203       RESERVED FOR DIALOG
+definequote 204       RESERVED FOR DIALOG
+definequote 205       RESERVED FOR DIALOG
+definequote 206       RESERVED FOR DIALOG
+
+definequote 210       status bar off
+definequote 211       status bar on
+definequote 212       full status bar
+
+definequote 220       unavailable in preview
+definequote 221       sorry... Chaingun unavailable in preview
+definequote 222       ^98Press ^8F1 ^98for gameplay help
+definequote 223       ^98Old Keys Discarded...
+
+definequote 256       RESERVED
+definequote 257       RESERVED
+
+definequote 320       ^84[ammo crate] ^4a baton... much wow! ^1Come back soon?
+definequote 321       ^84[ammo crate] ^4Free Loverboy Ammo! ^1Come back soon!
+definequote 322       ^84[ammo crate] ^4Free Disperser Ammo! ^1Come back soon!
+definequote 323       ^84[ammo crate] ^4Free Penetrator Ammo! ^1Come back soon!
+definequote 324       ^84[ammo crate] ^4Free Chaingun Ammo! ^1Come back soon!
+definequote 325       ^84[ammo crate] ^4Free Bowling Bombs! ^1Come back soon!
+definequote 326       ^84[ammo crate] ^4Free Grenade Ammo! ^1Come back soon!
+definequote 327       ^84[ammo crate] ^4Free Ion Bow Ammo! ^1Come back soon!
+definequote 328       ^84[ammo crate] ^4Free Clusterpucks! ^1Come back soon!
+
+definequote 329       ^84[ammo crate] ^4a baton... much wow!
+definequote 330       ^84[ammo crate] ^4Free Loverboy Ammo!
+definequote 331       ^84[ammo crate] ^4Free Disperser Ammo!
+definequote 332       ^84[ammo crate] ^4Free Penetrator Ammo!
+definequote 333       ^84[ammo crate] ^4Free Chaingun Ammo!
+definequote 334       ^84[ammo crate] ^4Free Bowling Bombs!
+definequote 335       ^84[ammo crate] ^4Free Grenade Ammo!
+definequote 336       ^84[ammo crate] ^4Free Ion Bow Ammo!
+definequote 337       ^84[ammo crate] ^4Free Clusterpucks!
+
+definequote 360       Found the Zone Mega-Secret!
+
+// unlocked quotes
+definequote 361       ^5DOOR UNLOCKED
+definequote 362       ^9DOOR LOCKED
+definequote 363       ^5POWER RESTORED
+definequote 364       ^9POWER TERMINATED
+definequote 365       ^5ACCESS GRANTED
+definequote 366       ^9ACCESS REVOKED
+definequote 367       ^5GENERATOR ONLINE
+definequote 368       ^9GENERATOR OFFLINE
+definequote 369       ^5ELEVATOR ONLINE
+definequote 370       ^9ELEVATOR OFFLINE
+definequote 371       ^5DOORS UNLOCKED
+
+// generic mapper quotes
+definequote 388       ^5LOCKDOWN LIFTED
+definequote 389       ^6What did I ever do to you!?
+definequote 390       ^6Ouch
+definequote 391       ^5VENTILATION SYSTEM ONLINE
+definequote 392       ^5DRAINAGE SYSTEM RESTORED
+
+definequote 393       ^5COOLANT FLOW RESTORED
+definequote 394       ^5ELEVATOR POWER RESTORED
+definequote 395       ^9HATCH OPENED
+definequote 396       ^6WATER LEVEL NOMINAL
+definequote 397       ^5AIR CONDITION ON
+definequote 398       ^9LASERS OFFLINE
+definequote 399       ^5ELEVATORS ONLINE
+
+definequote 400       A secret was opened
+
+definequote 401		  ^9WARNING: ^1LOCKDOWN IN PROGRESS!
+definequote 402		  ^9ELEVATOR DISABLED, CLEARANCE REQUIRED!
+definequote 403		  ^8Pygar, is that you?
+definequote 404		  ^9REACTOR DEFINITELY OFFLINE
+definequote 405       ^8?yek laer eht si ohw wonk uoy oD
+definequote 406       ^8
+
+// Piano range 410 - 430
+definequote 410		  ^8This tune has super powers
+definequote 411		  ^8Hmm, that sounds familiar..
+definequote 412		  ^8SHE IS DEAD, GET OVER IT!
+definequote 413		  ^8LAAAWWWRAAAAHHHH!!
+definequote 414		  ^8Stop it! -Next door neighbour
+definequote 415		  ^8I live... again!
+definequote 416		  ^8DROPPED ITEMS: RED ARMOR
+definequote 417		  ^8Something opened..
+definequote 418		  ^8You're mechanical!
+definequote 419		  ^8No effect
+definequote 420		  ^8Build equals, lobotomy squared
+definequote 421		  ^8Now you've gone and done it..
+
+definequote 440       RESERVED TUT
+definequote 441       RESERVED TUT
+
+definequote 480       RESERVED HORDE
+definequote 481       RESERVED HORDE
+definequote 482       RESERVED HORDE
+definequote 483       RESERVED HORDE
+definequote 484       RESERVED HORDE
+definequote 485       RESERVED HORDE
+
+definequote 512       
+definequote 513       But that was nothing
+definequote 514       Try to survive this one
+definequote 515       you'll be mince if you stop
+definequote 516       Hope you like spiders...
+definequote 517       ... because you will need them
+definequote 518       it only gets tougher from here
+definequote 519       Over halfway there
+definequote 520       Shotgun time
+definequote 521       This one is a barrel of fun!
+definequote 522       Deadly mix incoming
+definequote 523       Look out for the shotgun train!
+definequote 524       You really should restock
+definequote 525       Big bad finale coming up
+definequote 526       just kidding, you are dead!
+definequote 527       Round Start 16
+definequote 528       Round Start 17
+definequote 529       Round Start 18
+definequote 530       Round Start 19
+definequote 531       Round Start 20
+definequote 532       Round Start 21
+definequote 533       Round Start 22
+definequote 534       Round Start 23
+definequote 535       Round Start 24
+definequote 536       Round Start 25
+definequote 537       Round Start 26
+definequote 538       Round Start 27
+definequote 539       Round Start 28
+definequote 540       Round Start 29
+definequote 541       Round Start 30
+definequote 542       Round Start 31
+definequote 543       Round Start 32
+
+definequote 552       Nice!
+definequote 553       Ok, you beat it
+definequote 554       Good good
+definequote 555       Still here?
+definequote 556       Hope you like shards...
+definequote 557       adequate performance
+definequote 558       what happened to your cover?
+definequote 559       You are pretty good
+definequote 560       Had fun? ..well..
+definequote 561       Forgot to say, strafe!
+definequote 562       Good job getting this far
+definequote 563       expect more in the future
+definequote 564       Oh boy!
+definequote 565       YOU WIN!
+definequote 566       VERY NICE!
+definequote 567       Round End 16
+definequote 568       Round End 17
+definequote 569       Round End 18
+definequote 570       Round End 19
+definequote 571       Round End 20
+definequote 572       Round End 21
+definequote 573       Round End 22
+definequote 574       Round End 23
+definequote 575       Round End 24
+definequote 576       Round End 25
+definequote 577       Round End 26
+definequote 578       Round End 27
+definequote 579       Round End 28
+definequote 580       Round End 29
+definequote 581       Round End 30
+definequote 582       Round End 31
+definequote 583       Round End 32
+
+// 16320 and up reserved
+

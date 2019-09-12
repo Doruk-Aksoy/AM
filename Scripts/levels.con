@@ -1,0 +1,162 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:                                                   
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#  
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, and Evan Ramos
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file contains the level definitions for the game. Editing this file
+incorrectly may cause unexpected unintended behavior, and you should use a new
+episode for custom content rather than the originally defined ones in most
+cases.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+definevolumename EP_MAIN        Capital Offense
+definevolumename EP_PREVIEW     Crisis in Columbia
+definevolumename EP_HORDE       Queen of the Hill
+definevolumename EP_BOMB        Bombardier Trial
+undefinevolume                  1
+
+defineskillname 0               First Blood
+defineskillname 1               Wanton Carnage
+defineskillname 2               Ultra Viscera
+defineskillname 3               Maximum Fury
+
+define LV_X 14
+definelevelname EP_MAIN 0       maps/z1a1.map           00:00   00:00   The All-Seeing Eye
+definelevelname EP_MAIN 1       maps/z1a2.map           00:00   00:00   Trouble in Paradise
+definelevelname EP_MAIN 2       maps/z1a3.map           00:00   00:00   Fan Service
+definelevelname EP_MAIN 3       maps/z1a4.map           00:00   00:00   Cultural Divide
+definelevelname EP_MAIN 4       maps/z1a5.map           00:00   00:00   Reformation Plaza
+
+definelevelname EP_MAIN 5       maps/z2a1.map           00:00   00:00   Abandonment Issues
+definelevelname EP_MAIN 6       maps/z2a2.map           00:00   00:00   Alphabet Soup
+definelevelname EP_MAIN 7       maps/z2a3.map           00:00   00:00   Defense Farce
+definelevelname EP_MAIN 8       maps/z2a4.map           00:00   00:00   D.C. Meltdown
+definelevelname EP_MAIN 9       maps/z2a5.map           00:00   00:00   Nukage Nightmare
+
+definelevelname EP_MAIN 10      maps/z3a1.map           00:00   00:00   The Washington Institute
+definelevelname EP_MAIN 11      maps/z3a2.map           00:00   00:00   Corporate Chaos
+definelevelname EP_MAIN 12      maps/z3a3.map           00:00   00:00   Subhuman Resources
+definelevelname EP_MAIN 13      maps/z3a4.map           00:00   00:00   Executive Disorder
+definelevelname EP_MAIN LV_X    maps/z3a5.map           00:00   00:00   Grand Slam
+
+definelevelname EP_MAIN 15      maps/z4a1.map           00:00   00:00   Off The Rails
+definelevelname EP_MAIN 16      maps/z4a2.map           00:00   00:00   Casual Casualties
+definelevelname EP_MAIN 17      maps/z4a3.map           00:00   00:00   Tunnel Disturbance
+definelevelname EP_MAIN 18      maps/z4a4.map           00:00   00:00   Power Up!
+definelevelname EP_MAIN 19      maps/z4a5.map           00:00   00:00   Twist of Freight
+
+definelevelname EP_MAIN 20      maps/z5a1.map           00:00   00:00   Inhospitable Hospitality
+definelevelname EP_MAIN 21      maps/z5a2.map           00:00   00:00   Knee Deep
+definelevelname EP_MAIN 22      maps/z5a3.map           00:00   00:00   Heskel's House of Horrors
+
+definelevelname EP_MAIN 23      maps/z6a1.map           00:00   00:00   Hellmouth
+definelevelname EP_MAIN 24      maps/z6a2.map           00:00   00:00   Hazard Disposal
+definelevelname EP_MAIN 25      maps/z6a3.map           00:00   00:00   Parting Procedure 
+
+definelevelname EP_MAIN 26      maps/z7a1.map           00:00   00:00   Destructive Desires
+definelevelname EP_MAIN 27      maps/z7a2.map           00:00   00:00   Epicenter
+
+
+
+definelevelname EP_PREVIEW 0    maps/preview_0.map      00:00   00:00   Defense Farce
+definelevelname EP_PREVIEW 1    maps/preview_1.map      00:00   00:00   Washington Wasteland
+definelevelname EP_PREVIEW 2    maps/preview_2.map      00:00   00:00   Blast Processing
+definelevelname EP_PREVIEW 3    maps/preview_3.map      00:00   00:00   Disrupted Service
+definelevelname EP_PREVIEW 4    maps/preview_4.map      00:00   00:00   Nukage Nightmare
+definelevelname EP_PREVIEW 5    maps/preview_hhoh.map   00:00   00:00   Heskel's House of Horrors
+
+
+definelevelname EP_HORDE 0      maps/arena1.map         00:00   00:00   The DC Chaingun Massacre
+
+definelevelname 4        0      autosave_playtest.map   00:00   00:00   Mapster32 Playtest
+
+// for EP_MAIN
+define EP_MAIN_NUMZONES 7
+define EP_MAIN_ZONE_1_START 0
+define EP_MAIN_ZONE_2_START 5
+define EP_MAIN_ZONE_3_START 10
+define EP_MAIN_ZONE_4_START 15
+define EP_MAIN_ZONE_5_START 20
+define EP_MAIN_ZONE_6_START 23
+define EP_MAIN_ZONE_7_START 26
+define EP_MAIN_ZONE_S_START LV_X
+define EP_MAIN_ZONE_1_END 4
+define EP_MAIN_ZONE_2_END 9
+define EP_MAIN_ZONE_3_END 13
+define EP_MAIN_ZONE_4_END 18
+define EP_MAIN_ZONE_5_END 21
+define EP_MAIN_ZONE_6_END 24
+define EP_MAIN_ZONE_7_END 26
+define EP_MAIN_ZONE_S_END LV_X
+
+definequote 16320       Night on the Town
+definequote 16321       Downtown Disaster Relief
+definequote 16322       Institutionalized
+definequote 16323       The Six Underground
+definequote 16324       Countryside Carnage
+definequote 16325       Ordinary Laboratory
+definequote 16326       Subterranean Climax
+definequote 16327       Fever Pitch Stadium
+
+appendevent EVENT_VALIDATESTART
+    ife userdef .return 0 EP_MAIN
+    {
+        switch userdef .return 1
+            case 1 // 1-2
+                setu .return 1 0 // 1-1
+                break
+            case 8 // 2-4
+            case 9 // 2-5
+                setu .return 1 7 // 2-3
+                break
+            case LV_X // 3-5
+                setu .return 1 13 // 3-4
+                break
+            case 19 // 4-5
+                setu .return 1 18 // 4-4
+                break
+            case 22 // 5-3
+                setu .return 1 21 // 5-2
+                break
+            case 24 // 6-2
+            case 25 // 6-3
+                setu .return 1 23 // 6-1
+                break
+            case 27 // 7-2
+                setu .return 1 26 // 7-1
+                break
+        endswitch
+    }
+    else ife userdef .return 0 EP_PREVIEW
+    {
+        switch userdef .return 1
+            case 1 // 2
+                setu .return 1 0 // 1
+                break
+            case 3 // 4
+            case 4 // 5
+                setu .return 1 2 // 3
+                break
+        endswitch
+    }
+endevent

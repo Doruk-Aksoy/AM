@@ -1,0 +1,2515 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:                                                   
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#  
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, and Evan Ramos
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file contains all of the sound definitions as well as some on the fly sound
+playback tweaks.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+define S_DEFAULT                        0
+
+define S_TRILOAD1                       1
+define S_TRILOAD2                       43 // 2 is hardcoded
+define S_TRIFIRE1                       3
+define S_TRIFIRE2                       4
+define S_TRIFIRE3                       5
+define S_TRIFIRE4                       6
+define S_TRIFIRE5                       7
+define S_TRIFIRE6                       8
+define S_TRIFIRE7                       9
+
+define S_TRIFIRE_OLD1                   10
+define S_TRIFIRE_OLD2                   11
+define S_TRIFIRE_OLD3                   12
+define S_TRIFIRE_OLD4                   13
+
+// sound 14 is hardcoded to seenine
+define S_MINIGUN_WIND_UP                15
+define S_MINIGUN_WIND_DOWN              16
+define S_MINIGUN_SPIN                   17
+define S_MINIGUN_PICKUP                 60 // 18 is hardcoded for something
+define S_MINIGUN_PULSE                  61
+
+define S_CROSSBOW_LOAD                  19
+define S_CROSSBOW_CHARGE                50
+
+// ID 20 hardcoded for player landing
+
+define S_CROSSBOW_RESET                 51
+define S_CROSSBOW_READY                 52
+define S_CROSSBOW_SLAM1                 53
+define S_CROSSBOW_SLAM2                 54
+define S_CROSSBOW_SLIDE                 55
+
+ // 22-25 hard coded for misc water sounds
+define S_CROSSBOW_FIRE1                 26
+define S_CROSSBOW_FIRE2                 27
+define S_CROSSBOW_FIRE3                 28
+define S_CROSSBOW_FIRE4                 29
+define S_SHOTGUN_FIRE1                  30
+define S_SHOTGUN_FIRE2                  31
+define S_SHOTGUN_RELOAD1                34
+define S_SHOTGUN_RELOAD2                35
+define S_SHOTGUN_RELOAD3                36
+define S_SHOTGUN_OPENCLOSE              37
+define S_SHOTGUN_CLIPOUT                38
+define S_SHOTGUN_CLIPIN                 39
+define S_GRENADE_BOUNCE                 41 // 40 hardcoded for water
+// 42 hardcoded landing sound
+// 48 hardcoded for water
+define S_GRENADE_LAUNCH                 44
+define S_CROSSBOW_SQUARE                45
+define S_DSLAM_BEEP                     46
+
+define S_BBOMB_FUSE                     62
+define S_LOVEALT_LOCK                   66 // try 63 !
+define S_BBOMB_LAND                     64
+define S_BBOMB_ROLL                     65
+define S_BBOMB_LOCK                     66
+define S_BBOMB_LAND_ALT                 67
+define S_BBOMB_STRIKE                   68
+define S_BBOMB_THROW                    69
+define S_BBOMB_THROW_ALT                71 // 70 is TELEPORTER sound  hardcoded
+define S_BBOMB_LIGHTER                  79
+define S_BBOMB_LOCK2                    80
+define S_BOOSTER                        82
+
+define S_VEST_ZIP                       72
+define S_PICKUP01                       73
+define S_PICKUP02                       74
+define S_PICKUP03                       75
+define S_PICKUP04                       76
+define S_SECRET                         77
+define S_SUPER_SECRET                   78
+
+define S_BOMBETTE_EXP1                  92
+define S_BOMBETTE_EXP2                  93
+define S_BOMBETTE_EXP3                  94
+
+define S_SMG_SINGLE                     95
+define S_SMG_BURST                      96
+define S_SMG_CLIPIN                     97
+define S_SMG_CLIPOUT                    98
+
+define S_COUNTER                        100
+
+define S_CULTIST_RECOG1                 110
+define S_CULTIST_RECOG2                 111
+define S_CULTIST_RECOG3                 112
+
+define S_CULTIST_ROAM1                  113
+define S_CULTIST_ROAM2                  114
+define S_CULTIST_ROAM3                  115
+
+define S_CULTIST_CHAT1                  116
+define S_CULTIST_CHAT2                  117
+define S_CULTIST_CHAT3                  118
+
+define S_CULTIST_FIRE1                  119
+
+define S_CULTIST_FEAR1                  120
+define S_CULTIST_FEAR2                  121
+
+define S_CULTIST_HIT1                   122
+define S_CULTIST_HIT2                   123
+
+define S_CULTIST_DEAD1                  666
+define S_CULTIST_DEAD2                  667
+define S_CULTIST_DEAD3                  668
+
+define S_CULTIST_PAIN1                  669
+define S_CULTIST_PAIN2                  670
+define S_CULTIST_PAIN3                  671
+define S_CULTIST_PAIN4                  672
+define S_CULTIST_PAINBIG1               165
+define S_CULTIST_PAINBIG2               166
+define S_CULTIST_PAINBIG3               167
+define S_CULTIST_PAINHUGE               168
+
+
+define S_ZOMBIE_RECOG1                  673
+define S_ZOMBIE_RECOG2                  674
+
+define S_ZOMBIE_RECOG1_Q                821
+define S_ZOMBIE_RECOG2_Q                822
+
+define S_ZOMBIE_ROAM1                   675
+define S_ZOMBIE_ROAM2                   676
+define S_ZOMBIE_ROAM3                   677
+
+define S_ZOMBIE_SWING1                  678
+define S_ZOMBIE_SWING2                  679
+define S_ZOMBIE_SWING3                  680
+
+define S_ZOMBIE_THROW1                  681
+define S_ZOMBIE_THROW2                  682
+define S_ZOMBIE_THROW3                  683
+
+define S_ZOMBIE_HIT1                    684
+define S_ZOMBIE_HIT2                    685
+define S_ZOMBIE_HIT3                    686
+
+define S_ZOMBIE_DEAD1                   687
+define S_ZOMBIE_DEAD2                   688
+
+define S_ZOMBIE_GDF_RECOG1              689
+define S_ZOMBIE_GDF_RECOG2              690
+
+define S_ZOMBIE_GDF_RECOG1_Q            823
+define S_ZOMBIE_GDF_RECOG2_Q            824
+
+define S_ZOMBIE_GDF_ROAM1               691
+define S_ZOMBIE_GDF_ROAM2               692
+define S_ZOMBIE_GDF_ROAM3               693
+
+define S_ZOMBIE_GDF_PUKE1               694
+define S_ZOMBIE_GDF_PUKE2               695
+define S_ZOMBIE_GDF_PUKE3               696
+
+define S_ZOMBIE_GDF_HIT1                697
+define S_ZOMBIE_GDF_HIT2                698
+define S_ZOMBIE_GDF_HIT3                699
+define S_ZOMBIE_GDF_HIT4                700
+
+define S_ZOMBIE_GDF_DEAD1               701
+define S_ZOMBIE_GDF_DEAD2               702
+define S_ZOMBIE_HELP                    1002
+define S_ZOMBIE_GDF_HELP                1003
+
+
+define S_FLAMESKULL_HIT_1               820
+define S_SKINJOB_RECOG1                 1004
+define S_SKINJOB_RECOG2                 1005
+define S_SKINJOB_ROAM1                  1006
+define S_SKINJOB_ROAM2                  1007
+define S_SKINJOB_ATTACK1                1008
+define S_SKINJOB_ATTACK2                1009
+define S_SKINJOB_TPORT1                 1010
+define S_SKINJOB_TPORT2                 1011
+define S_SKINJOB_PAIN1                  1012
+define S_SKINJOB_PAIN2                  1013
+define S_SKINJOB_DIE1                   1014
+
+define S_SHOTGUNNER_RECOG1              1064
+define S_SHOTGUNNER_RECOG2              1065
+define S_SHOTGUNNER_RECOG3              1066
+define S_SHOTGUNNER_ROAM1               1067
+define S_SHOTGUNNER_ROAM2               1068
+define S_SHOTGUNNER_ROAM3               1069
+define S_SHOTGUNNER_CHAT1               1070
+define S_SHOTGUNNER_CHAT2               1071
+define S_SHOTGUNNER_CHAT3               1072
+define S_SHOTGUNNER_FIRE1               1073
+define S_SHOTGUNNER_FEAR1               1074
+define S_SHOTGUNNER_FEAR2               1075
+
+define S_BRUTE_LAUGH_1                  830
+define S_BRUTE_LAUGH_2                  831
+define S_BRUTE_LAUGH_3                  832
+define S_BRUTE_GRUNT_1                  833
+define S_BRUTE_GRUNT_2                  834
+define S_BRUTE_GRUNT_3                  835
+define S_BRUTE_DIE_1                    836
+define S_BRUTE_TAUNT_1                  837
+define S_BRUTE_TAUNT_2                  838
+define S_BRUTE_TAUNT_3                  839
+define S_BRUTE_TAUNT_4                  840
+define S_BRUTE_TAUNT_5                  841
+define S_BRUTE_TAUNT_6                  842
+
+define S_WENTEKO_ROAR_1                 843
+define S_WENTEKO_ROAR_2                 844
+define S_WENTEKO_ROAR_3                 845
+
+define S_WENTEKO_BREATHE_1              846
+define S_WENTEKO_BREATHE_2              847
+define S_WENTEKO_JUMP_1                 848
+define S_WENTEKO_SWIPE_1                849
+define S_WENTEKO_SWIPE_2                850
+define S_WENTEKO_SWIPE_3                851
+define S_WENTEKO_HIT_1                  852
+define S_WENTEKO_HIT_2                  853
+define S_WENTEKO_DIE_1                  854
+
+define S_MECH_RECOG                     125
+define S_MECH_LOST                      126
+
+define S_MECH_STEP1                     127
+define S_MECH_STEP2                     128
+define S_MECH_ROTATE                    129
+
+define S_MECH_PREPGUN1                  130
+define S_MECH_PREPGUN2                  131
+
+define S_MECH_GRENADE                   132
+
+define S_MECH_HIT1                      133
+define S_MECH_HIT2                      134
+define S_MECH_DEATH                     135
+
+define S_MECH_MOAN                      136
+
+define S_MECH_MGUN                      137
+
+define S_GREATER_ASCEND                 169
+define S_GREATER_FLESHBAG               170
+define S_GREATER_KILL                   171
+define S_GREATER_MINE                   172
+define S_GREATER_UNCLEAN                173
+define S_GREATER_TAUNT1                 174
+define S_GREATER_TAUNT2                 175
+define S_GREATER_DIE1                   184
+
+define S_SHELLY_GRUNT1                  138
+define S_SHELLY_GRUNT2                  139
+define S_SHELLY_GRUNT3                  140
+define S_SHELLY_GRUNT4                  141
+define S_SHELLY_HURT01                  142
+define S_SHELLY_HURT02                  143
+define S_SHELLY_HURT03                  144
+define S_SHELLY_HURTBAD01               145
+define S_SHELLY_HURTBAD02               146
+define S_SHELLY_HURTBAD03               147
+define S_SHELLY_HURTFATAL01             148
+define S_SHELLY_DEATH1                  149
+define S_SHELLY_DEATH2                  150
+define S_SHELLY_DEATH3                  151
+define S_SHELLY_DEATH4                  152
+define S_SHELLY_DEATH5                  153
+define S_SHELLY_BREATH1                 154
+define S_SHELLY_BREATH2                 155
+define S_SHELLY_HURTFATAL02             156
+define S_SHELLY_KISSY                   163
+
+define S_BRUTE_MOVE                     185
+define S_BRUTE_CHAINSAW                 186
+define S_BRUTE_CHAINSAW2                183
+
+define S_DRONE_ACTIVE                   187
+define S_DIOPEDE_HIT                    188
+define S_DIOPEDE_DIE                    189
+
+define S_DEACON_HOVER                   190
+define S_DEACON_MISSILE                 191
+define S_DEACON_MISSILE2                192
+
+define S_DEACON_RECOG1                  193
+define S_DEACON_RECOG2                  194
+define S_DEACON_ROAM1                   195
+define S_DEACON_ROAM2                   196
+define S_DEACON_ATTACK1                 197
+define S_DEACON_ATTACK2                 198
+define S_DEACON_PAIN1                   199
+define S_DEACON_PAIN2                   230
+define S_DEACON_DEATH1                  231
+define S_DEACON_DEATH2                  232
+
+define S_INTRO                          219
+define S_SHELLY_SEARCH1                 220
+define S_SHELLY_SEARCH2                 221
+define S_SHELLY_SEARCH3                 222
+define S_SHELLY_SEARCH4                 223
+define S_SHELLY_SEARCH5                 224
+define S_SHELLY_SEARCH6                 225
+define S_SHELLY_SEARCH7                 226
+define S_SHELLY_SEARCH8                 227
+
+define S_SHELLY_SEARCHTALK1             228
+define S_SHELLY_SEARCHTALK2             229
+
+define S_SECT_DEATHSPIRAL               157
+define S_SECT_HURT1                     158
+define S_SECT_HURT2                     159
+
+define S_TURRET_PREPGUN                 160
+define S_TURRET_ROTATE                  161
+define S_TURRET_MGUN                    162
+define S_TURRET_SEARCH                  1076
+define S_TURRET_SPOTTED                 1077
+
+define S_MUTANT_FLESHRIP                177
+
+define S_P_SIZZLELOOP                   254
+define S_P_SIZZLE                       255
+define S_P_ZAPPED                       256
+define S_P_ZAPPED_END                   257
+define S_EXPL_LG001                     258
+define S_EXPL_LG002                     259
+define S_EXPL_LG003                     260
+define S_EXPL_LG004                     261
+define S_EXPL_MD001                     262
+define S_EXPL_MD002                     263
+define S_EXPL_MD003                     264
+define S_EXPL_MD004                     265
+define S_EXPL_MD005                     266
+define S_EXPL_MD006                     267
+define S_EXPL_MD007                     268
+define S_EXPL_SM001                     269
+define S_EXPL_SM002                     270
+define S_EXPL_SM003                     271
+define S_EXPL_SM004                     272
+define S_EXPL_SM005                     273
+define S_EXPL_NEW01                     276
+define S_EXPL_NEW02                     277
+
+define S_SMASH_GLASSLAMP                274
+define S_SMASH_GLASS                    275
+
+define S_ENV_ZAP1                       290
+define S_ENV_ZAP2                       291
+define S_ENV_ZAP3                       292
+define S_ENV_UNDERWATER1                293
+define S_ENV_ZAP1_QT                    294
+define S_ENV_ZAP2_QT                    295
+
+define S_IMPACT_FLESH1                  300
+define S_IMPACT_PLASMABOW               301
+define S_IMPACT_MUGSMASH                302
+define S_IMPACT_DEFLATE                 303
+define S_IMPACT_HEADSHOT                304
+define S_IMPACT_HEAVY                   305
+define S_IMPACT_HEAVY2                  306
+define S_BIG_IMPACT                     307
+define S_MEDIUM_IMPACT                  308
+
+define S_MELEE_SWING01                  310
+define S_MELEE_SWING02                  311
+define S_MELEE_SWING03                  312
+define S_MELEE_THUD01                   313
+define S_MELEE_THUD02                   314
+define S_MELEE_THUD03                   315
+
+define S_GIBSPLODE01                    317
+define S_GIBSPLODE02                    318
+define S_GIBSPLODE03                    319
+define S_GIBSPLODE04                    320
+define S_GIBSPLODE05                    321
+define S_GIBDROP01                      322
+define S_GIBDROP02                      323
+define S_SKULLKICK                      324
+define S_GIBSPLODE02_Q                  325
+
+define S_PIANO_C0_C1                    382
+define S_PIANO_C1_C2                    383
+define S_PIANO_C2_C3                    384
+define S_PIANO_C3_C4                    385
+define S_PIANO_C4_C5                    386
+define S_PIANO_C5_C6                    387
+define S_PIANO_C6_C7                    388
+define S_PIANO_C7_C8                    389
+
+define S_RADIO_ON                       448
+define S_RADIO_OFF                      449
+
+define S_FANFARE                        480
+
+define S_BOOTS_STEP                     504
+define S_DING                           505
+define S_ENVELOPE                       506
+define S_MP_ON                          507
+define S_MP_START                       508
+define S_MP_END                         509
+define S_BOOTS_JUMP0                    510
+define S_BOOTS_JUMP1                    511
+
+define S_STEP_STONE_JUMP1               512 // and default
+define S_STEP_STONE_JUMP2               513
+define S_STEP_STONE_JUMP3               514
+define S_STEP_STONE_LAND1               515
+define S_STEP_STONE_LAND2               516
+define S_STEP_STONE_LAND3               517
+define S_STEP_STONE_WALK1               518
+define S_STEP_STONE_WALK2               519
+define S_STEP_STONE_WALK3               520
+define S_STEP_STONE_RUN1                521
+define S_STEP_STONE_RUN2                522
+define S_STEP_STONE_RUN3                523
+
+define S_STEP_TILE_JUMP1                524 // and plastic
+define S_STEP_TILE_JUMP2                525
+define S_STEP_TILE_JUMP3                526
+define S_STEP_TILE_LAND1                527
+define S_STEP_TILE_LAND2                528
+define S_STEP_TILE_LAND3                529
+define S_STEP_TILE_WALK1                530
+define S_STEP_TILE_WALK2                531
+define S_STEP_TILE_WALK3                532
+define S_STEP_TILE_RUN1                 533
+define S_STEP_TILE_RUN2                 534
+define S_STEP_TILE_RUN3                 535
+
+define S_STEP_METAL_JUMP1               536
+define S_STEP_METAL_JUMP2               537
+define S_STEP_METAL_JUMP3               538
+define S_STEP_METAL_LAND1               539
+define S_STEP_METAL_LAND2               540
+define S_STEP_METAL_LAND3               541
+define S_STEP_METAL_WALK1               542
+define S_STEP_METAL_WALK2               543
+define S_STEP_METAL_WALK3               544
+define S_STEP_METAL_RUN1                545
+define S_STEP_METAL_RUN2                546
+define S_STEP_METAL_RUN3                547
+
+define S_STEP_DIRT_JUMP1                548
+define S_STEP_DIRT_JUMP2                549
+define S_STEP_DIRT_JUMP3                550
+define S_STEP_DIRT_LAND1                551
+define S_STEP_DIRT_LAND2                552
+define S_STEP_DIRT_LAND3                553
+define S_STEP_DIRT_WALK1                554
+define S_STEP_DIRT_WALK2                555
+define S_STEP_DIRT_WALK3                556
+define S_STEP_DIRT_RUN1                 557
+define S_STEP_DIRT_RUN2                 558
+define S_STEP_DIRT_RUN3                 559
+
+define S_STEP_GRASS_JUMP1               560
+define S_STEP_GRASS_JUMP2               561
+define S_STEP_GRASS_JUMP3               562
+define S_STEP_GRASS_LAND1               563
+define S_STEP_GRASS_LAND2               564
+define S_STEP_GRASS_LAND3               565
+define S_STEP_GRASS_WALK1               566
+define S_STEP_GRASS_WALK2               567
+define S_STEP_GRASS_WALK3               568
+define S_STEP_GRASS_RUN1                569
+define S_STEP_GRASS_RUN2                570
+define S_STEP_GRASS_RUN3                571
+
+define S_STEP_WATER_JUMP1               572
+define S_STEP_WATER_JUMP2               573
+define S_STEP_WATER_JUMP3               574
+define S_STEP_WATER_LAND1               575
+define S_STEP_WATER_LAND2               576
+define S_STEP_WATER_LAND3               577
+define S_STEP_WATER_WALK1               578
+define S_STEP_WATER_WALK2               579
+define S_STEP_WATER_WALK3               580
+define S_STEP_WATER_RUN1                581
+define S_STEP_WATER_RUN2                582
+define S_STEP_WATER_RUN3                583
+
+define S_STEP_WATERD_JUMP1              584
+define S_STEP_WATERD_JUMP2              585
+define S_STEP_WATERD_JUMP3              586
+define S_STEP_WATERD_LAND1              587
+define S_STEP_WATERD_LAND2              588
+define S_STEP_WATERD_LAND3              589
+define S_STEP_WATERD_WALK1              590
+define S_STEP_WATERD_WALK2              591
+define S_STEP_WATERD_WALK3              592
+define S_STEP_WATERD_RUN1               593
+define S_STEP_WATERD_RUN2               594
+define S_STEP_WATERD_RUN3               595
+
+define S_STEP_FABRIC_JUMP1              596 // and carpet
+define S_STEP_FABRIC_JUMP2              597
+define S_STEP_FABRIC_JUMP3              598
+define S_STEP_FABRIC_LAND1              599
+define S_STEP_FABRIC_LAND2              600
+define S_STEP_FABRIC_LAND3              601
+define S_STEP_FABRIC_WALK1              602
+define S_STEP_FABRIC_WALK2              603
+define S_STEP_FABRIC_WALK3              604
+define S_STEP_FABRIC_RUN1               605
+define S_STEP_FABRIC_RUN2               606
+define S_STEP_FABRIC_RUN3               607
+
+define S_STEP_WATER_SWIM1               608
+define S_STEP_WATER_SWIM2               609
+define S_STEP_WATER_SWIM3               610
+
+define S_STEP_SLIME_JUMP1               611
+define S_STEP_SLIME_JUMP2               612
+define S_STEP_SLIME_JUMP3               613
+define S_STEP_SLIME_LAND1               614
+define S_STEP_SLIME_LAND2               615
+define S_STEP_SLIME_LAND3               616
+define S_STEP_SLIME_WALK1               617
+define S_STEP_SLIME_WALK2               618
+define S_STEP_SLIME_WALK3               619
+define S_STEP_SLIME_RUN1                620
+define S_STEP_SLIME_RUN2                621
+define S_STEP_SLIME_RUN3                622
+
+define S_STEP_GLASS_JUMP1               623
+define S_STEP_GLASS_JUMP2               624
+define S_STEP_GLASS_JUMP3               625
+define S_STEP_GLASS_LAND1               626
+define S_STEP_GLASS_LAND2               627
+define S_STEP_GLASS_LAND3               628
+define S_STEP_GLASS_WALK1               629
+define S_STEP_GLASS_WALK2               630
+define S_STEP_GLASS_WALK3               631
+define S_STEP_GLASS_RUN1                632
+define S_STEP_GLASS_RUN2                633
+define S_STEP_GLASS_RUN3                634
+
+define S_STEP_WOOD_JUMP1                635
+define S_STEP_WOOD_JUMP2                636
+define S_STEP_WOOD_JUMP3                637
+define S_STEP_WOOD_LAND1                638
+define S_STEP_WOOD_LAND2                639
+define S_STEP_WOOD_LAND3                640
+define S_STEP_WOOD_WALK1                641
+define S_STEP_WOOD_WALK2                642
+define S_STEP_WOOD_WALK3                643
+define S_STEP_WOOD_RUN1                 644
+define S_STEP_WOOD_RUN2                 645
+define S_STEP_WOOD_RUN3                 646
+
+define S_STEP_MSET_HARD1                647
+define S_STEP_MSET_HARD2                648
+define S_STEP_MSET_WOOD1                649
+define S_STEP_MSET_WOOD2                650
+define S_STEP_MSET_METAL1               651
+define S_STEP_MSET_METAL2               652
+
+define S_STEP_LADDER01                  653
+define S_STEP_LADDER02                  654
+define S_STEP_LADDER03                  655
+define S_STEP_LADDER04                  656
+
+define S_DIVE_SPLASH                    657
+
+define S_WOOD_CREAK01                   658
+define S_WOOD_CREAK02                   659
+define S_WOOD_CREAK03                   660
+define S_FIRELOOP_SHORT                 661
+
+define S_AMB_SPARKLOOP_QT               703
+define S_AMB_RAIN1                      704
+define S_AMB_RAIN2                      705
+define S_AMB_FIRE1                      706
+define S_AMB_FIRE2                      707
+define S_AMB_FIRE3                      708
+define S_AMB_COMPUTER1                  709
+define S_AMB_COMPUTER2                  710
+define S_AMB_COMPUTER3                  711
+define S_AMB_AC1                        712
+define S_AMB_HVAC1                      713
+define S_AMB_HVAC2                      714
+define S_AMB_HVAC3                      715
+define S_AMB_FANLG1                     716
+define S_AMB_FANLG2                     717
+define S_AMB_FANLG3                     718
+define S_AMB_FANLG4                     719
+define S_AMB_FANSM1                     720
+define S_AMB_BOILER1                    721
+define S_AMB_BOILER2                    722
+define S_AMB_PIPEHISS1                  723
+define S_AMB_PIPEHISS2                  724
+define S_AMB_PIPEHISS3                  725
+define S_AMB_TANKHISS1                  726
+define S_AMB_WATERFALL1                 727
+define S_AMB_WATERFALL2                 728
+define S_AMB_WATERFALL3                 729
+define S_AMB_FOUNTAIN1                  730
+define S_AMB_FOUNTAIN2                  731
+define S_AMB_CAVEWET1                   732
+define S_AMB_CAVEWET2                   733
+define S_AMB_CAVEDRY1                   734
+define S_AMB_CAVEDRY2                   735
+define S_AMB_CAVEDRY3                   736
+define S_AMB_CAVEDRIP1                  737
+define S_AMB_CAVEDRIP2                  738
+define S_AMB_CAVEDRIP3                  739
+define S_AMB_CAVEDRIP4                  740
+define S_AMB_BUZZER                     741
+define S_AMB_SPARKLOOP                  742
+define S_AMB_LAMPHUMLOOP01              743
+define S_AMB_LAMPHUMLOOP02              744
+define S_AMB_LAMPHUMLOOP03              745
+define S_AMB_LAMPHUMLONG                746
+define S_AMB_LAMPHUM01                  747
+define S_AMB_LAMPHUM02                  748
+define S_AMB_LAMPHUM03                  749
+define S_AMB_NEONFLICKR01               750
+define S_AMB_NEONFLICKR02               751
+define S_AMB_ESCALATOR                  752
+define S_AMB_TUBEARRIVE                 753
+define S_AMB_TUBEDEPART                 754
+define S_AMB_TUBESTATION                756
+define S_AMB_TUBEINTLOOP                757
+define S_AMB_TUBEPASSBY                 758
+define S_AMB_WIND                       759
+define S_AMB_WIND_ALT                   760
+define S_AMB_WIND_ALT2                  761
+define S_AMB_WIND_INT                   762
+define S_ELEVATOR_MOVE                  763 //elevator sounds added here because need to be <1k
+define S_ELEVATOR_START                 764
+define S_ELEVATOR_STOP                  765
+define S_AMB_NUKAGE                     766
+define S_AMB_NUKAGE2                    767
+define S_AMB_CLOCKTICK                  768
+define S_AMB_ROTARYMOTOR                769
+define S_AMB_WATERDROP                  770
+define S_TUBE_SCREECH                   771
+define S_AMB_BUBBLING                   772
+define S_PRINTER_DOTMATRIX              773
+define S_PRINTER_SERVO                  774
+define S_PCBEEP                         775
+define S_AMB_DANCE1                     776
+define S_AMB_DANCE2                     777
+define S_AMB_4AMSONG                    778
+define S_AMB_ROWDY                      779
+define S_AMB_ROWDY_LOW                  780
+define S_AMB_RAVE                       781
+define S_AMB_RAVE_LOW                   782
+define S_AMB_MUZAK                      783
+define S_AMB_MUZAK_LOW                  784
+define S_AMB_WATERDROP_HARD             785
+define S_AMB_REACTOR_1                  786
+define S_AMB_REACTOR_2                  787
+define S_AMB_REACTOR_3                  788
+define S_AMB_REACTOR_1_VERB             789
+define S_AMB_REACTOR_INTENSE            790
+define S_AMB_MACHINERY                  791
+define S_AMB_MACHINERY_LOUD             792
+define S_SAW_LOOP                       793
+define S_WILDLIFE_JUNGLE                794
+define S_WILDLIFE_SWAMP                 795
+define S_WILDLIFE_TROPICAL              796
+define S_AMB_MACHINERY2                 797
+define S_AMB_THUNDER_FAR				798
+define S_AMB_THUNDER_NEAR				799
+define S_METRONOME1						800
+define S_METRONOME2						801
+define S_AMB_PALLMALL					802
+define S_AMB_PALLMALL2					803
+define S_LIFT_LARGE_LOOP                805
+define S_LOUDMISSILE	                806
+define S_AMB_REACTOR_INT2				807
+define S_AMB_WIND_HEAVY                 808
+define S_AMB_STAWHSTL					809
+
+define S_AMB_TUBEINTLOOP2               810
+
+define S_LOGO                           1001
+
+define S_AMB_FANSM1_D                   1023
+define S_BULLET_STONE1                  1024
+define S_BULLET_STONE2                  1025
+define S_BULLET_STONE3                  1026
+
+define S_BULLET_METAL1                  1027
+define S_BULLET_METAL2                  1028
+define S_BULLET_METAL3                  1029
+
+define S_BULLET_GLASS1                  1030
+define S_BULLET_GLASS2                  1031
+define S_BULLET_GLASS3                  1032
+
+define S_BULLET_WOOD1                   1033
+define S_BULLET_WOOD2                   1034
+define S_BULLET_WOOD3                   1035
+
+define S_BULLET_DIRT1                   1036
+define S_BULLET_DIRT2                   1037
+define S_BULLET_DIRT3                   1038
+
+define S_BULLET_GRASS1                  1039
+define S_BULLET_GRASS2                  1040
+define S_BULLET_GRASS3                  1041
+
+define S_BULLET_FABRIC1                 1042
+define S_BULLET_FABRIC2                 1043
+define S_BULLET_FABRIC3                 1044
+
+define S_BULLET_FLESH1                  1045
+define S_BULLET_FLESH2                  1046
+define S_BULLET_FLESH3                  1047
+
+define S_BULLET_WATER1                  1048
+define S_BULLET_WATER2                  1049
+define S_BULLET_WATER3                  1050
+
+define S_BULLET_RICOCHET1               1051
+define S_BULLET_RICOCHET2               1052
+define S_BULLET_RICOCHET3               1053
+define S_BULLET_RICOCHET4               1054
+define S_BULLET_RICOCHET5               1055
+
+define S_SHELL01                        1056
+define S_SHELL02                        1057
+define S_SHELL03                        1058
+define S_SHELL04                        1059
+define S_SHELL05                        1060
+define S_SHELL06                        1061
+
+define S_LAVANAIL_SURFACE               1062
+define S_LAVANAIL_FLESH                 1063
+
+define S_GATE_LOCKED                    1534
+define S_DOOR_LOCKED                    1535
+define S_DOOR_GARAGE1                   1536
+define S_DOOR_GARAGE2                   1537
+define S_DOOR_GARAGE3                   1538
+define S_DOOR_METAL_LG_OPEN             1539
+define S_DOOR_METAL_LG_CLOS             1540
+define S_DOOR_METAL_1_OPEN              1541
+define S_DOOR_METAL_1_CLOSE             1542
+define S_DOOR_METAL_2_OPEN              1543
+define S_DOOR_METAL_2_CLOSE             1544
+define S_DOOR_PNEUMATIC1                1545
+define S_DOOR_PNEUMATIC2                1546
+define S_DOOR_SCIFI1                    1547
+define S_DOOR_SCIFI_2_OPEN              1548
+define S_DOOR_SCIFI_2_CLOSE             1549
+define S_DOOR_WOOD_1_OPEN               1550
+define S_DOOR_WOOD_1_CLOSE              1551
+define S_DOOR_WOOD_2_OPEN               1552
+define S_DOOR_WOOD_2_CLOSE              1553
+define S_DOOR_STONE_1                   1554
+define S_DOOR_STONE_2                   1555
+define S_DOOR_SCRAPELOOP_1              1556
+define S_DOOR_SCRAPELOOP_2              1557
+define S_DOOR_CLANK_HUGE                1558
+define S_DOOR_CLANK_MODERN              1559
+define S_DOOR_SCIFI_BROKEN              1560
+define S_DOOR_AUTO_LOCKED               1561
+define S_DOOR_SLIDE                     1562
+define S_DOOR_GIANT_MOVE                1563
+define S_DOOR_GIANT_START               1564
+define S_DOOR_GIANT_STOP                1565
+define S_DOOR_METAL_LG_OPEN_Q           1566
+define S_DOOR_CLANK_HUGE_Q              1567
+
+define S_SWITCH_CARDLOCKED              1792
+define S_SWITCH_CARDUNLOCK              1793
+define S_SWITCH_CARDUNLOCK2             1794
+define S_SWITCH_BUTTONBLEEP             1795
+define S_SWITCH_COMPKEY01               1796
+define S_SWITCH_COMPKEY02               1797
+define S_SWITCH_BUTTON01                1798
+define S_SWITCH_BUTTON02                1799
+define S_SWITCH_LEVER01                 1800
+define S_SWITCH_LEVER02                 1801
+define S_SWITCH_LARGE01                 1802
+define S_SWITCH_LARGE02                 1803
+define S_SWITCH_MEDIUM01                1804
+define S_SWITCH_MEDIUM02                1805
+define S_SWITCH_MULTITWIST              1806
+define S_SWITCH_POWEROFF                1807
+define S_SWITCH_SMALL01                 1808
+define S_SWITCH_SMALL02                 1809
+define S_SWITCH_SNAPPY                  1810
+define S_VALVE_TURN                     1811
+
+define S_ELEVATOR_UNSTABLE              2048
+define S_ELEVATOR_FSQUEAL               2049
+define S_ELEVATOR_CRASH                 2050
+define S_ELEVATOR_CRASH2                2051
+define S_ELEVATOR_BELL                  2052
+
+define S_EARTHQUAKE_LOOP                2304
+define S_EARTHQUAKE                     2305
+define S_RUBBLE                         2306
+define S_RUBBLELIGHT                    2307
+
+define S_WAR_AIRBOMB1                   2560
+define S_WAR_AIRBOMB2                   2561
+define S_WAR_AIRPASS                    2562
+define S_WAR_EXPCLOSE                   2563
+define S_WAR_EXPDIST1                   2564
+define S_WAR_EXPDIST2                   2565
+define S_WAR_GUNDIST1                   2566
+define S_WAR_GUNDIST2                   2567
+define S_WAR_GUNDIST3                   2568
+define S_WAR_LARGECANIMP                2569
+define S_WAR_LARGELASER                 2570
+define S_WAR_LARGECAN1                  2571
+define S_WAR_LARGECAN2                  2572
+define S_WAR_MISSILE                    2573
+define S_WAR_CROWDSCRM                  2574
+define S_WAR_SCREAM1                    2575
+define S_WAR_SCREAM2                    2576
+define S_WAR_SHELLING                   2578
+define S_WAR_SIREN                      2579
+
+define S_VEHICLE_DRIVE                  2816
+define S_VEHICLE_TIRES                  2817
+define S_VEHICLE_CRASH                  2818
+define S_VEHICLE_OFF                    2819
+define S_VEHICLE_REV                    2820
+define S_VEHICLE_DOWNREV                2821
+define S_VEHICLE_START                  2822
+define S_VEHICLE_TURBO                  2823
+define S_VEHICLE_HORN                   2824
+define S_VEHICLE_ALARM                  2825
+define S_HOVERCRAFT_FLYBY               2826
+define S_HOVERCRAFT_PREFIRE				2827
+define S_HOVERCRAFT_LOOP				2828
+define S_HOVERCRAFT_LOOP2				2829
+define S_HOVERCRAFT_CHARGE			    2830
+define S_ELEVATOR_MOVE2                 2831 // Second defition with new flags
+define S_HOVERCRAFT_FLYBY2              2832
+
+define S_ITEM_HEALTH                    2840
+define S_ITEM_BBOMB                     2841
+define S_ITEM_PIZZA                     2842
+define S_ITEM_CAN                       2843
+define S_ITEM_HAZMAT_GEIGER             2844
+define S_ITEM_HAZMAT_BREATH             2845
+
+define S_OBJECT_PUSH                    2860
+define S_TOILET_FLUSH                   2861
+define S_TOILET_LIDUP                   2862
+define S_TOILET_LIDDOWN                 2863
+define S_SINK_TAPRUN                    2864
+define S_CHAIN                          2865
+define S_LADDER                         2866
+define S_HAND_DRYER                     2867
+define S_PHONE_BUSY                     2868
+define S_ENGINE_LOOP                    2869
+define S_ENGINE_START                   2870
+define S_ENGINE_OFF                     2871
+define S_HEART_BEEP                     2872
+define S_PHONE_RING_OLD                 2873
+define S_VENDING_DISPENSE               2874
+define S_COIN_INSERT                    2875
+define S_VENDING_HUM_LOOP               2876
+define S_VINYL_START                    2877
+define S_IMPACT_REV                     2878
+define S_CHAIR_ROLL                     2879
+define S_CHAIR_ROLL_ALT                 2880
+define S_PISTON_STEAM                   2881
+define S_PISTON_STOP                    2882
+define S_SPOTLIGHT                      2883
+define S_PISTON_STEAM_DUP               2884
+define S_PISTON_STOP_DUP                2885
+define S_CORKPULL                       2886
+define S_CAM_SWITCH                     2887
+define S_AMB_FOUNTAIN2_D                2888
+define S_ATM_SHAKEIT                    2889
+
+define S_SHELLY_COINFLIP                3069
+define S_SHELLY_COINCATCH               3070
+define S_SHELLY_COINLAND                3071
+// 3072 - 3327
+
+define S_SHELLYVO_MAPSND1               3072
+define S_SHELLYVO_MAPSND2               3073
+define S_SHELLYVO_MAPSND3A              3074
+define S_SHELLYVO_MAPSND3B              3075
+define S_SHELLYVO_MAPSND4               3076
+define S_SHELLYVO_MAPSND5               3077
+
+define S_SHELLYVO_LVLSND1               3078
+define S_SHELLYVO_LVLSND2               3079
+define S_SHELLYVO_LVLSND3               3080
+define S_SHELLYVO_LVLSND4               3081
+define S_SHELLYVO_LVLSND5               3082
+define S_SHELLYVO_LVLSND6               3083
+define S_SHELLYVO_LVLSND7               3084
+define S_SHELLYVO_LVLSND8               3085
+
+define S_SHELLYVO_MAPSND6               3086
+define S_SHELLYVO_MAPSND7               3087
+
+define S_SHELLYVO_LVLSND9               3088
+define S_SHELLYVO_LVLSND10              3089
+define S_SHELLYVO_LVLSND11              3090
+define S_SHELLYVO_LVLSND12              3091
+define S_SHELLYVO_LVLSND13              3092
+
+define S_SHELLYVO_1_10               3100
+define S_SHELLYVO_1_11               3101
+define S_SHELLYVO_1_12               3102
+define S_SHELLYVO_1_13               3103
+define S_SHELLYVO_1_1               3104
+define S_SHELLYVO_1_2               3105
+define S_SHELLYVO_1_3               3106
+define S_SHELLYVO_1_4               3107
+define S_SHELLYVO_1_5               3108
+define S_SHELLYVO_1_6               3109
+define S_SHELLYVO_1_7               3110
+define S_SHELLYVO_1_8               3111
+define S_SHELLYVO_1_9               3112
+define S_SHELLYVO_1_14				3113
+define S_SHELLYVO_1_15				3114
+
+define S_SHELLYVO_2_1               3120
+define S_SHELLYVO_2_2               3121
+define S_SHELLYVO_2_3               3122
+define S_SHELLYVO_2_4               3123
+define S_SHELLYVO_2_5               3124
+define S_SHELLYVO_2_6               3125
+define S_SHELLYVO_2_7               3126
+define S_SHELLYVO_2_8               3127
+define S_SHELLYVO_2_9               3128
+
+define S_SHELLYVO_3_10               3140
+define S_SHELLYVO_3_11               3141
+define S_SHELLYVO_3_12               3142
+define S_SHELLYVO_3_13               3143
+define S_SHELLYVO_3_14               3144
+define S_SHELLYVO_3_15               3145
+define S_SHELLYVO_3_16               3146
+define S_SHELLYVO_3_1               3147
+define S_SHELLYVO_3_2               3148
+define S_SHELLYVO_3_5               3151
+define S_SHELLYVO_3_6               3152
+define S_SHELLYVO_3_7               3153
+define S_SHELLYVO_3_8               3154
+define S_SHELLYVO_3_9               3155
+
+define S_SHELLYVO_4_1				3160
+define S_SHELLYVO_4_2				3161
+define S_SHELLYVO_4_3				3162
+define S_SHELLYVO_4_4				3163
+define S_SHELLYVO_4_6				3165
+define S_SHELLYVO_4_7				3166
+define S_SHELLYVO_4_8				3167
+define S_SHELLYVO_4_9				3168
+define S_SHELLYVO_4_10				3169
+define S_SHELLYVO_4_11				3170
+define S_SHELLYVO_4_12				3171
+define S_SHELLYVO_4_13				3172
+define S_SHELLYVO_4_14				3173
+define S_SHELLYVO_4_15				3174
+define S_SHELLYVO_4_16				3175
+
+define S_SHELLYVO_5_1               3180
+define S_SHELLYVO_5_2               3181
+define S_SHELLYVO_5_4               3182
+define S_SHELLYVO_5_5               3183
+define S_SHELLYVO_5_6               3184
+define S_SHELLYVO_5_7               3185
+define S_SHELLYVO_5_8				3186
+define S_SHELLYVO_5_9				3187
+define S_SHELLYVO_5_10				3188
+define S_SHELLYVO_5_11				3189
+define S_SHELLYVO_5_12				3190
+define S_SHELLYVO_5_13				3191
+define S_SHELLYVO_5_14				3192
+
+
+define S_SHELLYVO_6_10              3200
+define S_SHELLYVO_6_1               3201
+define S_SHELLYVO_6_4               3202
+define S_SHELLYVO_6_5               3203
+define S_SHELLYVO_6_6               3204
+define S_SHELLYVO_6_8               3205
+define S_SHELLYVO_6_9               3206
+define S_SHELLYVO_6_2               3207
+define S_SHELLYVO_6_3               3208
+define S_SHELLYVO_6_7               3209
+
+define S_SHELLYVO_7_1				3220
+
+define S_SHELLYVO_GIBSND1               3328
+define S_SHELLYVO_GIBSND2               3329
+define S_SHELLYVO_GIBSND3               3330
+define S_SHELLYVO_GIBSND4               3331
+define S_SHELLYVO_GIBSND5               3332
+define S_SHELLYVO_GIBSND6               3333
+define S_SHELLYVO_GIBSND7               3334
+define S_SHELLYVO_GIBSND8               3335
+define S_SHELLYVO_GIBSND9               3336
+define S_SHELLYVO_GIBSND10              3337
+define S_SHELLYVO_GIBSND11              3338
+define S_SHELLYVO_GIBSND12              3339
+
+define S_SHELLYVO_KILLSND1              3344
+define S_SHELLYVO_KILLSND2              3345
+define S_SHELLYVO_KILLSND3              3346
+define S_SHELLYVO_KILLSND4              3347
+define S_SHELLYVO_KILLSND5              3348
+define S_SHELLYVO_KILLSND6              3349
+define S_SHELLYVO_KILLSND7              3350
+define S_SHELLYVO_KILLSND8              3351
+define S_SHELLYVO_KILLSND9              3352
+define S_SHELLYVO_KILLSND10             3353
+define S_SHELLYVO_KILLSND11             3354
+
+define S_SHELLYVO_PUPSHOTSND1           3360
+define S_SHELLYVO_PUPSHOTSND2           3361
+define S_SHELLYVO_PUPSHOTSND3           3362
+
+define S_SHELLYVO_PUPSMGSND1            3364
+define S_SHELLYVO_PUPSMGSND2            3365
+
+define S_SHELLYVO_PUPCHAINSND1          3368
+
+define S_SHELLYVO_PUPBOMBSND1           3372
+define S_SHELLYVO_PUPBOMBSND2           3373
+define S_SHELLYVO_BOMB_STRIKE           3374
+
+define S_SHELLYVO_PUPBOWSND1            3376
+
+define S_SHELLYVO_PUPLAMSND1            3378
+define S_SHELLYVO_PUPLAMSND2            3379
+define S_SHELLYVO_PUPLAMSND3            3380
+
+define S_SHELLYVO_PUPARMORSND1          3388
+define S_SHELLYVO_PUPARMORSND2          3389
+
+define S_SHELLYVO_PUPHEALSND1           3392
+define S_SHELLYVO_PUPHEALSND2           3393
+define S_SHELLYVO_PUPHEALSND3           3394
+define S_SHELLYVO_PUPHEALSND4           3395
+
+define S_SHELLYVO_PUPGENERIC1           3396
+define S_SHELLYVO_PUPGENERIC2           3397
+define S_SHELLYVO_PUPGENERIC3           3398
+define S_SHELLYVO_PUPGENERIC4           3399
+define S_SHELLYVO_PUPGENERIC5           3400
+define S_SHELLYVO_PUPGENERIC6           3401
+
+define S_SHELLYVO_REACT1                3404
+define S_SHELLYVO_REACT2                3405
+define S_SHELLYVO_REACT3                3406
+define S_SHELLYVO_REACT4                3407
+define S_SHELLYVO_REACT5                3408
+define S_SHELLYVO_REACT6                3409
+
+define S_SHELLYVO_SECRET1               3410
+define S_SHELLYVO_SECRET2               3411
+define S_SHELLYVO_SECRET3               3412
+define S_SHELLYVO_SECRET3A              3413
+define S_SHELLYVO_SECRET5               3414
+define S_SHELLYVO_SECRET6               3415
+define S_SHELLYVO_SECRET7               3416
+define S_SHELLYVO_SECRET8               3417
+define S_SHELLYVO_PLACEHOLDER           3418
+
+define S_SHELLYVO_PUPBOMBRUSH1          3456
+define S_SHELLYVO_PUPBOOTS1             3457
+define S_SHELLYVO_PUPBOOTS2             3458
+define S_SHELLYVO_PUPHAZARD1            3459
+define S_SHELLYVO_PUPRADAR1             3460
+define S_SHELLYVO_PUPDAMAGE1            3461
+
+define S_SHELLYVO_MISCVEND              3470
+
+define S_WILDLIFE_FROG1                 3584
+define S_WILDLIFE_FROG2                 3585
+define S_WILDLIFE_FROG3                 3586
+define S_WILDLIFE_CRICKET               3587
+define S_WILDLIFE_OWLHOOT               3588
+define S_WILDLIFE_GUSTLEAVES            3590
+define S_LOCKDOWN_ON_ANNOUNCE           3594
+
+define S_HESKEL_TONE                    3798
+define S_HESKEL_STATIC                  3799
+
+define S_HES_1_1_HEADROOM			3801
+define S_HES_1_2_AMBUSH				3800
+define S_HES_1_5_CLIMAX				3805
+define S_HES_2_1_OLDGDF				3810
+define S_HES_2_4_MECHTEASE			3815
+define S_HES_3_1_LOCKDOWN			3820
+define S_HES_3_4_GREET				3825
+define S_HES_4_2_TRAINPLAT			3831
+define S_HES_4_3_TABLETURN			3832
+define S_HES_4_4_POWERLESS			3833
+define S_HES_4_4_PRELIFT			3835
+define S_HES_5_1_PRESEWER			3840
+define S_HES_5_2_KNEEDEEP			3843
+define S_HES_5_3_LIFTREPLY			3845
+define S_HES_6_2_WELCOME			3850
+define S_HES_6_3_TAUNT				3853
+define S_HES_6_2_TOOCLOSE			3855
+define S_HES_7_1_INTRO				3860
+define S_HES_7_1_FIRSTFIGHT			3862
+define S_HES_7_1_POSTFIGHT1			3864
+define S_HES_7_1_BRIDGEFALL			3866
+define S_HES_7_1_FINALPATH			3868
+
+define S_HES_X_JUMBOTRON			3870
+
+define S_HES_LAFF_1					3871
+define S_HES_LAFF_2					3872
+define S_HES_LAFF_3					3873
+define S_HES_LAFF_4					3874
+define S_HES_LAFF_5					3875
+define S_HES_LAFF_6					3876
+define S_HES_LAFF_7					3877
+define S_HES_LAFF_8					3878
+define S_HES_LAFF_9					3879
+define S_HES_LAFF_10				3880
+define S_HES_LAFF_11				3881
+define S_HES_LAFF_12				3882
+define S_HES_LAFF_13				3883
+define S_HES_LAFF_14				3884
+define S_HES_LAFF_15				3885
+define S_HES_LAFF_16				3886
+define S_HES_LAFF_17				3887
+
+define S_HES_FINAL1					3980
+define S_HES_FINAL2					3981
+define S_HES_FINAL3					3982
+define S_HES_FINAL4					3983
+
+define S_HES_HP90					3990
+define S_HES_HP75					3991
+define S_HES_HP60					3992
+define S_HES_HP45					3993
+define S_HES_HP30					3994
+define S_HES_HP15					3995
+define S_HES_HPZERO					3998
+define S_HES_HPGLOD					3999
+
+
+
+
+
+
+definesound S_DEFAULT                   sounds/blank.ogg                                                0       0       0       0       0
+
+definesound S_LOGO                      sounds/logo.ogg                                                 0       0       255     0       -32768
+
+definesound S_INTRO                      sounds/intro_3.ogg                                                 0       0       255     0       -32768
+
+definesound S_TRIFIRE1                  sounds/weapons/tri/shot_001_alt.ogg                             192     256     255     144       0
+definesound S_TRIFIRE2                  sounds/weapons/tri/shot_002_alt.ogg                             192     256     255     144       0
+definesound S_TRIFIRE3                  sounds/weapons/tri/shot_003_alt.ogg                             192     256     255     144       0
+definesound S_TRIFIRE4                  sounds/weapons/tri/shot_004_alt.ogg                             192     256     255     144       0
+definesound S_TRIFIRE5                  sounds/weapons/tri/shot_005_alt.ogg                             192     256     255     144       0
+definesound S_TRIFIRE6                  sounds/weapons/tri/shot_006_alt.ogg                             192     256     255     144       0
+definesound S_TRIFIRE7                  sounds/weapons/tri/shot_007_alt.ogg                             192     256     255     144       0
+
+definesound S_TRILOAD1                  sounds/weapons/tri/reload.ogg                                   -64     -64     128     0       0
+definesound S_TRILOAD2                  sounds/weapons/tri/reload2.ogg                                  -96     -96     128     0       0
+
+definesound S_TRIFIRE_OLD1              sounds/weapons/tri/fire_1.ogg                                   0       0       255     144       0
+definesound S_TRIFIRE_OLD2              sounds/weapons/tri/fire_2.ogg                                   0       0       255     144       0
+definesound S_TRIFIRE_OLD3              sounds/weapons/tri/fire_3.ogg                                   0       0       255     144       0
+definesound S_TRIFIRE_OLD4              sounds/weapons/tri/fire_4.ogg                                   0       0       255     144       0
+
+definesound S_SHOTGUN_FIRE1             sounds/weapons/shotgun/fire_1_4.ogg                             -16     16      255     144       0
+definesound S_SHOTGUN_FIRE2             sounds/weapons/shotgun/fire_2_4.ogg                             -16     16      255     144       0
+
+definesound S_SHOTGUN_RELOAD1           sounds/weapons/shotgun/reload_1_2.ogg                           -256    -192    255     0       0
+definesound S_SHOTGUN_RELOAD2           sounds/weapons/shotgun/reload_2_2.ogg                           -256    -192    255     0       0
+
+definesound S_SHOTGUN_OPENCLOSE         sounds/weapons/shotgun/apart_001.ogg                            -32     32      255     0       0
+definesound S_SHOTGUN_CLIPOUT           sounds/weapons/shotgun/eject_001.ogg                            -32     32      255     0       0
+definesound S_SHOTGUN_CLIPIN            sounds/weapons/shotgun/insert_001.ogg                           -32     32      255     0       0
+definesound S_GRENADE_BOUNCE            sounds/weapons/shotgun/grenadebounce_001.ogg                    -8      8       255     0       1024
+definesound S_GRENADE_LAUNCH            sounds/weapons/shotgun/glaunch.ogg                              0       0       255     0       0
+
+definesound S_MINIGUN_WIND_UP           sounds/weapons/minigun/start_001.ogg                            192     256     255     144     0
+definesound S_MINIGUN_WIND_DOWN         sounds/weapons/minigun/stop_002.ogg                             192     256     255     144     0
+definesound S_MINIGUN_SPIN              sounds/weapons/minigun/spin_001.ogg                             192     200     255     144     0
+definesound S_MINIGUN_PICKUP            sounds/weapons/minigun/mini_pickup.ogg                          -64     64      255     0       0
+definesound S_MINIGUN_PULSE             sounds/weapons/minigun/minigun_pulse.ogg                        0       0       255     0       0
+
+definesound S_CROSSBOW_LOAD             sounds/weapons/plasmabow/load_001.ogg                           0       64      255     144     0
+definesound S_CROSSBOW_CHARGE           sounds/weapons/plasmabow/charge_001.ogg                         192     256     254     0       0
+definesound S_CROSSBOW_FIRE1            sounds/weapons/plasmabow/fire_001.ogg                           0       64      255     144     0
+definesound S_CROSSBOW_FIRE2            sounds/weapons/plasmabow/fire_002.ogg                           0       64      255     144     0
+definesound S_CROSSBOW_FIRE3            sounds/weapons/plasmabow/fire_003.ogg                           0       64      255     144     0
+definesound S_CROSSBOW_FIRE4            sounds/weapons/plasmabow/fire_004.ogg                           0       64      255     144     0
+definesound S_CROSSBOW_RESET            sounds/weapons/plasmabow/reset_001.ogg                          -704    -640    255     144     0
+definesound S_CROSSBOW_READY            sounds/weapons/plasmabow/ready_001.ogg                          0       64      255     0       0
+definesound S_CROSSBOW_SLAM1            sounds/weapons/plasmabow/slam_001.ogg                           -16     16      255     0       0
+definesound S_CROSSBOW_SLAM2            sounds/weapons/plasmabow/slam_002.ogg                           -16     16      255     0       0
+definesound S_CROSSBOW_SLIDE            sounds/weapons/plasmabow/slide_001.ogg                          -32    -32      255     0       0
+definesound S_CROSSBOW_SQUARE            sounds/weapons/plasmabow/square.ogg                          0    0      255     0       0
+
+definesound S_BBOMB_FUSE                sounds/weapons/bbomb/bbomb_fuse.ogg                             0       0       255     0       6144
+definesound S_BBOMB_LAND                sounds/weapons/bbomb/bbomb_land.ogg                             -128    128     3       0       6144
+definesound S_BBOMB_ROLL                sounds/weapons/bbomb/bbomb_roll.ogg                             -64     64      3       0       0
+definesound S_BBOMB_LOCK                sounds/weapons/bbomb/bbomb_lock.ogg                             0       0       255     0       -8192
+definesound S_BBOMB_LAND_ALT            sounds/weapons/bbomb/bbomb_land_alt.ogg                         -64     64      3       0       6144
+definesound S_BBOMB_STRIKE              sounds/weapons/bbomb/bbomb_strike.ogg                           -64     64      255     0       0
+definesound S_BBOMB_THROW               sounds/weapons/bbomb/bbomb_throw.ogg                            -64     64      3       0       0
+definesound S_BBOMB_THROW_ALT           sounds/weapons/bbomb/bbomb_throw_alt.ogg                        -64     64      3       0       0
+definesound S_BBOMB_LIGHTER             sounds/weapons/bbomb/bbomb_lighter.ogg                          0       0       3       0       0
+definesound S_BBOMB_LOCK2                sounds/weapons/bbomb/bbomb_lock_2.ogg                          640       640       255     0       -8192
+
+definesound S_BOMBETTE_EXP1             sounds/weapons/bombette/explode_001.ogg                         0       256     254     0       0
+definesound S_BOMBETTE_EXP2             sounds/weapons/bombette/explode_002.ogg                         0       256     254     0       0
+definesound S_BOMBETTE_EXP3             sounds/weapons/bombette/explode_003.ogg                         0       256     254     0       0
+
+definesound S_SMG_SINGLE                sounds/weapons/smg/smg_fire.ogg                                 -8      96      255     144       0
+definesound S_SMG_BURST                 sounds/weapons/smg/smg_burst.ogg                                0       0       255     144       0
+definesound S_SMG_CLIPIN                sounds/weapons/smg/smg_clip_in.ogg                              0        0      255     0        0
+definesound S_SMG_CLIPOUT               sounds/weapons/smg/smg_clip_out.ogg                             0        0      255     0        0
+
+
+definesound S_DSLAM_BEEP                sounds/weapons/lam/lam_beep.ogg                                 0    0      255     0       8192
+
+definesound S_COUNTER                   sounds/temp_counter.ogg                                         0       0       128     0       0
+
+definesound S_VEST_ZIP                  sounds/pickups/vestzip_001.ogg                                  512     576     254     0       -6144
+definesound S_PICKUP01                  sounds/pickups/pickup_simple.ogg                                0       0       254     0       -6144
+definesound S_PICKUP02                  sounds/pickups/pickup_sparkle01.ogg                             -32     32      254     0       -6144
+definesound S_PICKUP03                  sounds/pickups/pickup_sparkle02.ogg                             0       0       254     0       -6144
+definesound S_PICKUP04                  sounds/pickups/pickup_multi2.ogg                                -32     32      254     0       -6144
+
+definesound S_BOOSTER                   sounds/pickups/booster.ogg                                      -32     32      254     0       -6144
+definesound S_SECRET                    sounds/secret.ogg                                               0       0       255     0       0
+definesound S_SUPER_SECRET              sounds/super_secret.ogg                                         0       0       255     0       0
+
+definesound S_P_SIZZLE                  sounds/hurt/sizzle.ogg                                          0       0       255     0       0
+definesound S_P_SIZZLELOOP              sounds/hurt/sizzleLoop.ogg                                      0       0       255     0       0
+definesound S_P_ZAPPED                  sounds/hurt/shocked_001.ogg                                     0       0       255     0       0
+definesound S_P_ZAPPED_END              sounds/hurt/shocked_002.ogg                                     0       0       255     0       0
+definesound S_EXPL_LG001                sounds/env/explo_lg_001.ogg                                     -128    128     200   144       0
+definesound S_EXPL_LG002                sounds/env/explo_lg_002.ogg                                     -128    128     200   144       0
+definesound S_EXPL_LG003                sounds/env/explo_lg_003.ogg                                     -128    128     200   144       0
+definesound S_EXPL_LG004                sounds/env/explo_lg_004.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD001                sounds/env/explo_md_001.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD002                sounds/env/explo_md_002.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD003                sounds/env/explo_md_003.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD004                sounds/env/explo_md_004.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD005                sounds/env/explo_md_005.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD006                sounds/env/explo_md_006.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD007                sounds/env/explo_md_007.ogg                                     -128    128     200   144       0
+definesound S_EXPL_SM001                sounds/env/explo_sm_001.ogg                                     -128    128     200     0       0
+definesound S_EXPL_SM002                sounds/env/explo_sm_002.ogg                                     -128    128     200     0       0
+definesound S_EXPL_SM003                sounds/env/explo_sm_003.ogg                                     -128    128     200     0       0
+definesound S_EXPL_SM004                sounds/env/explo_sm_004.ogg                                     -128    128     200     0       0
+definesound S_EXPL_SM005                sounds/env/explo_sm_005.ogg                                     -128    128     200     0       0
+definesound S_EXPL_NEW01                sounds/env/explo_new_001.ogg                                    -128    128     200     0       0
+definesound S_EXPL_NEW02                sounds/env/explo_new_002.ogg                                    -128    128     200     0       0
+
+definesound S_SMASH_GLASS               sounds/impact/smash/Smash_Glass.ogg                             -60     60      200     0       0
+definesound S_SMASH_GLASSLAMP           sounds/impact/smash/Smash_GlassLamp.ogg                         -60     60      200     0       0
+
+definesound S_ENV_ZAP1                  sounds/env/zap_001.ogg                                          -64     64      128     0       0
+definesound S_ENV_ZAP2                  sounds/env/zap_002.ogg                                          -64     64      128     0       0
+definesound S_ENV_ZAP3                  sounds/env/zap_003.ogg                                          -64     64      128     0       0
+definesound S_ENV_UNDERWATER1           sounds/env/underwater_001.ogg                                   -256    -256    128     0       0
+definesound S_ENV_ZAP1_QT                  sounds/env/zap_001_qt.ogg                                          -64     64      128     0       4096
+definesound S_ENV_ZAP2_QT                  sounds/env/zap_002_qt.ogg                                          -64     64      128     0       4096
+
+definesound S_AMB_RAIN1                 sounds/env/rain_loop_001.ogg                                    0       0       16      2       0
+definesound S_AMB_RAIN2                 sounds/env/rain_loop_002.ogg                                    0       0       16      2       0
+definesound S_AMB_FIRE1                 sounds/env/fire_loop_001.ogg                                    0       0       16      2       0
+definesound S_AMB_FIRE2                 sounds/env/fire_loop_002.ogg                                    0       0       16      2       0
+definesound S_AMB_FIRE3                 sounds/env/fire_loop_003.ogg                                    0       0       16      2       0
+definesound S_AMB_COMPUTER1             sounds/env/computer_loop_001.ogg                                0       0       16      2       0
+definesound S_AMB_COMPUTER2             sounds/env/computer_loop_002.ogg                                0       0       16      2       0
+definesound S_AMB_COMPUTER3             sounds/env/computer_loop_003.ogg                                0       0       16      2       0
+definesound S_AMB_AC1                   sounds/env/hvac/ACLoop01.ogg                                    0       0       16      2       0
+definesound S_AMB_HVAC1                 sounds/env/hvac/FanLoop01.ogg                                   0       0       16      2       0
+definesound S_AMB_HVAC2                 sounds/env/hvac/FanLoop02.ogg                                   0       0       16      2       0
+definesound S_AMB_HVAC3                 sounds/env/hvac/FanLoop03.ogg                                   0       0       16      2       0
+definesound S_AMB_FANLG1                sounds/env/hvac/FanLoopLarge01.ogg                              0       0       16      2       0
+definesound S_AMB_FANLG2                sounds/env/hvac/FanLoopLarge02.ogg                              0       0       16      2       0
+definesound S_AMB_FANLG3                sounds/env/hvac/FanLoopLarge03.ogg                              0       0       16      2       0
+definesound S_AMB_FANLG4                sounds/env/hvac/FanLoopLarge04.ogg                              0       0       16      2       0
+definesound S_AMB_FANSM1                sounds/env/hvac/FanLoopNoise.ogg                                0       0       16      2       0
+definesound S_AMB_FANSM1_D              sounds/env/hvac/FanLoopNoise.ogg                                0       0       16      2       10240
+definesound S_AMB_BOILER1               sounds/env/hvac/BoilerRoomLoop01.ogg                            0       0       16      2       0
+definesound S_AMB_BOILER2               sounds/env/hvac/BoilerRoomLoop02.ogg                            0       0       16      2       0
+definesound S_AMB_PIPEHISS1             sounds/env/hvac/pipe_fluidflow01.ogg                            0       0       16      2       0
+definesound S_AMB_PIPEHISS2             sounds/env/hvac/pipe_fluidflow02_highpressure.ogg               0       0       16      2       0
+definesound S_AMB_PIPEHISS3             sounds/env/hvac/pipe_fluidflow03_highpressure.ogg               0       0       16      2       0
+definesound S_AMB_TANKHISS1             sounds/env/hvac/TankHissLoop.ogg                                0       0       16      2       0
+definesound S_AMB_WATERFALL1            sounds/env/water/Waterfall_LargeLoop.ogg                        0       0       16      2       0
+definesound S_AMB_WATERFALL2            sounds/env/water/Waterfall_MediumLoop.ogg                       0       0       16      2       0
+definesound S_AMB_WATERFALL3            sounds/env/water/Waterfall_SmallLoop.ogg                        0       0       16      2       0
+definesound S_AMB_FOUNTAIN1             sounds/env/water/Water_FountainLoop01.ogg                       0       0       16      2       0
+definesound S_AMB_FOUNTAIN2             sounds/env/water/Water_FountainLoop02.ogg                       0       0       16      2       6800
+definesound S_AMB_CAVEWET1              sounds/env/underground/wet_cave_loop1.ogg                       0       0       16      2       0
+definesound S_AMB_CAVEWET2              sounds/env/underground/wet_cave_loop2.ogg                       0       0       16      2       0
+definesound S_AMB_CAVEDRY1              sounds/env/underground/Wind_LowLoop1.ogg                        0       0       16      2       0
+definesound S_AMB_CAVEDRY2              sounds/env/underground/Wind_LowLoop2.ogg                        0       0       16      2       0
+definesound S_AMB_CAVEDRY3              sounds/env/underground/Wind_LowLoop3.ogg                        0       0       16      2       0
+definesound S_AMB_CAVEDRIP1             sounds/env/underground/water_cavedrip1.ogg                      0       0       16      2       0
+definesound S_AMB_CAVEDRIP2             sounds/env/underground/water_cavedrip2.ogg                      0       0       16      2       0
+definesound S_AMB_CAVEDRIP3             sounds/env/underground/water_cavedrip3.ogg                      0       0       16      2       0
+definesound S_AMB_CAVEDRIP4             sounds/env/underground/water_cavedrip4.ogg                      0       0       16      2       0
+definesound S_AMB_BUZZER                sounds/env/hums_buzzes/buzzer_oneshot.ogg                       0       0       16      2       0
+definesound S_AMB_SPARKLOOP             sounds/env/hums_buzzes/electricity_hum_sparkloop.ogg            0       0       16      2       0
+definesound S_AMB_SPARKLOOP_QT          sounds/env/hums_buzzes/electricity_hum_sparkloop_qt.ogg            0       0       16      2       4096
+definesound S_AMB_LAMPHUMLOOP01         sounds/env/hums_buzzes/fluorescent_lamp_hum_loop01.ogg          0       0       16      2       0
+definesound S_AMB_LAMPHUMLOOP02         sounds/env/hums_buzzes/fluorescent_lamp_hum_loop02.ogg          0       0       16      2       0
+definesound S_AMB_LAMPHUMLOOP03         sounds/env/hums_buzzes/fluorescent_lamp_hum_loop03.ogg          0       0       16      2       0
+definesound S_AMB_LAMPHUMLONG           sounds/env/hums_buzzes/fluorescent_lamp_hum_oneshot_long.ogg    0       0       16      2       0
+definesound S_AMB_LAMPHUM01             sounds/env/hums_buzzes/fluorescent_lamp_hum_oneshot01.ogg       0       0       16      2       0
+definesound S_AMB_LAMPHUM02             sounds/env/hums_buzzes/fluorescent_lamp_hum_oneshot02.ogg       0       0       16      2       0
+definesound S_AMB_LAMPHUM03             sounds/env/hums_buzzes/fluorescent_lamp_hum_oneshot03.ogg       0       0       16      2       0
+definesound S_AMB_NEONFLICKR01          sounds/env/hums_buzzes/neonlight_flicker_loop01.ogg             0       0       16      2       0
+definesound S_AMB_NEONFLICKR02          sounds/env/hums_buzzes/neonlight_flicker_loop02.ogg             0       0       16      2       0
+definesound S_AMB_ESCALATOR             sounds/env/escalator_loop1.ogg                                  0       0       16      2       0
+definesound S_AMB_TUBEARRIVE            sounds/env/subway/tube_arrive.ogg                               0       0       16      2       0
+definesound S_AMB_TUBEDEPART            sounds/env/subway/tube_depart.ogg                               0       0       16      2       0
+definesound S_AMB_TUBESTATION           sounds/env/subway/station_ambience_loop.ogg                     0       0       16      2       0
+definesound S_AMB_TUBEINTLOOP           sounds/env/subway/tube_interiorloop01.ogg                       0       0       16      2       0
+definesound S_AMB_TUBEPASSBY            sounds/env/subway/tube_passby_fast.ogg                          0       0       16      2       0
+definesound S_TUBE_SCREECH              sounds/env/subway/tube_suddenScreech.ogg                        0       0       255     0       0
+definesound S_AMB_WIND                  sounds/env/wind/wind_longloop3.ogg                              0       0       16      2       0
+definesound S_AMB_WIND_ALT              sounds/env/wind/wind_longloop1.ogg                              0       0       16      2       0
+definesound S_AMB_WIND_ALT2             sounds/env/wind/wind_longloop2.ogg                              0       0       16      2       0
+definesound S_AMB_WIND_INT              sounds/env/wind/wind_interior.ogg                               0       0       16      2       0
+definesound S_AMB_WIND_HEAVY            sounds/env/wind/wind_heavy.ogg                                  0       0       16      2       0
+definesound S_AMB_NUKAGE                sounds/env/nukage.ogg                                           0       0       200     2       0
+definesound S_AMB_NUKAGE2               sounds/env/nukage02.ogg                                         0       0       200     2       0
+definesound S_AMB_CLOCKTICK             sounds/env/clocktick.ogg                                        0       0       16      0       11520
+definesound S_AMB_ROTARYMOTOR           sounds/env/rotary_motor.ogg                                     0       0       16      2       0
+definesound S_AMB_WATERDROP             sounds/env/water_drop.ogg                                       -32     32      100     2       0
+definesound S_AMB_WATERDROP_HARD        sounds/env/water_drop_hard.ogg                                  -32     32      100     2       0
+definesound S_AMB_BUBBLING              sounds/env/bubbling.ogg                                         0       0       100     3       0
+definesound S_PRINTER_DOTMATRIX         sounds/objects/printer_dotmatrix.ogg                            0       0       200     3       0
+definesound S_PRINTER_SERVO             sounds/objects/printer_servo.ogg                                0       0       200     0       0
+definesound S_PCBEEP                    sounds/objects/pcbeep.ogg                                       0       0       16      0       0
+definesound S_AMB_DANCE1                sounds/music/ambient/bobs.ogg                                   0       0       200     3       0
+definesound S_AMB_DANCE2                sounds/music/ambient/led.ogg                                    0       0       200     3       0
+definesound S_AMB_4AMSONG               sounds/music/ambient/ryangosling.ogg                            0       0       200     3       0
+definesound S_AMB_ROWDY                 sounds/music/ambient/rowdy.ogg                                  0       0       200     3       0
+definesound S_AMB_ROWDY_LOW             sounds/music/ambient/rowdy_low.ogg                              0       0       200     3       0
+definesound S_AMB_RAVE                  sounds/music/ambient/rave.ogg                                   0       0       200     3       0
+definesound S_AMB_RAVE_LOW              sounds/music/ambient/rave_low.ogg                               0       0       200     3       0
+definesound S_AMB_MUZAK                 sounds/music/ambient/muzak.ogg                                  0       0       200     3       0
+definesound S_AMB_MUZAK_LOW             sounds/music/ambient/muzak_low.ogg                              0       0       200     3       0
+definesound S_AMB_REACTOR_1             sounds/env/reactor_loop1.ogg                                    0       0       16      3       0
+definesound S_AMB_REACTOR_2             sounds/env/reactor_loop2.ogg                                    0       0       16      3       0
+definesound S_AMB_REACTOR_3             sounds/env/reactor_loop3.ogg                                    0       0       16      3       0
+definesound S_AMB_REACTOR_1_VERB        sounds/env/reactor_loop1_verb.ogg                               0       0       16      3       0
+definesound S_AMB_REACTOR_INTENSE       sounds/env/reactor_intense.ogg                                  0       0       16      3       0
+definesound S_AMB_REACTOR_INT2           sounds/env/reactor_intense.ogg                                 0       0       200     3      -32767
+definesound S_AMB_MACHINERY             sounds/env/machinery_loop.ogg                                   0       0       16      3       0
+definesound S_AMB_MACHINERY_LOUD        sounds/env/machinery_loud_loop.ogg                              0       0       16      3       0
+definesound S_AMB_MACHINERY2            sounds/env/machinery_loop2.ogg                                  0       0       16      3       0
+definesound S_AMB_THUNDER_FAR			sounds/env/thunder_far.ogg										-512		0		16		3		-32767
+definesound S_AMB_THUNDER_NEAR			sounds/env/thunder_close.ogg									-512		-16		128		0		-32767
+definesound S_METRONOME1    	        sounds/env/metronome1.ogg		                                0       0       128     0       12000
+definesound S_METRONOME2        	    sounds/env/metronome2.ogg       		                        0       0       128     0       12000
+definesound S_AMB_PALLMALL              sounds/music/ambient/pallmall.ogg                               0       0       200     3       0
+definesound S_AMB_PALLMALL2              sounds/music/ambient/pallmall.ogg                               0       0       200     3       0
+definesound S_LOUDMISSILE        	    sounds/vehicle/aircraft_missile.ogg     			            -32     -32     128     0       -8192
+definesound S_AMB_STAWHSTL              sounds/env/stadium_whistle.ogg                                  0       0       255     0       -32767
+
+definesound S_AMB_TUBEINTLOOP2          sounds/env/subway/tube_interiorloop01.ogg                       0       0       16      2       0
+
+definesound S_GATE_LOCKED               sounds/doors/gate_locked.ogg                                    -8      8       128     0       0
+definesound S_DOOR_LOCKED               sounds/doors/door_keys_locked.ogg                               -8      8       128     0       0
+definesound S_DOOR_AUTO_LOCKED          sounds/doors/door_auto_locked.ogg                               0       0       128     0       0
+definesound S_DOOR_GARAGE1              sounds/doors/door_garage.ogg                                    -8      8       128     0       0
+definesound S_DOOR_GARAGE2              sounds/doors/door_garage02.ogg                                  -8      8       128     0       0
+definesound S_DOOR_GARAGE3              sounds/doors/door_garage03.ogg                                  -8      8       128     0       0
+definesound S_DOOR_METAL_LG_OPEN        sounds/doors/door_huge_metal_open.ogg                           -8      8       128     0       0
+definesound S_DOOR_METAL_LG_OPEN_Q      sounds/doors/door_huge_metal_open.ogg                           -8      8       128     0       8192
+definesound S_DOOR_METAL_LG_CLOS        sounds/doors/door_huge_metal_close.ogg                          -8      8       128     0       0
+definesound S_DOOR_METAL_1_OPEN         sounds/doors/door_metal_open.ogg                                -8      8       128     0       0
+definesound S_DOOR_METAL_1_CLOSE        sounds/doors/door_metal_close.ogg                               -8      8       128     0       0
+definesound S_DOOR_METAL_2_OPEN         sounds/doors/door_metal02_open.ogg                              -8      8       128     0       0
+definesound S_DOOR_METAL_2_CLOSE        sounds/doors/door_metal02_close.ogg                             -8      8       128     0       0
+definesound S_DOOR_PNEUMATIC1           sounds/doors/door_pneumatic_air.ogg                             -8      8       128     0       0
+definesound S_DOOR_PNEUMATIC2           sounds/doors/door_pneumatic_air02.ogg                           -8      8       128     0       0
+definesound S_DOOR_SCIFI1               sounds/doors/door_scifi01.ogg                                   -8      8       128     0       0
+definesound S_DOOR_SCIFI_BROKEN         sounds/doors/door_scifi01_broken.ogg                            0       0       128     0       0
+definesound S_DOOR_SCIFI_2_OPEN         sounds/doors/door_scifi02_open.ogg                              -8      8       128     0       0
+definesound S_DOOR_SCIFI_2_CLOSE        sounds/doors/door_scifi02_close.ogg                             -8      8       128     0       0
+definesound S_DOOR_WOOD_1_OPEN          sounds/doors/door_wood01_open.ogg                               -8      8       128     0       0
+definesound S_DOOR_WOOD_1_CLOSE         sounds/doors/door_wood01_close.ogg                              -8      8       128     0       0
+definesound S_DOOR_WOOD_2_OPEN          sounds/doors/door_wood02_open.ogg                               -8      8       128     0       0
+definesound S_DOOR_WOOD_2_CLOSE         sounds/doors/door_wood02_close.ogg                              -8      8       128     0       0
+definesound S_DOOR_STONE_1              sounds/doors/door_stone1.ogg                                    -8      8       128     0       0
+definesound S_DOOR_STONE_2              sounds/doors/door_stone2.ogg                                    -8      8       128     0       0
+definesound S_DOOR_SCRAPELOOP_1         sounds/doors/stonescrape_loop1.ogg                              -8      8       128     0       0
+definesound S_DOOR_SCRAPELOOP_2         sounds/doors/stonescrape_loop2.ogg                              -8      8       128     0       0
+definesound S_DOOR_CLANK_MODERN         sounds/doors/door_clank_modern.ogg                              -8      8       128     0       0
+definesound S_DOOR_CLANK_HUGE           sounds/doors/door_clank_huge.ogg                                -8      8       128     0       0
+definesound S_DOOR_CLANK_HUGE_Q         sounds/doors/door_clank_huge.ogg                                -8      8       128     0       10240
+definesound S_DOOR_SLIDE                sounds/doors/door_slide.ogg                                     0       0       128     0       0
+definesound S_DOOR_GIANT_MOVE           sounds/engine/stadium_loophumm.ogg                              0       0       200     144     0
+definesound S_DOOR_GIANT_START          sounds/engine/stadium_poweron.ogg                               0       0       255     144     0
+definesound S_DOOR_GIANT_STOP           sounds/engine/stadium_powreoff.ogg                              0       0       255     144     0
+
+
+definesound S_SWITCH_CARDLOCKED         sounds/keycard/keycard_locked.ogg                               0       0       128     0       0
+definesound S_SWITCH_CARDUNLOCK         sounds/keycard/keycard_unlock.ogg                               0       0       128     0       0
+definesound S_SWITCH_CARDUNLOCK2        sounds/keycard/keycard_unlock_air.ogg                           0       0       128     0       0
+definesound S_SWITCH_BUTTONBLEEP        sounds/switches/button_bleep.ogg                                0       0       128     0       0
+definesound S_SWITCH_COMPKEY01          sounds/switches/button_computerkeyboard01.ogg                   0       0       128     0       0
+definesound S_SWITCH_COMPKEY02          sounds/switches/button_computerkeyboard02.ogg                   0       0       128     0       0
+definesound S_SWITCH_BUTTON01           sounds/switches/button01.ogg                                    0       0       128     0       8192
+definesound S_SWITCH_BUTTON02           sounds/switches/button02.ogg                                    0       0       128     0       0
+definesound S_SWITCH_LEVER01            sounds/switches/lever_heavy01.ogg                               0       0       128     0       0
+definesound S_SWITCH_LEVER02            sounds/switches/lever_heavy02.ogg                               0       0       128     0       0
+definesound S_SWITCH_LARGE01            sounds/switches/switch_large01.ogg                              0       0       128     0       0
+definesound S_SWITCH_LARGE02            sounds/switches/switch_large02.ogg                              0       0       128     0       0
+definesound S_SWITCH_MEDIUM01           sounds/switches/switch_medium01.ogg                             0       0       128     0       0
+definesound S_SWITCH_MEDIUM02           sounds/switches/switch_medium02.ogg                             0       0       128     0       0
+definesound S_SWITCH_MULTITWIST         sounds/switches/switch_multitwist.ogg                           0       0       128     0       0
+definesound S_SWITCH_POWEROFF           sounds/switches/switch_poweroff.ogg                             0       0       128     0       0
+definesound S_SWITCH_SMALL01            sounds/switches/switch_small01.ogg                              0       0       128     0       0
+definesound S_SWITCH_SMALL02            sounds/switches/switch_small02.ogg                              0       0       128     0       0
+definesound S_SWITCH_SNAPPY             sounds/switches/switch_snappy.ogg                               0       0       128     0       0
+definesound S_VALVE_TURN                sounds/switches/valve_turn.ogg                                  -16     16      128     0       0
+
+definesound S_ELEVATOR_UNSTABLE         sounds/elevator/elevator_unstable.ogg                           0       0       128     0       0
+definesound S_ELEVATOR_FSQUEAL          sounds/elevator/elevator_fallsqueal.ogg                         0       0       128     0       0
+definesound S_ELEVATOR_CRASH            sounds/elevator/elevator_crash.ogg                              0       0       128     0       0
+definesound S_ELEVATOR_CRASH2           sounds/elevator/elevator_crash2.ogg                             0       0       128     0       0
+definesound S_ELEVATOR_BELL             sounds/elevator/elevator_bell.ogg                               0       0       128     0       0
+definesound S_ELEVATOR_MOVE             sounds/elevator/elevator_move.ogg                               0       0       128     0       0
+definesound S_ELEVATOR_START            sounds/elevator/elevator_start.ogg                              0       0       128     0       0
+definesound S_ELEVATOR_STOP             sounds/elevator/elevator_stop.ogg                               0       0       128     0       0
+definesound S_LIFT_LARGE_LOOP           sounds/elevator/lift_large_loop.ogg                             0       0       128     3       0
+
+definesound S_EARTHQUAKE_LOOP           sounds/env/quake_rumbleloop.ogg                                 0       0       128     0       0
+definesound S_EARTHQUAKE                sounds/env/quake_rumble.ogg                                     0       0       128     0       0
+definesound S_RUBBLE                    sounds/env/rubble.ogg                                           0       0       128     0       0
+definesound S_RUBBLELIGHT               sounds/env/rubble_light.ogg                                     0       0       128     0       0
+
+definesound S_WAR_AIRBOMB1              sounds/war/aircraft_bombing1.ogg                                -128    128     16        0       0
+definesound S_WAR_AIRBOMB2              sounds/war/aircraft_bombing2.ogg                                -128    128     16        0       0
+definesound S_WAR_AIRPASS               sounds/war/aircraft_jetpass.ogg                                 -128    128     16        0       0
+definesound S_WAR_EXPCLOSE              sounds/war/explosion_close.ogg                                  -128    128     16      144       0
+definesound S_WAR_EXPDIST1              sounds/war/explosion_distant1.ogg                               -128    128     16      144       0
+definesound S_WAR_EXPDIST2              sounds/war/explosion_distant2.ogg                               -128    128     16      144       0
+definesound S_WAR_GUNDIST1              sounds/war/gunfire_distant1.ogg                                 -128    128     16      144       0
+definesound S_WAR_GUNDIST2              sounds/war/gunfire_distant2.ogg                                 -128    128     16      144       0
+definesound S_WAR_GUNDIST3              sounds/war/gunfire_distant3.ogg                                 -128    128     16      144       0
+definesound S_WAR_LARGECANIMP           sounds/war/largecannon_impact.ogg                               -128    128     16      144       0
+definesound S_WAR_LARGELASER            sounds/war/largecannon_laser.ogg                                -128    128     16      144       0
+definesound S_WAR_LARGECAN1             sounds/war/largecannon1.ogg                                     -128    128     16      144       0
+definesound S_WAR_LARGECAN2             sounds/war/largecannon2.ogg                                     -128    128     16      144       0
+definesound S_WAR_MISSILE               sounds/war/missile_scifi1.ogg                                   -128    128     16      0       0
+definesound S_WAR_CROWDSCRM             sounds/war/scream_crowd.ogg                                     -128    128     16      0       0
+definesound S_WAR_SCREAM1               sounds/war/scream1.ogg                                          -128    128     16      0       0
+definesound S_WAR_SCREAM2               sounds/war/scream2.ogg                                          -128    128     16      0       0
+definesound S_WAR_SHELLING              sounds/war/shells_distant1.ogg                                  -128    128     16      144       0
+definesound S_WAR_SIREN                 sounds/war/bomb_siren_loop.ogg                                  0       0       100     144       0
+
+definesound S_CULTIST_RECOG1            sounds/enemies/cultist/contact.ogg                              0       0       3       0       0
+definesound S_CULTIST_RECOG2            sounds/enemies/cultist/hostile.ogg                              0       0       3       0       0
+definesound S_CULTIST_RECOG3            sounds/enemies/cultist/heystop.ogg                              0       10      3       0       0
+definesound S_CULTIST_ROAM1             sounds/blank.ogg                                                0       0       3       0       0
+definesound S_CULTIST_ROAM2             sounds/blank.ogg                                                0       0       3       0       0
+definesound S_CULTIST_ROAM3             sounds/blank.ogg                                                0       0       3       0       0
+definesound S_CULTIST_CHAT1             sounds/enemies/cultist/moveout.ogg                              0       0       3       0       0
+definesound S_CULTIST_CHAT2             sounds/enemies/cultist/overhere.ogg                             0       0       3       0       0
+definesound S_CULTIST_CHAT3             sounds/enemies/cultist/fanout.ogg                               0       0       3       0       0
+definesound S_CULTIST_FIRE1             sounds/enemies/cultist/dropher.ogg                              0       0       3       0       0
+definesound S_CULTIST_FEAR1             sounds/enemies/cultist/takecover.ogg                            0       0       3       0       0
+definesound S_CULTIST_FEAR2             sounds/enemies/cultist/grenade.ogg                              0       0       3       0       0
+definesound S_CULTIST_HIT1              sounds/enemies/cultist/imhit.ogg                                0       0       3       0       0
+definesound S_CULTIST_HIT2              sounds/enemies/cultist/imhit.ogg                                0       0       3       0       0
+definesound S_CULTIST_DEAD1             sounds/enemies/cultist/alt/ahh.ogg                              0       0       3       0       0
+definesound S_CULTIST_DEAD2             sounds/enemies/cultist/death01.ogg                              0       0       3       0       0
+definesound S_CULTIST_DEAD3             sounds/enemies/cultist/death02.ogg                              0       0       3       0       0
+definesound S_CULTIST_PAIN1             sounds/enemies/cultist/pain01.ogg                               0       0       3       0       0
+definesound S_CULTIST_PAIN2             sounds/enemies/cultist/pain02.ogg                               0       0       3       0       0
+definesound S_CULTIST_PAIN3             sounds/enemies/cultist/pain03.ogg                               0       0       3       0       0
+definesound S_CULTIST_PAIN4             sounds/enemies/cultist/pain04.ogg                               0       0       3       0       0
+definesound S_CULTIST_PAINBIG1          sounds/enemies/cultist/pain_major01.ogg                         0       0       3       0       0
+definesound S_CULTIST_PAINBIG2          sounds/enemies/cultist/pain_major02.ogg                         0       0       3       0       0
+definesound S_CULTIST_PAINBIG3          sounds/enemies/cultist/pain_major03.ogg                         0       0       3       0       0
+definesound S_CULTIST_PAINHUGE          sounds/enemies/cultist/pain_severe.ogg                          0       0       3       0       0
+definesound S_GREATER_ASCEND            sounds/enemies/cultist/greater/alt/ascend.ogg                   0       0       3       0       0
+definesound S_GREATER_FLESHBAG          sounds/enemies/cultist/greater/alt/fleshbag.ogg                 0       0       3       0       0
+definesound S_GREATER_KILL              sounds/enemies/cultist/greater/alt/kill.ogg                     0       0       3       0       0
+definesound S_GREATER_MINE              sounds/enemies/cultist/greater/alt/mine.ogg                     0       0       3       0       0
+definesound S_GREATER_UNCLEAN           sounds/enemies/cultist/greater/alt/unclean.ogg                  0       0       3       0       0
+definesound S_GREATER_DIE1              sounds/enemies/cultist/greater/alt/die1.ogg                     0       0       3       0       0
+definesound S_GREATER_TAUNT1            sounds/enemies/cultist/greater/alt/human.ogg                    0       0       3       0       0
+definesound S_GREATER_TAUNT2            sounds/enemies/cultist/greater/alt/praisebe.ogg                 0       0       3       0       0
+
+
+definesound S_SHOTGUNNER_RECOG1         sounds/enemies/cultist/alt/contact.ogg                         -64     -64      3       0       0
+definesound S_SHOTGUNNER_RECOG2         sounds/enemies/cultist/alt/hostile.ogg                         -64     -64      3       0       0
+definesound S_SHOTGUNNER_RECOG3         sounds/enemies/cultist/alt/targetspotted.ogg                   -64     -54      3       0       0
+definesound S_SHOTGUNNER_ROAM1          sounds/blank.ogg                                               -64     -64      3       0       0
+definesound S_SHOTGUNNER_ROAM2          sounds/blank.ogg                                               -64     -64      3       0       0
+definesound S_SHOTGUNNER_ROAM3          sounds/blank.ogg                                               -64     -64      3       0       0
+definesound S_SHOTGUNNER_CHAT1          sounds/enemies/cultist/alt/moveout.ogg                         -111    -111     3       0       0
+definesound S_SHOTGUNNER_CHAT2          sounds/enemies/cultist/alt/overhere.ogg                        -111    -111     3       0       0
+definesound S_SHOTGUNNER_CHAT3          sounds/enemies/cultist/alt/fanout.ogg                          -64     -64      3       0       0
+definesound S_SHOTGUNNER_FIRE1          sounds/enemies/cultist/alt/ivegother.ogg                       -64     -64      3       0       0
+
+definesound S_SHOTGUNNER_FEAR1          sounds/enemies/cultist/alt/takecover.ogg                       -64     -64      3       0       0
+definesound S_SHOTGUNNER_FEAR2          sounds/enemies/cultist/alt/grenade.ogg                         -64     -64      3       0       0
+
+definesound S_ZOMBIE_RECOG1             sounds/enemies/zombie/zombie_recog_1_2.ogg                      0       10      3       0       0
+definesound S_ZOMBIE_RECOG2             sounds/enemies/zombie/zombie_recog_2_2.ogg                      0       10      3       0       0
+definesound S_ZOMBIE_RECOG1_Q           sounds/enemies/zombie/zombie_recog_1.ogg                        0       10      3       0       0
+definesound S_ZOMBIE_RECOG2_Q           sounds/enemies/zombie/zombie_recog_2.ogg                        0       10      3       0       0
+
+definesound S_ZOMBIE_ROAM1              sounds/enemies/zombie/zombie_roam_1.ogg                         0       10      3       0       0
+definesound S_ZOMBIE_ROAM2              sounds/enemies/zombie/zombie_roam_2.ogg                         0       10      3       0       0
+definesound S_ZOMBIE_ROAM3              sounds/enemies/zombie/zombie_roam_3.ogg                         0       10      3       0       0
+
+definesound S_ZOMBIE_SWING1             sounds/enemies/zombie/zombie_swing_1.ogg                        0       10      3       0       0
+definesound S_ZOMBIE_SWING2             sounds/enemies/zombie/zombie_swing_2.ogg                        0       10      3       0       0
+definesound S_ZOMBIE_SWING3             sounds/enemies/zombie/zombie_swing_3.ogg                        0       10      3       0       0
+
+definesound S_ZOMBIE_THROW1             sounds/enemies/zombie/zombie_throw_1.ogg                        0       10      3       0       0
+definesound S_ZOMBIE_THROW2             sounds/enemies/zombie/zombie_throw_2.ogg                        0       10      3       0       0
+definesound S_ZOMBIE_THROW3             sounds/enemies/zombie/zombie_throw_3.ogg                        0       10      3       0       0
+
+definesound S_ZOMBIE_HIT1               sounds/enemies/zombie/zombie_hit_1.ogg                          0       10      3       0       0
+definesound S_ZOMBIE_HIT2               sounds/enemies/zombie/zombie_hit_2.ogg                          0       10      3       0       0 
+definesound S_ZOMBIE_HIT3               sounds/enemies/zombie/zombie_hit_3.ogg                          0       10      3       0       0
+
+definesound S_ZOMBIE_DEAD1              sounds/enemies/zombie/zombie_dead_1.ogg                         0       10      3       0       0
+definesound S_ZOMBIE_DEAD2              sounds/enemies/zombie/zombie_dead_2.ogg                         0       10      3       0       0
+
+definesound S_ZOMBIE_GDF_RECOG1         sounds/enemies/zombie_gdf/zombie_recog_special_1_2.ogg          0       10      3       0       0
+definesound S_ZOMBIE_GDF_RECOG2         sounds/enemies/zombie_gdf/zombie_recog_special_2_2.ogg          0       10      3       0       0
+
+definesound S_ZOMBIE_GDF_RECOG1_Q       sounds/enemies/zombie_gdf/zombie_recog_special_1.ogg            0       10      3       0       0
+definesound S_ZOMBIE_GDF_RECOG2_Q       sounds/enemies/zombie_gdf/zombie_recog_special_2.ogg            0       10      3       0       0
+
+definesound S_ZOMBIE_GDF_ROAM1          sounds/enemies/zombie_gdf/zombie_roam_special_1.ogg             0       10      3       0       0
+definesound S_ZOMBIE_GDF_ROAM2          sounds/enemies/zombie_gdf/zombie_roam_special_2.ogg             0       10      3       0       0
+definesound S_ZOMBIE_GDF_ROAM3          sounds/enemies/zombie_gdf/zombie_roam_special_3.ogg             0       10      3       0       0
+
+definesound S_ZOMBIE_GDF_PUKE1          sounds/enemies/zombie_gdf/zombie_puke_1.ogg                     0       10      3       0       0
+definesound S_ZOMBIE_GDF_PUKE2          sounds/enemies/zombie_gdf/zombie_puke_2.ogg                     0       10      3       0       0
+definesound S_ZOMBIE_GDF_PUKE3          sounds/enemies/zombie_gdf/zombie_puke_3.ogg                     0       10      3       0       0
+
+definesound S_ZOMBIE_GDF_HIT1           sounds/enemies/zombie_gdf/zombie_hit_special_1.ogg              0       10      3       0       0
+definesound S_ZOMBIE_GDF_HIT2           sounds/enemies/zombie_gdf/zombie_hit_special_2.ogg              0       10      3       0       0
+definesound S_ZOMBIE_GDF_HIT3           sounds/enemies/zombie_gdf/zombie_hit_special_3.ogg              0       10      3       0       0
+definesound S_ZOMBIE_GDF_HIT4           sounds/enemies/zombie_gdf/zombie_hit_special_4.ogg              0       10      3       0       0
+
+definesound S_ZOMBIE_GDF_DEAD1          sounds/enemies/zombie_gdf/zombie_dead_special_1.ogg             0       10      3       0       0
+definesound S_ZOMBIE_GDF_DEAD2          sounds/enemies/zombie_gdf/zombie_dead_special_2.ogg             0       10      3       0       0
+
+definesound S_ZOMBIE_HELP               sounds/enemies/zombie/zombie_helpme_1.ogg                      -2       10      3       0       0
+definesound S_ZOMBIE_GDF_HELP           sounds/enemies/zombie_gdf/zombie_helpme_2.ogg                  -2       10      3       0       0
+
+definesound S_WENTEKO_ROAR_1            sounds/enemies/wendigo/roar_1.ogg                               -4      4       3       0       0
+definesound S_WENTEKO_ROAR_2            sounds/enemies/wendigo/roar_2.ogg                               -4      4       3       0       0
+definesound S_WENTEKO_ROAR_3            sounds/enemies/wendigo/roar_3.ogg                               -4      4       3       0       0
+
+definesound S_WENTEKO_BREATHE_1        sounds/enemies/wendigo/wendigo_breathe.ogg                     -4      4       3       0       0
+definesound S_WENTEKO_BREATHE_2        sounds/enemies/wendigo/wendigo_breathe_hard.ogg                -4      4       3       0       0
+definesound S_WENTEKO_JUMP_1           sounds/enemies/wendigo/wendigo_jump.ogg                        -4      16       3       0       0
+definesound S_WENTEKO_SWIPE_1          sounds/enemies/wendigo/wendigo_swipe1.ogg                      -4      16       3       0       0
+definesound S_WENTEKO_SWIPE_2          sounds/enemies/wendigo/wendigo_swipe2.ogg                      -4      16       3       0       0
+definesound S_WENTEKO_SWIPE_3          sounds/enemies/wendigo/wendigo_swipe3.ogg                      -4      16       3       0       0
+definesound S_WENTEKO_HIT_1            sounds/enemies/wendigo/wendigo_hit.ogg                         -8      16       3       0       0
+definesound S_WENTEKO_HIT_2            sounds/enemies/wendigo/wendigo_hit2.ogg                        -8      16       3       0       0
+definesound S_WENTEKO_DIE_1            sounds/enemies/wendigo/wendigo_die.ogg                         -16      16       3       0       0
+
+definesound S_SHELLY_COINFLIP           sounds/shelly/coinflip_001.ogg                                  8    16    64     0       0
+definesound S_SHELLY_COINCATCH          sounds/shelly/coincatch_001.ogg                                 320    328    64     0       0
+definesound S_SHELLY_COINLAND           sounds/shelly/coinland_001.ogg                                  0 0    128    0       0
+
+definesound S_SHELLY_GRUNT1             sounds/shelly/grunt/Female_LS_E_Grunt01.ogg                     0       0       255     8       0
+definesound S_SHELLY_GRUNT2             sounds/shelly/grunt/Female_LS_E_HurtGrunt24.ogg                 0       0       255     8       0
+definesound S_SHELLY_GRUNT3             sounds/shelly/grunt/Female_LS_E_HurtGrunt31.ogg                 0       0       255     8       0
+definesound S_SHELLY_GRUNT4             sounds/shelly/grunt/Female_LS_E_HurtPunch05.ogg                 0       0       255     8       0
+definesound S_SHELLY_HURT01             sounds/shelly/pain/hurt01.ogg                                   0       0       255     8       0
+definesound S_SHELLY_HURT02             sounds/shelly/pain/hurt02.ogg                                   0       0       255     8       0
+definesound S_SHELLY_HURT03             sounds/shelly/pain/hurt03.ogg                                   0       0       255     8       0
+definesound S_SHELLY_HURTBAD01          sounds/shelly/pain/hurtbad01.ogg                                0       0       255     8       0
+definesound S_SHELLY_HURTBAD02          sounds/shelly/pain/hurtbad02.ogg                                0       0       255     8       0
+definesound S_SHELLY_HURTBAD03          sounds/shelly/pain/hurtbad03.ogg                                0       0       255     8       0
+definesound S_SHELLY_HURTFATAL01        sounds/shelly/pain/hurtfatal01.ogg                              0       0       255     8       0
+definesound S_SHELLY_HURTFATAL02        sounds/shelly/pain/hurtfatal02.ogg                              0       0       255     8       0
+definesound S_SHELLY_DEATH1             sounds/shelly/death/BS_Hurt_Noises-01.ogg                       0       0       255     8       0
+definesound S_SHELLY_DEATH2             sounds/shelly/death/BS_Hurt_Noises-02.ogg                       0       0       255     8       0
+definesound S_SHELLY_DEATH3             sounds/shelly/death/Z-BS_Hurt_Noises-07.ogg                     0       0       255     8       0
+definesound S_SHELLY_DEATH4             sounds/shelly/death/Z-BS_Hurt_Noises-08.ogg                     0       0       255     8       0
+definesound S_SHELLY_DEATH5             sounds/shelly/death/Z-BS_Hurt_Noises-09.ogg                     0       0       255     8       0
+definesound S_SHELLY_BREATH1            sounds/shelly/breath/breath01.ogg                               0       0       255     8       0
+definesound S_SHELLY_BREATH2            sounds/shelly/breath/breath02.ogg                               0       0       255     8       0
+
+
+definesound S_SHELLY_KISSY              sounds/shelly/kissy.ogg                                         0       0       255     8       0
+
+
+definesound S_SHELLY_SEARCH1            sounds/shelly/voiceover/Generic_Event_10.ogg                    0       0       255     0       0
+definesound S_SHELLY_SEARCH2            sounds/shelly/voiceover/Generic_Event_10_a.ogg                  0       0       255     0       0
+definesound S_SHELLY_SEARCH3            sounds/shelly/voiceover/Generic_Event_10_b.ogg                  0       0       255     0       0
+definesound S_SHELLY_SEARCH4            sounds/shelly/voiceover/Generic_Event_10_c.ogg                  0       0       255     0       0
+definesound S_SHELLY_SEARCH5            sounds/shelly/voiceover/Generic_Event_10_d.ogg                  0       0       255     0       0
+definesound S_SHELLY_SEARCH6            sounds/shelly/voiceover/Generic_Event_10_e.ogg                  0       0       255     0       0
+definesound S_SHELLY_SEARCH7            sounds/shelly/voiceover/Generic_Event_10_f.ogg                  0       0       255     0       0
+definesound S_SHELLY_SEARCH8            sounds/shelly/voiceover/Generic_Event_10_g.ogg                  0       0       255     0       0
+
+definesound S_SHELLY_SEARCHTALK1        sounds/shelly/voiceover/Generic_Event_11.ogg                    0       0       255     0       0
+definesound S_SHELLY_SEARCHTALK2        sounds/shelly/voiceover/Generic_Event_11_a.ogg                  0       0       255     0       0
+
+
+definesound S_MECH_RECOG                sounds/enemies/mech/mech_recog.ogg                              0       0       3       144     0
+definesound S_MECH_LOST                 sounds/enemies/mech/mech_lost.ogg                               0       0       3       0       -4096
+definesound S_MECH_STEP1                sounds/enemies/mech/mech_step1.ogg                              -16     16      3       0       -4096
+definesound S_MECH_STEP2                sounds/enemies/mech/mech_step2.ogg                              -16     16      3       0       -4096
+definesound S_MECH_ROTATE               sounds/enemies/mech/mech_rotate.ogg                             0       0       3       0       -2048
+definesound S_MECH_PREPGUN1             sounds/enemies/mech/mech_prepgun1.ogg                           0       0       3       0       -6144
+definesound S_MECH_PREPGUN2             sounds/enemies/mech/mech_prepgun2.ogg                           0       0       3       0       1024
+definesound S_MECH_GRENADE              sounds/enemies/mech/mech_grenadelaunch.ogg                      0       0       3       0       -4096
+definesound S_MECH_HIT1                 sounds/enemies/mech/mech_hit1.ogg                               0       0       3       0       -8192
+definesound S_MECH_HIT2                 sounds/enemies/mech/mech_hit2.ogg                               0       0       3       0       -8192
+definesound S_MECH_DEATH                sounds/enemies/mech/mech_death.ogg                              0       0       3       144     0
+definesound S_MECH_MOAN                 sounds/enemies/mech/mech_moan.ogg                               0       0       3       0       -8192
+definesound S_MECH_MGUN                 sounds/enemies/mech/mech_mgun.ogg                               0       0       3       0       -1536
+
+definesound S_BRUTE_MOVE                sounds/enemies/brute/brute_move.ogg                             0       0       100     0       8192
+definesound S_BRUTE_CHAINSAW            sounds/enemies/brute/brute_chainsaw.ogg                         -16     16      255     0       0
+definesound S_BRUTE_CHAINSAW2           sounds/enemies/brute/brute_chainsaw.ogg                         -16     16      255     0       0
+
+definesound S_BRUTE_LAUGH_1                sounds/enemies/brute/laugh_001.ogg                          0       10       100     0       0
+definesound S_BRUTE_LAUGH_2                sounds/enemies/brute/laugh_002.ogg                          0       10       100     0       0
+definesound S_BRUTE_LAUGH_3                sounds/enemies/brute/brute_roam1.ogg                          0      10       100     0       0
+definesound S_BRUTE_GRUNT_1                sounds/enemies/brute/grunt_001.ogg                          0       10       100     0       0
+definesound S_BRUTE_GRUNT_2                sounds/enemies/brute/grunt_002.ogg                          0       10       100     0       0
+definesound S_BRUTE_GRUNT_3                sounds/enemies/brute/grunt_003.ogg                          0       10       100     0       8192
+definesound S_BRUTE_DIE_1                  sounds/enemies/brute/die_001.ogg                            0       10       100     0       0
+definesound S_BRUTE_TAUNT_1                sounds/enemies/brute/dietime.ogg                            0       10       100     0       0
+definesound S_BRUTE_TAUNT_2                sounds/enemies/brute/gut.ogg                                0       10       100     0       0
+definesound S_BRUTE_TAUNT_3                sounds/enemies/brute/weak.ogg                               0       10       100     0       0
+definesound S_BRUTE_TAUNT_4                sounds/enemies/brute/kittykitty.ogg                         0       10       100     0       0
+definesound S_BRUTE_TAUNT_5                sounds/enemies/brute/fleshscum.ogg                          0       10       100     0       0
+definesound S_BRUTE_TAUNT_6                sounds/enemies/brute/eatit.ogg                              0       10       100     0       0
+
+definesound S_SKINJOB_RECOG1                 sounds/enemies/skinjob/skinjob_new_recog_1.ogg            -4       4       100     0       0
+definesound S_SKINJOB_RECOG2                 sounds/enemies/skinjob/skinjob_new_recog_2.ogg            -4       4       100     0       0
+definesound S_SKINJOB_ROAM1                  sounds/enemies/skinjob/skinjob_new_roam_1.ogg            -4       4       100     0       0
+definesound S_SKINJOB_ROAM2                  sounds/enemies/skinjob/skinjob_new_roam_2.ogg            -4       4       100     0       0
+definesound S_SKINJOB_ATTACK1                sounds/enemies/skinjob/skinjob_new_attack_1.ogg            -4       4       100     0       0
+definesound S_SKINJOB_ATTACK2                sounds/enemies/skinjob/skinjob_new_attack_4.ogg            -4       4       100     0       0
+definesound S_SKINJOB_TPORT1                 sounds/enemies/skinjob/skinjob_new_tele_1.ogg            -4       4       100     0       0
+definesound S_SKINJOB_TPORT2                 sounds/enemies/skinjob/skinjob_new_tele_2.ogg            -4       4       100     0       0
+definesound S_SKINJOB_PAIN1                  sounds/enemies/skinjob/skinjob_new_pain_1.ogg           -4       4       100     0       0
+definesound S_SKINJOB_PAIN2                  sounds/enemies/skinjob/skinjob_new_pain_2.ogg            -4       4       100     0       0
+definesound S_SKINJOB_DIE1                   sounds/enemies/skinjob/skinjob_new_death.ogg            -4       4       100     0       0
+definesound S_FLAMESKULL_HIT_1             sounds/enemies/skinjob/flameskull_explosion.ogg            -4       4       100     0       0
+
+definesound S_DRONE_ACTIVE              sounds/enemies/drone/drone_active.ogg                           0       0       100     0       5120
+
+definesound S_DIOPEDE_HIT                  sounds/enemies/diopede/hit.ogg                           -8       8       100     0       -4096
+definesound S_DIOPEDE_DIE                  sounds/enemies/diopede/die.ogg                          256       264       100     0       4096
+
+definesound S_DEACON_HOVER              sounds/enemies/deacon/deacon_hover.ogg                          0       0       100     0       6144
+definesound S_DEACON_MISSILE            sounds/enemies/deacon/deacon_missile.ogg                        0       0       100     0       4096
+definesound S_DEACON_MISSILE2            sounds/enemies/deacon/deacon_missile.ogg                        0       0       100     0       4096
+
+definesound S_DEACON_RECOG1                  sounds/enemies/deacon/deacon_recog_1.ogg                   0       0       100     0       2048
+definesound S_DEACON_RECOG2                  sounds/enemies/deacon/deacon_recog_2.ogg                   0       0       100     0       2048
+definesound S_DEACON_ROAM1                   sounds/enemies/deacon/deacon_roam_1.ogg                    0       0       100     0       4096
+definesound S_DEACON_ROAM2                   sounds/enemies/deacon/deacon_roam_2.ogg                    0       0       100     0       4096
+definesound S_DEACON_ATTACK1                 sounds/enemies/deacon/deacon_attack_1.ogg                  0       0       100     0       -2048
+definesound S_DEACON_ATTACK2                 sounds/enemies/deacon/deacon_attack_2.ogg                  0       0       100     0       -2048
+definesound S_DEACON_PAIN1                   sounds/enemies/deacon/deacon_pain_1.ogg                    0       0       100     0       -2048
+definesound S_DEACON_PAIN2                   sounds/enemies/deacon/deacon_pain_2.ogg                    0       0       100     0       -2048
+definesound S_DEACON_DEATH1                  sounds/enemies/deacon/deacon_death_1.ogg                   0       0       100     0       -2048
+definesound S_DEACON_DEATH2                  sounds/enemies/deacon/deacon_death_2.ogg                   0       0       100     0       -2048
+
+definesound S_TURRET_PREPGUN            sounds/enemies/mech/mech_prepgun2.ogg                           0       0       3       144     0
+definesound S_TURRET_ROTATE             sounds/enemies/mech/mech_rotate.ogg                             0       0       3       0       -4096
+definesound S_TURRET_MGUN               sounds/enemies/mech/mech_mgun.ogg                               0       0       3       144     0
+definesound S_TURRET_SEARCH             sounds/enemies/turret/RobotSearching.ogg                        0       0       32       0       -6144
+definesound S_TURRET_SPOTTED            sounds/enemies/turret/RobotSpotted.ogg                        0       0       32       0       -6144
+
+definesound S_MUTANT_FLESHRIP           sounds/enemies/nukemutant/flesh_rip.ogg                         -16     16      100     0       0       
+
+definesound S_SECT_DEATHSPIRAL          sounds/enemies/mechsect/sect_deathSpiral.ogg                    256     320     255     0       0
+definesound S_SECT_HURT1                sounds/enemies/mechsect/mechsect_hurt1.ogg                      -64     64      256     0       0
+definesound S_SECT_HURT2                sounds/enemies/mechsect/mechsect_hurt2.ogg                      -64     64      256     0       0
+
+definesound S_IMPACT_FLESH1             sounds/impact/splat.ogg                                   	-128    128     3       0       0
+definesound S_IMPACT_PLASMABOW          sounds/impact/projectiles/plasmahit.ogg                         -64     128     3       144     0
+definesound S_IMPACT_MUGSMASH           sounds/impact/smash/smash_mug.ogg                               -64     64      10      0       0
+definesound S_IMPACT_DEFLATE            sounds/impact/smash/deflate.ogg                                 -16     16      10      0       0
+definesound S_IMPACT_HEADSHOT           sounds/impact/projectiles/headshot.ogg                          0       128     10      0       0
+definesound S_IMPACT_HEAVY              sounds/impact/smash/impact_heavy.ogg                            0       0       255     0       0
+definesound S_IMPACT_HEAVY2             sounds/impact/smash/impact_heavy2.ogg                           0       0       255     0       0
+definesound S_BIG_IMPACT                sounds/impact/big_impact.ogg                                    0       0       255     0       0
+definesound S_MEDIUM_IMPACT             sounds/impact/medium_impact.ogg                                 0       0       255     0       0
+definesound S_MELEE_SWING01             sounds/weapons/baton/swing_clean01.ogg                          -16     16      255     0       0
+definesound S_MELEE_SWING02             sounds/weapons/baton/swing_clean02.ogg                          -16     16      255     0       0
+definesound S_MELEE_SWING03             sounds/weapons/baton/swing_clean03.ogg                          -16     16      255     0       0
+definesound S_MELEE_THUD01              sounds/weapons/baton/thud01.ogg                                 -16     16      255     0       0
+definesound S_MELEE_THUD02              sounds/weapons/baton/thud02.ogg                                 -16     16      255     0       0
+definesound S_MELEE_THUD03              sounds/weapons/baton/thud03.ogg                                 -16     16      255     0       0
+
+definesound S_GIBSPLODE01               sounds/gibs/gibsplode01.ogg                                     -16     16      150     0       0
+definesound S_GIBSPLODE02               sounds/gibs/gibsplode02.ogg                                     -16     16      150     0       0
+definesound S_GIBSPLODE03               sounds/gibs/gibsplode03.ogg                                     -16     16      150     0       0
+definesound S_GIBSPLODE04               sounds/gibs/gibsplode04.ogg                                     -16     16      150     0       0
+definesound S_GIBSPLODE05               sounds/gibs/gibsplode05.ogg                                     -16     16      150     0       0
+definesound S_GIBDROP01                 sounds/gibs/gibdrop01.ogg                                       -512    -256    150     0       0
+definesound S_GIBDROP02                 sounds/gibs/gibdrop02.ogg                                       -16     16      150     0       0
+definesound S_SKULLKICK                 sounds/gibs/skullkick.ogg                                       -16     16      150     0       0
+definesound S_GIBSPLODE02_Q             sounds/gibs/gibsplode02_q.ogg                                 -16     16      150     0       2048
+
+definesound S_DING                      sounds/pickups/chaching_l.ogg                                   0     0  127     0       0
+definesound S_ENVELOPE                  sounds/pickups/envelope_lowq.ogg                                -1023     -1023  127     1       0
+definesound S_MP_ON                     sounds/pickups/heart.ogg                                         0     0  127     0       0
+definesound S_MP_START                  sounds/pickups/mp.ogg                                           -8     8  127     0       0
+definesound S_MP_END                    sounds/pickups/mp_r.ogg                                         -8     8  127     0       0
+
+definesound S_BOOTS_JUMP0               sounds/pickups/bootflame_clipped.ogg                            -8     8  127     0       0
+definesound S_BOOTS_JUMP1               sounds/pickups/bootflame.ogg                                    -8     8  127     0       0
+definesound S_BOOTS_STEP               sounds/pickups/boot_step.ogg                                    -8     8  127     0       0
+
+definesound S_STEP_STONE_JUMP1          sounds/footsteps/stone_jump001.ogg                              -64     64      127     0       0
+definesound S_STEP_STONE_JUMP2          sounds/footsteps/stone_jump002.ogg                              -64     64      127     0       0
+definesound S_STEP_STONE_JUMP3          sounds/footsteps/stone_jump003.ogg                              -64     64      127     0       0
+definesound S_STEP_STONE_LAND1          sounds/footsteps/stone_land001.ogg                              -64     64      127     0       0
+definesound S_STEP_STONE_LAND2          sounds/footsteps/stone_land002.ogg                              -64     64      127     0       0
+definesound S_STEP_STONE_LAND3          sounds/footsteps/stone_land003.ogg                              -64     64      127     0       0
+definesound S_STEP_STONE_WALK1          sounds/footsteps/stone_walk001.ogg                              -64     64      127     0       0
+definesound S_STEP_STONE_WALK2          sounds/footsteps/stone_walk002.ogg                              -64     64      127     0       0
+definesound S_STEP_STONE_WALK3          sounds/footsteps/stone_walk003.ogg                              -64     64      127     0       0
+definesound S_STEP_STONE_RUN1           sounds/footsteps/stone_run001.ogg                               -64     64      127     0       0
+definesound S_STEP_STONE_RUN2           sounds/footsteps/stone_run002.ogg                               -64     64      127     0       0
+definesound S_STEP_STONE_RUN3           sounds/footsteps/stone_run003.ogg                               -64     64      127     0       0
+
+definesound S_STEP_TILE_JUMP1           sounds/footsteps/tile_jump001.ogg                               -64     64      127     0       0
+definesound S_STEP_TILE_JUMP2           sounds/footsteps/tile_jump002.ogg                               -64     64      127     0       0
+definesound S_STEP_TILE_JUMP3           sounds/footsteps/tile_jump003.ogg                               -64     64      127     0       0
+definesound S_STEP_TILE_LAND1           sounds/footsteps/tile_land001.ogg                               -64     64      127     0       0
+definesound S_STEP_TILE_LAND2           sounds/footsteps/tile_land002.ogg                               -64     64      127     0       0
+definesound S_STEP_TILE_LAND3           sounds/footsteps/tile_land003.ogg                               -64     64      127     0       0
+definesound S_STEP_TILE_WALK1           sounds/footsteps/tile_walk001.ogg                               -64     64      127     0       0
+definesound S_STEP_TILE_WALK2           sounds/footsteps/tile_walk002.ogg                               -64     64      127     0       0
+definesound S_STEP_TILE_WALK3           sounds/footsteps/tile_walk003.ogg                               -64     64      127     0       0
+definesound S_STEP_TILE_RUN1            sounds/footsteps/tile_run001.ogg                                -64     64      127     0       0
+definesound S_STEP_TILE_RUN2            sounds/footsteps/tile_run002.ogg                                -64     64      127     0       0
+definesound S_STEP_TILE_RUN3            sounds/footsteps/tile_run003.ogg                                -64     64      127     0       0
+
+definesound S_STEP_METAL_JUMP1          sounds/footsteps/metal_jump001.ogg                              -64     64      127     0       0
+definesound S_STEP_METAL_JUMP2          sounds/footsteps/metal_jump002.ogg                              -64     64      127     0       0
+definesound S_STEP_METAL_JUMP3          sounds/footsteps/metal_jump003.ogg                              -64     64      127     0       0
+definesound S_STEP_METAL_LAND1          sounds/footsteps/metal_land001.ogg                              -64     64      127     0       0
+definesound S_STEP_METAL_LAND2          sounds/footsteps/metal_land002.ogg                              -64     64      127     0       0
+definesound S_STEP_METAL_LAND3          sounds/footsteps/metal_land003.ogg                              -64     64      127     0       0
+definesound S_STEP_METAL_WALK1          sounds/footsteps/metal_walk001.ogg                              -64     64      127     0       0
+definesound S_STEP_METAL_WALK2          sounds/footsteps/metal_walk002.ogg                              -64     64      127     0       0
+definesound S_STEP_METAL_WALK3          sounds/footsteps/metal_walk003.ogg                              -64     64      127     0       0
+definesound S_STEP_METAL_RUN1           sounds/footsteps/metal_run001.ogg                               -64     64      127     0       0
+definesound S_STEP_METAL_RUN2           sounds/footsteps/metal_run002.ogg                               -64     64      127     0       0
+definesound S_STEP_METAL_RUN3           sounds/footsteps/metal_run003.ogg                               -64     64      127     0       0
+
+definesound S_STEP_DIRT_JUMP1           sounds/footsteps/dirt_jump001.ogg                               -64     64      127     0       0
+definesound S_STEP_DIRT_JUMP2           sounds/footsteps/dirt_jump002.ogg                               -64     64      127     0       0
+definesound S_STEP_DIRT_JUMP3           sounds/footsteps/dirt_jump003.ogg                               -64     64      127     0       0
+definesound S_STEP_DIRT_LAND1           sounds/footsteps/dirt_land001.ogg                               -64     64      127     0       0
+definesound S_STEP_DIRT_LAND2           sounds/footsteps/dirt_land002.ogg                               -64     64      127     0       0
+definesound S_STEP_DIRT_LAND3           sounds/footsteps/dirt_land003.ogg                               -64     64      127     0       0
+definesound S_STEP_DIRT_WALK1           sounds/footsteps/dirt_walk001.ogg                               -64     64      127     0       0
+definesound S_STEP_DIRT_WALK2           sounds/footsteps/dirt_walk002.ogg                               -64     64      127     0       0
+definesound S_STEP_DIRT_WALK3           sounds/footsteps/dirt_walk003.ogg                               -64     64      127     0       0
+definesound S_STEP_DIRT_RUN1            sounds/footsteps/dirt_run001.ogg                                -64     64      127     0       0
+definesound S_STEP_DIRT_RUN2            sounds/footsteps/dirt_run002.ogg                                -64     64      127     0       0
+definesound S_STEP_DIRT_RUN3            sounds/footsteps/dirt_run003.ogg                                -64     64      127     0       0
+
+definesound S_STEP_GRASS_JUMP1          sounds/footsteps/grass_jump001.ogg                              -64     64      127     0       0
+definesound S_STEP_GRASS_JUMP2          sounds/footsteps/grass_jump002.ogg                              -64     64      127     0       0
+definesound S_STEP_GRASS_JUMP3          sounds/footsteps/grass_jump003.ogg                              -64     64      127     0       0
+definesound S_STEP_GRASS_LAND1          sounds/footsteps/grass_land001.ogg                              -64     64      127     0       0
+definesound S_STEP_GRASS_LAND2          sounds/footsteps/grass_land002.ogg                              -64     64      127     0       0
+definesound S_STEP_GRASS_LAND3          sounds/footsteps/grass_land003.ogg                              -64     64      127     0       0
+definesound S_STEP_GRASS_WALK1          sounds/footsteps/grass_walk001.ogg                              -64     64      127     0       0
+definesound S_STEP_GRASS_WALK2          sounds/footsteps/grass_walk002.ogg                              -64     64      127     0       0
+definesound S_STEP_GRASS_WALK3          sounds/footsteps/grass_walk003.ogg                              -64     64      127     0       0
+definesound S_STEP_GRASS_RUN1           sounds/footsteps/grass_run001.ogg                               -64     64      127     0       0
+definesound S_STEP_GRASS_RUN2           sounds/footsteps/grass_run002.ogg                               -64     64      127     0       0
+definesound S_STEP_GRASS_RUN3           sounds/footsteps/grass_run003.ogg                               -64     64      127     0       0
+
+definesound S_STEP_WATER_JUMP1          sounds/footsteps/water_jump001.ogg                              -64     64      127     0       0
+definesound S_STEP_WATER_JUMP2          sounds/footsteps/water_jump002.ogg                              -64     64      127     0       0
+definesound S_STEP_WATER_JUMP3          sounds/footsteps/water_jump003.ogg                              -64     64      127     0       0
+definesound S_STEP_WATER_LAND1          sounds/footsteps/water_land001.ogg                              -64     64      127     0       0
+definesound S_STEP_WATER_LAND2          sounds/footsteps/water_land002.ogg                              -64     64      127     0       0
+definesound S_STEP_WATER_LAND3          sounds/footsteps/water_land003.ogg                              -64     64      127     0       0
+definesound S_STEP_WATER_WALK1          sounds/footsteps/water_walk001.ogg                              -64     64      127     0       0
+definesound S_STEP_WATER_WALK2          sounds/footsteps/water_walk002.ogg                              -64     64      127     0       0
+definesound S_STEP_WATER_WALK3          sounds/footsteps/water_walk003.ogg                              -64     64      127     0       0
+definesound S_STEP_WATER_RUN1           sounds/footsteps/water_run001.ogg                               -64     64      127     0       0
+definesound S_STEP_WATER_RUN2           sounds/footsteps/water_run002.ogg                               -64     64      127     0       0
+definesound S_STEP_WATER_RUN3           sounds/footsteps/water_run003.ogg                               -64     64      127     0       0
+
+definesound S_STEP_WATERD_JUMP1         sounds/footsteps/waterdeep_jump001.ogg                          -64     64      127     0       0
+definesound S_STEP_WATERD_JUMP2         sounds/footsteps/waterdeep_jump002.ogg                          -64     64      127     0       0
+definesound S_STEP_WATERD_JUMP3         sounds/footsteps/waterdeep_jump003.ogg                          -64     64      127     0       0
+definesound S_STEP_WATERD_LAND1         sounds/footsteps/waterdeep_land001.ogg                          -64     64      127     0       0
+definesound S_STEP_WATERD_LAND2         sounds/footsteps/waterdeep_land002.ogg                          -64     64      127     0       0
+definesound S_STEP_WATERD_LAND3         sounds/footsteps/waterdeep_land003.ogg                          -64     64      127     0       0
+definesound S_STEP_WATERD_WALK1         sounds/footsteps/waterdeep_walk001.ogg                          -64     64      127     0       0
+definesound S_STEP_WATERD_WALK2         sounds/footsteps/waterdeep_walk002.ogg                          -64     64      127     0       0
+definesound S_STEP_WATERD_WALK3         sounds/footsteps/waterdeep_walk003.ogg                          -64     64      127     0       0
+definesound S_STEP_WATERD_RUN1          sounds/footsteps/waterdeep_run001.ogg                           -64     64      127     0       0
+definesound S_STEP_WATERD_RUN2          sounds/footsteps/waterdeep_run002.ogg                           -64     64      127     0       0
+definesound S_STEP_WATERD_RUN3          sounds/footsteps/waterdeep_run003.ogg                           -64     64      127     0       0
+
+definesound S_STEP_FABRIC_JUMP1         sounds/footsteps/carpet_jump001.ogg                             -64     64      127     0       0
+definesound S_STEP_FABRIC_JUMP2         sounds/footsteps/carpet_jump002.ogg                             -64     64      127     0       0
+definesound S_STEP_FABRIC_JUMP3         sounds/footsteps/carpet_jump003.ogg                             -64     64      127     0       0
+definesound S_STEP_FABRIC_LAND1         sounds/footsteps/carpet_land001.ogg                             -64     64      127     0       0
+definesound S_STEP_FABRIC_LAND2         sounds/footsteps/carpet_land002.ogg                             -64     64      127     0       0
+definesound S_STEP_FABRIC_LAND3         sounds/footsteps/carpet_land003.ogg                             -64     64      127     0       0
+definesound S_STEP_FABRIC_WALK1         sounds/footsteps/carpet_walk001.ogg                             -64     64      127     0       0
+definesound S_STEP_FABRIC_WALK2         sounds/footsteps/carpet_walk002.ogg                             -64     64      127     0       0
+definesound S_STEP_FABRIC_WALK3         sounds/footsteps/carpet_walk003.ogg                             -64     64      127     0       0
+definesound S_STEP_FABRIC_RUN1          sounds/footsteps/carpet_run001.ogg                              -64     64      127     0       0
+definesound S_STEP_FABRIC_RUN2          sounds/footsteps/carpet_run002.ogg                              -64     64      127     0       0
+definesound S_STEP_FABRIC_RUN3          sounds/footsteps/carpet_run003.ogg                              -64     64      127     0       0
+
+definesound S_STEP_WATER_SWIM1          sounds/footsteps/water_swim001.ogg                              -64     64      127     0       0
+definesound S_STEP_WATER_SWIM2          sounds/footsteps/water_swim002.ogg                              -64     64      127     0       0
+definesound S_STEP_WATER_SWIM3          sounds/footsteps/water_swim003.ogg                              -64     64      127     0       0
+
+definesound S_STEP_SLIME_JUMP1          sounds/footsteps/slime_jump001.ogg                              -64     64      127     0       0
+definesound S_STEP_SLIME_JUMP2          sounds/footsteps/slime_jump002.ogg                              -64     64      127     0       0
+definesound S_STEP_SLIME_JUMP3          sounds/footsteps/slime_jump003.ogg                              -64     64      127     0       0
+definesound S_STEP_SLIME_LAND1          sounds/footsteps/slime_land001.ogg                              -64     64      127     0       0
+definesound S_STEP_SLIME_LAND2          sounds/footsteps/slime_land002.ogg                              -64     64      127     0       0
+definesound S_STEP_SLIME_LAND3          sounds/footsteps/slime_land003.ogg                              -64     64      127     0       0
+definesound S_STEP_SLIME_WALK1          sounds/footsteps/slime_walk001.ogg                              -64     64      127     0       0
+definesound S_STEP_SLIME_WALK2          sounds/footsteps/slime_walk002.ogg                              -64     64      127     0       0
+definesound S_STEP_SLIME_WALK3          sounds/footsteps/slime_walk003.ogg                              -64     64      127     0       0
+definesound S_STEP_SLIME_RUN1           sounds/footsteps/slime_run001.ogg                               -64     64      127     0       0
+definesound S_STEP_SLIME_RUN2           sounds/footsteps/slime_run002.ogg                               -64     64      127     0       0
+definesound S_STEP_SLIME_RUN3           sounds/footsteps/slime_run003.ogg                               -64     64      127     0       0
+
+definesound S_STEP_GLASS_JUMP1          sounds/footsteps/glass_jump001.ogg                              -64     64      127     0       0
+definesound S_STEP_GLASS_JUMP2          sounds/footsteps/glass_jump002.ogg                              -64     64      127     0       0
+definesound S_STEP_GLASS_JUMP3          sounds/footsteps/glass_jump003.ogg                              -64     64      127     0       0
+definesound S_STEP_GLASS_LAND1          sounds/footsteps/glass_land001.ogg                              -64     64      127     0       0
+definesound S_STEP_GLASS_LAND2          sounds/footsteps/glass_land002.ogg                              -64     64      127     0       0
+definesound S_STEP_GLASS_LAND3          sounds/footsteps/glass_land003.ogg                              -64     64      127     0       0
+definesound S_STEP_GLASS_WALK1          sounds/footsteps/glass_walk001.ogg                              -64     64      127     0       0
+definesound S_STEP_GLASS_WALK2          sounds/footsteps/glass_walk002.ogg                              -64     64      127     0       0
+definesound S_STEP_GLASS_WALK3          sounds/footsteps/glass_walk003.ogg                              -64     64      127     0       0
+definesound S_STEP_GLASS_RUN1           sounds/footsteps/glass_run001.ogg                               -64     64      127     0       0
+definesound S_STEP_GLASS_RUN2           sounds/footsteps/glass_run002.ogg                               -64     64      127     0       0
+definesound S_STEP_GLASS_RUN3           sounds/footsteps/glass_run003.ogg                               -64     64      127     0       0
+
+definesound S_STEP_WOOD_JUMP1           sounds/footsteps/wood_jump001.ogg                               -64     64      127     0       0
+definesound S_STEP_WOOD_JUMP2           sounds/footsteps/wood_jump002.ogg                               -64     64      127     0       0
+definesound S_STEP_WOOD_JUMP3           sounds/footsteps/wood_jump003.ogg                               -64     64      127     0       0
+definesound S_STEP_WOOD_LAND1           sounds/footsteps/wood_land001.ogg                               -64     64      127     0       0
+definesound S_STEP_WOOD_LAND2           sounds/footsteps/wood_land002.ogg                               -64     64      127     0       0
+definesound S_STEP_WOOD_LAND3           sounds/footsteps/wood_land003.ogg                               -64     64      127     0       0
+definesound S_STEP_WOOD_WALK1           sounds/footsteps/wood_walk001.ogg                               -64     64      127     0       0
+definesound S_STEP_WOOD_WALK2           sounds/footsteps/wood_walk002.ogg                               -64     64      127     0       0
+definesound S_STEP_WOOD_WALK3           sounds/footsteps/wood_walk003.ogg                               -64     64      127     0       0
+definesound S_STEP_WOOD_RUN1            sounds/footsteps/wood_run001.ogg                                -64     64      127     0       0
+definesound S_STEP_WOOD_RUN2            sounds/footsteps/wood_run002.ogg                                -64     64      127     0       0
+definesound S_STEP_WOOD_RUN3            sounds/footsteps/wood_run003.ogg                                -64     64      127     0       0
+
+definesound S_STEP_MSET_HARD1           sounds/footsteps/mechset/step_hardsurface1.ogg                  -64     64      127     0       0
+definesound S_STEP_MSET_HARD2           sounds/footsteps/mechset/step_hardsurface2.ogg                  -64     64      127     0       0
+definesound S_STEP_MSET_METAL1          sounds/footsteps/mechset/step_metal1.ogg                        -64     64      127     0       0
+definesound S_STEP_MSET_METAL2          sounds/footsteps/mechset/step_metal2.ogg                        -64     64      127     0       0
+definesound S_STEP_MSET_WOOD1           sounds/footsteps/mechset/step_wood1.ogg                         -64     64      127     0       0
+definesound S_STEP_MSET_WOOD2           sounds/footsteps/mechset/step_wood2.ogg                         -64     64      127     0       0
+
+definesound S_STEP_LADDER01             sounds/footsteps/ladder_step001.ogg                             -64     64      127     0       0
+definesound S_STEP_LADDER02             sounds/footsteps/ladder_step002.ogg                             -64     64      127     0       0
+definesound S_STEP_LADDER03             sounds/footsteps/ladder_step003.ogg                             -64     64      127     0       0
+definesound S_STEP_LADDER04             sounds/footsteps/ladder_step004.ogg                             -64     64      127     0       0
+
+definesound S_DIVE_SPLASH               sounds/env/water/water_splash_dive.ogg                           0       0       127     0       0
+
+definesound S_WOOD_CREAK01              sounds/footsteps/wood_creak01.ogg                                0       0       127     0       0
+definesound S_WOOD_CREAK02              sounds/footsteps/wood_creak02.ogg                                0       0       127     0       0
+definesound S_WOOD_CREAK03              sounds/footsteps/wood_creak03.ogg                                0       0       127     0       0
+
+definesound S_FIRELOOP_SHORT            sounds/env/fire_loop_short.ogg                                   0       0       64     0       0
+
+definesound S_PIANO_C0_C1               sounds/env/pianoc1.ogg                                          -2426       -2426       128     0       0
+definesound S_PIANO_C1_C2               sounds/env/pianoc2.ogg                                          -2426       -2426       128     0       0
+definesound S_PIANO_C2_C3               sounds/env/pianoc3.ogg                                          -2426       -2426       128     0       0
+definesound S_PIANO_C3_C4               sounds/env/pianoc4.ogg                                          -2426       -2426       128     0       0
+definesound S_PIANO_C4_C5               sounds/env/pianoc5.ogg                                          -2426       -2426       128     0       0
+definesound S_PIANO_C5_C6               sounds/env/pianoc6.ogg                                          -2426       -2426       128     0       0
+definesound S_PIANO_C6_C7               sounds/env/pianoc7.ogg                                          -2426       -2426       128     0       0
+definesound S_PIANO_C7_C8               sounds/env/pianoc8.ogg                                          -2426       -2426       128     0       0
+
+definesound S_RADIO_ON                  sounds/dialog/radio1.ogg                                        0       0       250     0       0
+definesound S_RADIO_OFF                 sounds/dialog/radio2.ogg                                        0       0       250     0       0
+
+definesound S_BULLET_STONE1             sounds/impact/projectiles/bullet_stone001.ogg                   -128    128     3       0       6144
+definesound S_BULLET_STONE2             sounds/impact/projectiles/bullet_stone002.ogg                   -128    128     3       0       6144
+definesound S_BULLET_STONE3             sounds/impact/projectiles/bullet_stone003.ogg                   -128    128     3       0       6144
+
+definesound S_BULLET_METAL1             sounds/impact/projectiles/bullet_metal001.ogg                   -128    128     3       0       6144
+definesound S_BULLET_METAL2             sounds/impact/projectiles/bullet_metal002.ogg                   -128    128     3       0       6144
+definesound S_BULLET_METAL3             sounds/impact/projectiles/bullet_metal003.ogg                   -128    128     3       0       6144
+
+definesound S_BULLET_GLASS1             sounds/impact/projectiles/bullet_glass001.ogg                   -128    128     3       0       6144
+definesound S_BULLET_GLASS2             sounds/impact/projectiles/bullet_glass002.ogg                   -128    128     3       0       6144
+definesound S_BULLET_GLASS3             sounds/impact/projectiles/bullet_glass003.ogg                   -128    128     3       0       6144
+
+definesound S_BULLET_WOOD1              sounds/impact/projectiles/bullet_wood001.ogg                    -128    128     3       0       6144
+definesound S_BULLET_WOOD2              sounds/impact/projectiles/bullet_wood002.ogg                    -128    128     3       0       6144
+definesound S_BULLET_WOOD3              sounds/impact/projectiles/bullet_wood003.ogg                    -128    128     3       0       6144
+
+definesound S_BULLET_DIRT1              sounds/impact/projectiles/bullet_dirt001.ogg                    -128    128     3       0       6144
+definesound S_BULLET_DIRT2              sounds/impact/projectiles/bullet_dirt002.ogg                    -128    128     3       0       6144
+definesound S_BULLET_DIRT3              sounds/impact/projectiles/bullet_dirt003.ogg                    -128    128     3       0       6144
+
+definesound S_BULLET_GRASS1             sounds/impact/projectiles/bullet_grass001.ogg                   -128    128     3       0       6144
+definesound S_BULLET_GRASS2             sounds/impact/projectiles/bullet_grass002.ogg                   -128    128     3       0       6144
+definesound S_BULLET_GRASS3             sounds/impact/projectiles/bullet_grass003.ogg                   -128    128     3       0       6144
+
+definesound S_BULLET_WATER1             sounds/impact/projectiles/bullet_water001.ogg                   -128    128     3       0       6144
+definesound S_BULLET_WATER2             sounds/impact/projectiles/bullet_water002.ogg                   -128    128     3       0       6144
+definesound S_BULLET_WATER3             sounds/impact/projectiles/bullet_water003.ogg                   -128    128     3       0       6144
+
+definesound S_BULLET_FABRIC1            sounds/impact/projectiles/bullet_fabric001.ogg                  -128    128     3       0       6144
+definesound S_BULLET_FABRIC2            sounds/impact/projectiles/bullet_fabric002.ogg                  -128    128     3       0       6144
+definesound S_BULLET_FABRIC3            sounds/impact/projectiles/bullet_fabric003.ogg                  -128    128     3       0       6144
+
+definesound S_BULLET_FLESH1             sounds/impact/projectiles/bullet_flesh001.ogg                   -128    128     3       0       6144
+definesound S_BULLET_FLESH2             sounds/impact/projectiles/bullet_flesh002.ogg                   -128    128     3       0       6144
+definesound S_BULLET_FLESH3             sounds/impact/projectiles/bullet_flesh003.ogg                   -128    128     3       0       6144
+
+definesound S_BULLET_RICOCHET1          sounds/impact/projectiles/bullet_ricochet001.ogg                -128    128     3       0       6144
+definesound S_BULLET_RICOCHET2          sounds/impact/projectiles/bullet_ricochet002.ogg                -128    128     3       0       6144
+definesound S_BULLET_RICOCHET3          sounds/impact/projectiles/bullet_ricochet003.ogg                -128    128     3       0       6144
+definesound S_BULLET_RICOCHET4          sounds/impact/projectiles/bullet_ricochet004.ogg                -128    128     3       0       6144
+definesound S_BULLET_RICOCHET5          sounds/impact/projectiles/bullet_ricochet005.ogg                -128    128     3       0       6144
+
+definesound S_SHELL01                   sounds/weapons/shells/gunshell_01.ogg                           -8      8       20      0       6144
+definesound S_SHELL02                   sounds/weapons/shells/gunshell_02.ogg                           -8      8       20      0       6144
+definesound S_SHELL03                   sounds/weapons/shells/gunshell_03.ogg                           -8      8       20      0       6144
+definesound S_SHELL04                   sounds/weapons/shells/gunshell_04.ogg                           -8      8       20      0       6144
+definesound S_SHELL05                   sounds/weapons/shells/gunshell_05.ogg                           -8      8       20      0       6144
+definesound S_SHELL06                   sounds/weapons/shells/gunshell_06.ogg                           -8      8       20      0       6144
+
+definesound S_LAVANAIL_SURFACE          sounds/impact/projectiles/lavanail_surface.ogg                  -128    128     3       0       6144
+definesound S_LAVANAIL_FLESH            sounds/impact/projectiles/lavanail_flesh.ogg                    -128    128     3       0       6144
+
+definesound S_VEHICLE_DRIVE             sounds/vehicle/drive_loop.ogg                                   0       0       255     0       0
+definesound S_VEHICLE_TIRES             sounds/vehicle/tires_screech.ogg                                0       0       255     0       0
+definesound S_VEHICLE_CRASH             sounds/vehicle/vehicle_crash.ogg                                0       0       255     0       0
+definesound S_VEHICLE_OFF               sounds/vehicle/vehicle_off.ogg                                  0       0       255     0       0
+definesound S_VEHICLE_REV               sounds/vehicle/vehicle_rev.ogg                                  0       0       255     0       0
+definesound S_VEHICLE_DOWNREV           sounds/vehicle/vehicle_revdown.ogg                              0       0       255     0       0
+definesound S_VEHICLE_START             sounds/vehicle/vehicle_start.ogg                                0       0       255     0       0
+definesound S_VEHICLE_TURBO             sounds/vehicle/vehicle_turbo.ogg                                0       0       255     0       0
+definesound S_VEHICLE_HORN              sounds/vehicle/vehicle_horn.ogg                                 0       0       255     0       0
+definesound S_VEHICLE_ALARM             sounds/vehicle/vehicle_alarm.ogg                               0       0       128     0       0
+definesound S_HOVERCRAFT_FLYBY          sounds/vehicle/aircraft_hover_path.ogg							0       0       255     0       -32768
+definesound S_HOVERCRAFT_FLYBY2         sounds/vehicle/aircraft_hover_path.ogg							0       0       255     0       -32768
+definesound S_HOVERCRAFT_PREFIRE		sounds/vehicle/aircraft_abouttofire.ogg							0       0       255     144     0
+definesound S_HOVERCRAFT_CHARGE		    sounds/vehicle/aircraft_abouttofire2.ogg						0       0       255     144     0
+definesound S_HOVERCRAFT_LOOP           sounds/vehicle/aircraft_hover_loop.ogg							0       0       200     3       -32768
+definesound S_HOVERCRAFT_LOOP2          sounds/vehicle/aircraft_hover_loop_deep.ogg						0       0       200     3       -32768
+definesound S_ELEVATOR_MOVE2            sounds/elevator/elevator_move.ogg                               0       0       200     3       0
+
+definesound S_ITEM_HEALTH               sounds/items/health_powerup.ogg                                 0       0       255     0       0
+definesound S_ITEM_BBOMB                sounds/items/bbomb_powerup.ogg                                  0       0       255     0       0
+definesound S_ITEM_PIZZA                sounds/items/pizza.ogg                                          0       0       255     0       0
+definesound S_ITEM_CAN                  sounds/items/can_open.ogg                                       0       0       255     0       0
+definesound S_ITEM_HAZMAT_GEIGER        sounds/items/hazmat_geiger.ogg                                  256     256       255     0       0
+definesound S_ITEM_HAZMAT_BREATH        sounds/items/hazmat_breath.ogg                                  0       0       255     0       0
+
+definesound S_OBJECT_PUSH               sounds/object_push.ogg                                          0       0       180     1       0
+definesound S_TOILET_FLUSH              sounds/objects/wc/toilet_flush.ogg                              0       0       180     0       0
+definesound S_TOILET_LIDUP              sounds/objects/wc/toilet_lidUp.ogg                              0       0       180     0       0
+definesound S_TOILET_LIDDOWN            sounds/objects/wc/toilet_lidDown.ogg                            0       0       180     0       0
+definesound S_SINK_TAPRUN               sounds/objects/wc/sink_tapRun.ogg                               0       0       180     0       0
+definesound S_HAND_DRYER                sounds/objects/wc/hand_dryer.ogg                                0       0       180     0       0
+definesound S_CHAIN                     sounds/objects/chain.ogg                                        0       0       180     0       0
+definesound S_LADDER                    sounds/objects/ladder.ogg                                       0       0       180     0       0
+definesound S_PHONE_BUSY                sounds/objects/phone_busy.ogg                                   0       0       180     0       8192
+definesound S_PHONE_RING_OLD            sounds/objects/phone_ring_old.ogg                               0       0       180     0       0
+definesound S_ENGINE_LOOP               sounds/engine/engine_loop.ogg                                   0       0       180     0       0
+definesound S_ENGINE_START              sounds/engine/engine_start.ogg                                  0       0       180     0       0
+definesound S_ENGINE_OFF                sounds/engine/engine_off.ogg                                    0       0       180     0       0
+definesound S_HEART_BEEP                sounds/objects/heart_beep.ogg                                   0       0       180     0       10240
+definesound S_VENDING_DISPENSE          sounds/objects/vending_dispense.ogg                             0       0       180     0       0
+definesound S_COIN_INSERT               sounds/objects/slot_coin.ogg                                    0       0       180     0       0
+definesound S_VENDING_HUM_LOOP          sounds/objects/vending_machine_hum.ogg                          0       0       180     1       0
+definesound S_VINYL_START               sounds/objects/vinyl_start.ogg                                  0       0       180     0       0
+definesound S_IMPACT_REV                sounds/objects/impact_rev.ogg                                   -64    64     180     0       0
+definesound S_CHAIR_ROLL                sounds/objects/chair_roll_loop.ogg                              -32     32      180     0       10240
+definesound S_CHAIR_ROLL_ALT            sounds/objects/chair_roll_loop_alt.ogg                          -32     32      180     0       10240
+definesound S_SAW_LOOP                  sounds/objects/saw_loop.ogg                                     0       0       100     2       0
+definesound S_PISTON_STEAM              sounds/objects/piston_steam.ogg                                 -8      8       100     0       0
+definesound S_PISTON_STOP               sounds/objects/piston_stop.ogg                                  -8      8       100     0       0
+definesound S_PISTON_STEAM_DUP          sounds/objects/piston_steam.ogg                                 -8      8       100     0       0
+definesound S_PISTON_STOP_DUP           sounds/objects/piston_stop.ogg                                  -8      8       100     0       0
+definesound S_SPOTLIGHT                 sounds/objects/spotlight.ogg                                    0       0       100     0       0
+definesound S_CAM_SWITCH                sounds/objects/cam_switch.ogg                                   0       0       100     0       0
+definesound S_AMB_FOUNTAIN2_D           sounds/env/water/Water_FountainLoop02.ogg                       0       0       200     3       10240
+definesound S_ATM_SHAKEIT               sounds/objects/atm_shakeit.ogg                                  0       0       200     0       0
+
+definesound S_CORKPULL                  sounds/objects/corkpull.ogg                                    -32     32      180     0       6144
+// 3072 - 3327
+
+definesound S_SHELLYVO_MAPSND1          sounds/shelly/voiceover/Map_1_Start_01.ogg                      0       0       255     4       0
+definesound S_SHELLYVO_MAPSND2          sounds/shelly/voiceover/Map_2_Start_01.ogg                      0       0       255     4       0
+definesound S_SHELLYVO_MAPSND3A         sounds/shelly/voiceover/Map_3_Start_01.ogg                      0       0       255     4       0
+definesound S_SHELLYVO_MAPSND3B         sounds/shelly/voiceover/Map_3_Start_01_a.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_MAPSND4          sounds/shelly/voiceover/Map_4_Start_01.ogg                      0       0       255     4       0
+definesound S_SHELLYVO_MAPSND5          sounds/shelly/voiceover/Map_5_Start_01.ogg                      0       0       255     4       0
+definesound S_SHELLYVO_MAPSND6          sounds/shelly/voiceover/shelly_007_that_isnt_ominous_alt1.ogg                      0       0       255     4       0
+definesound S_SHELLYVO_MAPSND7          sounds/shelly/voiceover/shelly_008_heskels_house_of_horrors.ogg                      0       0       255     4       0
+
+definesound S_SHELLYVO_LVLSND1          sounds/shelly/voiceover/Level_Specific_01.ogg                   0       0       255     4       0
+definesound S_SHELLYVO_LVLSND2          sounds/shelly/voiceover/Level_Specific_02.ogg                   0       0       255     4       0
+definesound S_SHELLYVO_LVLSND3          sounds/shelly/voiceover/Level_Specific_03.ogg                   0       0       255     4       0
+definesound S_SHELLYVO_LVLSND4          sounds/shelly/voiceover/Level_Specific_04.ogg                   0       0       255     4       0
+definesound S_SHELLYVO_LVLSND5          sounds/shelly/voiceover/Level_Specific_05.ogg                   0       0       255     4       0
+definesound S_SHELLYVO_LVLSND6          sounds/shelly/voiceover/Level_Specific_06.ogg                   0       0       255     4       0
+definesound S_SHELLYVO_LVLSND7          sounds/shelly/voiceover/campaign/Shelly_023_c_ed.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_LVLSND8          sounds/shelly/voiceover/Level_Specific_08.ogg                   0       0       255     4       0
+definesound S_SHELLYVO_LVLSND9          sounds/shelly/voiceover/shelly_009_the_one_who_knocks_alt8.ogg                   0       0       255     4       0
+definesound S_SHELLYVO_LVLSND10         sounds/shelly/voiceover/shelly_010_hmm_alt2.ogg                   0       0       255     4       0
+definesound S_SHELLYVO_LVLSND11         sounds/shelly/voiceover/shelly_011_never_would_have_guessed_trim.ogg                   0       0       255     4       0
+definesound S_SHELLYVO_LVLSND12         sounds/shelly/voiceover/shelly_012_a_bit_excessive_alt3.ogg                   0       0       255     4       0
+definesound S_SHELLYVO_LVLSND13         sounds/shelly/voiceover/shelly_013_no_budget_cut_trim.ogg                   0       0       255     4       0
+
+definesound S_SHELLYVO_GIBSND1          sounds/shelly/voiceover/Reactionary_Kill_02.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_GIBSND2          sounds/shelly/voiceover/Reactionary_Kill_03.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_GIBSND3          sounds/shelly/voiceover/Reactionary_Kill_04.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_GIBSND4          sounds/shelly/voiceover/Reactionary_Kill_05.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_GIBSND5          sounds/shelly/voiceover/Reactionary_Kill_06.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_GIBSND6          sounds/shelly/voiceover/Generic_Event_13.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_GIBSND7          sounds/shelly/voiceover/shelly_020_quarterback_is_toast.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_GIBSND8          sounds/shelly/voiceover/shelly_023_keep_em_separated_alt3.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_GIBSND9          sounds/shelly/voiceover/shelly_021_quite_a_party_alt3.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_GIBSND10         sounds/shelly/voiceover/campaign/Shelly_109.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_GIBSND11          sounds/shelly/voiceover/campaign/Shelly_103_comp.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_GIBSND12          sounds/shelly/voiceover/campaign/Shelly_112.ogg                    0       0       255     4       0
+
+definesound S_SHELLYVO_KILLSND1         sounds/shelly/voiceover/Reactionary_Kill_07.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_KILLSND2         sounds/shelly/voiceover/Reactionary_Kill_08.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_KILLSND3         sounds/shelly/voiceover/Reactionary_Kill_09.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_KILLSND4         sounds/shelly/voiceover/Reactionary_Kill_10.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_KILLSND5         sounds/shelly/voiceover/shelly_018_say_my_name_alt8.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_KILLSND6         sounds/shelly/voiceover/shelly_019_were_done_alt5.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_KILLSND7         sounds/shelly/voiceover/shelly_022_dance_fucker_dance.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_KILLSND8         sounds/shelly/voiceover/shelly_024_worthless_consumer_models.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_KILLSND9         sounds/shelly/voiceover/campaign/Shelly_102_comp.ogg                     0       0       255     4       0
+definesound S_SHELLYVO_KILLSND10        sounds/shelly/voiceover/campaign/Shelly_106.ogg                          0       0       255     4       0
+definesound S_SHELLYVO_KILLSND11        sounds/shelly/voiceover/campaign/Shelly_107_comp.ogg                     0       0       255     4       0
+
+definesound S_SHELLYVO_PUPSHOTSND1      sounds/shelly/voiceover/shelly_005_boomstick_alt4.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_PUPSHOTSND2      sounds/shelly/voiceover/shelly_005_boomstick_splice.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_PUPSHOTSND3      sounds/shelly/voiceover/shelly_002_fire_in_the_hole_alt1.ogg                  0       0       255     4       0
+
+definesound S_SHELLYVO_PUPSMGSND1       sounds/shelly/voiceover/Generic_Event_08.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_PUPSMGSND2       sounds/shelly/voiceover/shelly_004_on_your_knees_alt4.ogg                    0       0       255     4       0
+
+definesound S_SHELLYVO_PUPCHAINSND1       sounds/shelly/voiceover/shelly_006_wonderful_toys_alt4.ogg                    0       0       255     4       0
+
+definesound S_SHELLYVO_PUPBOMBSND1      sounds/shelly/voiceover/Generic_Event_09.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_PUPBOMBSND2      sounds/shelly/voiceover/Generic_Event_09_a.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_BOMB_STRIKE      sounds/shelly/voiceover/campaign/Shelly_120_a_splice.ogg        0       0       255     4       0
+
+definesound S_SHELLYVO_PUPBOWSND1       sounds/shelly/voiceover/shelly_001_state_of_the_art_alt5.ogg    0       0       255     4       0
+
+definesound S_SHELLYVO_PUPLAMSND1       sounds/shelly/voiceover/campaign/Shelly_094_splice_ed.ogg       0       0       255     4       0
+definesound S_SHELLYVO_PUPLAMSND2       sounds/shelly/voiceover/campaign/Shelly_095.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_PUPLAMSND3       sounds/shelly/voiceover/campaign/Shelly_096.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_PUPBOOTS1        sounds/shelly/voiceover/campaign/Shelly_090.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_PUPBOOTS2        sounds/shelly/voiceover/campaign/Shelly_091.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_PUPHAZARD1       sounds/shelly/voiceover/campaign/Shelly_092.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_PUPRADAR1        sounds/shelly/voiceover/campaign/Shelly_093.ogg                 0       0       255     4       0
+definesound S_SHELLYVO_PUPDAMAGE1       sounds/shelly/voiceover/campaign/Shelly_125.ogg                 0       0       255     4       0
+
+definesound S_SHELLYVO_MISCVEND         sounds/shelly/voiceover/campaign/Shelly_097.ogg                 0       0       255     4       0
+
+definesound S_SHELLYVO_PUPARMORSND1     sounds/shelly/voiceover/Generic_Event_01.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_PUPARMORSND2     sounds/shelly/voiceover/Generic_Event_02.ogg                    0       0       255     4       0
+
+definesound S_SHELLYVO_PUPHEALSND1      sounds/shelly/voiceover/Generic_Event_06.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_PUPHEALSND2      sounds/shelly/voiceover/Generic_Event_06_a.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_PUPHEALSND3      sounds/shelly/voiceover/yum2_cut_session_final.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_PUPHEALSND4      sounds/shelly/voiceover/shelly_027_ahh_alt2.ogg                  0       0       255     4       0
+
+definesound S_SHELLYVO_PUPGENERIC1      sounds/shelly/voiceover/Generic_Event_03.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_PUPGENERIC2      sounds/shelly/voiceover/Generic_Event_03_a.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_PUPGENERIC3      sounds/shelly/voiceover/Generic_Event_04.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_PUPGENERIC4      sounds/shelly/voiceover/Generic_Event_04_a.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_PUPGENERIC5      sounds/shelly/voiceover/Generic_Event_04_b.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_PUPGENERIC6      sounds/shelly/voiceover/Generic_Event_05.ogg                    0       0       255     4       0
+
+definesound S_SHELLYVO_REACT1           sounds/shelly/voiceover/Generic_Event_12.ogg                    0       0       255     4       0
+definesound S_SHELLYVO_REACT2           sounds/shelly/voiceover/Generic_Event_12_a.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_REACT3           sounds/shelly/voiceover/Generic_Event_12_b.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_REACT4           sounds/shelly/voiceover/Generic_Event_12_c.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_REACT5           sounds/shelly/voiceover/Generic_Event_12_d.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_REACT6           sounds/shelly/voiceover/Generic_Event_12_e.ogg                  0       0       255     4       0
+
+definesound S_SHELLYVO_SECRET1          sounds/shelly/voiceover/Secret_Oneliner_01.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_SECRET2          sounds/shelly/voiceover/Secret_Oneliner_02.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_SECRET3          sounds/shelly/voiceover/Secret_Oneliner_03.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_SECRET3A         sounds/shelly/voiceover/Secret_Oneliner_03_a.ogg                0       0       255     4       0
+definesound S_SHELLYVO_SECRET5          sounds/shelly/voiceover/Secret_Oneliner_05.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_SECRET6          sounds/shelly/voiceover/shelly_014_hamster_alt3.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_SECRET7          sounds/shelly/voiceover/shelly_015_daves_not_here_alt8_trim.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_SECRET8          sounds/shelly/voiceover/shelly_017_wow_alt15_long.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_PLACEHOLDER      sounds/blank.ogg                                                0       0       255     4       0
+
+definesound S_SHELLYVO_PUPBOMBRUSH1     sounds/shelly/voiceover/shelly_025_bowling_bomb.ogg                    0       0       255     4       0
+
+definesound S_HESKEL_TONE				sounds/heskel/tonelow.ogg                      	                    0       0       255     0       0
+definesound S_HESKEL_STATIC				sounds/env/static.ogg                      	                    0       0       255     0       0
+
+definesound S_HES_1_1_HEADROOM				sounds/heskel/zone1/heskel_006.ogg                      	0       0       255     0       0
+definesound S_HES_1_2_AMBUSH				sounds/heskel/zone1/heskel_008_splice.ogg                      	0       0       255     0       0
+definesound S_HES_1_5_CLIMAX				sounds/heskel/zone1/heskel_011_splice.ogg                 			0       0       255     0       0
+
+definesound S_HES_2_1_OLDGDF				sounds/heskel/zone2/heskel_014_splice.ogg                       		0       0       255     0       0
+definesound S_HES_2_4_MECHTEASE				sounds/heskel/zone2/heskel_018_splice.ogg                      		0       0       255     0       0
+definesound S_HES_3_1_LOCKDOWN				sounds/heskel/zone3/heskel_022_splice.ogg                       		0       0       255     0       0
+definesound S_HES_3_4_GREET					sounds/heskel/zone3/heskel_025.ogg                           	0       0       255     0       0
+
+definesound S_HES_4_2_TRAINPLAT				sounds/heskel/zone4/heskel_026_splice.ogg                      		0       0       255     0       0
+definesound S_HES_4_3_TABLETURN				sounds/heskel/zone4/heskel_029_splice_ed.ogg                      		0       0       255     0       0
+definesound S_HES_4_4_POWERLESS				sounds/heskel/zone4/heskel_031.ogg                      		0       0       255     0       0
+definesound S_HES_4_4_PRELIFT				sounds/heskel/zone4/heskel_032_splice.ogg                      		0       0       255     0       0
+
+definesound S_HES_5_1_PRESEWER				sounds/heskel/zone5/heskel_038_splice.ogg                      		0       0       255     0       0
+definesound S_HES_5_2_KNEEDEEP				sounds/heskel/zone5/heskel_041_splice_ed.ogg                       		0       0       255     0       0
+definesound S_HES_5_3_LIFTREPLY				sounds/heskel/zone5/heskel_043_splice_ed.ogg               		0       0       255     0       0
+
+definesound S_HES_6_2_WELCOME				sounds/heskel/zone6/heskel_049_splice_ed.ogg                         	0       0       255     0       0
+definesound S_HES_6_3_TAUNT					sounds/heskel/zone6/heskel_050_splice.ogg                           	0       0       255     0       0
+definesound S_HES_6_2_TOOCLOSE				sounds/heskel/zone6/heskel_051_ed.ogg                        	0       0       255     0       0
+
+definesound S_HES_7_1_INTRO					sounds/heskel/zone7/heskel_057_splice.ogg                             	0       0       255     0       0
+definesound S_HES_7_1_FIRSTFIGHT			sounds/heskel/zone7/heskel_061_ed.ogg                        	0       0       255     0       0
+definesound S_HES_7_1_POSTFIGHT1			sounds/heskel/zone7/heskel_066_splice_ed.ogg                        	0       0       255     0       0
+definesound S_HES_7_1_BRIDGEFALL			sounds/heskel/zone7/heskel_070.ogg                        	0       0       255     0       0
+definesound S_HES_7_1_FINALPATH				sounds/heskel/zone7/heskel_073_splice_ed2.ogg                       	0       0       255     0       0
+definesound S_HES_X_JUMBOTRON				sounds/heskel/zonex/heskel_077_splice.ogg                         	0       0       255     144       0
+                 
+definesound S_HES_LAFF_1					sounds/heskel/heskel_laugh_001.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_2					sounds/heskel/heskel_laugh_002.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_3					sounds/heskel/heskel_laugh_003.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_4					sounds/heskel/heskel_laugh_004.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_5					sounds/heskel/heskel_laugh_005.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_6					sounds/heskel/heskel_laugh_006.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_7					sounds/heskel/heskel_laugh_007.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_8					sounds/heskel/heskel_laugh_008.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_9					sounds/heskel/heskel_laugh_009.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_10					sounds/heskel/heskel_laugh_010.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_11					sounds/heskel/heskel_laugh_011.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_12					sounds/heskel/heskel_laugh_012.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_13					sounds/heskel/heskel_laugh_013.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_14					sounds/heskel/heskel_laugh_014.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_15					sounds/heskel/heskel_laugh_015.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_16					sounds/heskel/heskel_laugh_016.ogg                        		 		0       0       255     0       0
+definesound S_HES_LAFF_17					sounds/heskel/heskel_laugh_017.ogg                        		 		0       0       255     0       0
+                 
+definesound S_HES_FINAL1					sounds/heskel/zone7/heskel_082.ogg											0       0       255     144     0
+definesound S_HES_FINAL2	      	      sounds/heskel/zone7/heskel_084.ogg                                         0       0       255     144     0
+definesound S_HES_FINAL3	    	        sounds/heskel/zone7/heskel_085.ogg                                         0       0       255     144     0
+definesound S_HES_FINAL4	  	          sounds/heskel/zone7/heskel_092.ogg                                         0       0       255     144     0
+definesound S_HES_HP90	      		      sounds/heskel/zone7/heskel_094_ed.ogg                                          0       0       255     144     0
+definesound S_HES_HP75	            sounds/heskel/zone7/heskel_097_splice.ogg                                          0       0       255     144     0
+definesound S_HES_HP60	            sounds/heskel/zone7/heskel_104_splice_ed.ogg                                          0       0       255     144     0
+definesound S_HES_HP45	            sounds/heskel/zone7/heskel_108.ogg                                          0       0       255     144     0
+definesound S_HES_HP30	            sounds/heskel/zone7/heskel_117.ogg                                          0       0       255     144     0
+definesound S_HES_HP15	            sounds/heskel/zone7/heskel_121.ogg                                          0       0       255     144     0
+definesound S_HES_HPZERO	            sounds/heskel/zone7/heskel_127.ogg                                        0       0       255     144     0
+definesound S_HES_HPGLOD	            sounds/heskel/zone7/heskel_099.ogg                                        0       0       255     144     0
+
+
+
+definesound S_SHELLYVO_1_11           sounds/shelly/voiceover/campaign/Shelly_012_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_1_12           sounds/shelly/voiceover/campaign/Shelly_013_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_1_13           sounds/shelly/voiceover/campaign/Shelly_014_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_1_14           sounds/shelly/voiceover/campaign/Shelly_011_a_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_1_15           sounds/shelly/voiceover/campaign/Shelly_003_130_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_1_1           sounds/shelly/voiceover/campaign/Shelly_099.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_1_2           sounds/shelly/voiceover/campaign/Shelly_002_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_1_3           sounds/shelly/voiceover/campaign/Shelly_004_ed2.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_1_4           sounds/shelly/voiceover/campaign/Shelly_005_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_1_5           sounds/shelly/voiceover/campaign/Shelly_006_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_1_6           sounds/shelly/voiceover/campaign/Shelly_007_ed.ogg                0       0       255     4       0
+definesound S_SHELLYVO_1_7           sounds/shelly/voiceover/campaign/Shelly_008_b_splice_ed.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_1_8           sounds/shelly/voiceover/campaign/Shelly_009_splice_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_1_9           sounds/shelly/voiceover/campaign/Shelly_010_ed.ogg	                  0       0       255     4       0
+
+definesound S_SHELLYVO_2_1           sounds/shelly/voiceover/campaign/Shelly_015.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_2_2           sounds/shelly/voiceover/campaign/Shelly_016_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_2_3           sounds/shelly/voiceover/campaign/Shelly_017_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_2_4           sounds/shelly/voiceover/campaign/Shelly_019_b_comp.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_2_5           sounds/shelly/voiceover/campaign/Shelly_020_splice_ed4.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_2_6           sounds/shelly/voiceover/campaign/Shelly_022_a_splice_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_2_7           sounds/shelly/voiceover/campaign/Shelly_024_comp_ed2.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_2_8           sounds/shelly/voiceover/campaign/Shelly_021_b_splice_ed2.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_2_9           sounds/shelly/voiceover/campaign/Shelly_085_comp.ogg	                  0       0       255     4       0
+
+definesound S_SHELLYVO_3_10           sounds/shelly/voiceover/campaign/Shelly_033_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_11           sounds/shelly/voiceover/campaign/Shelly_034_splice_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_12           sounds/shelly/voiceover/campaign/Shelly_035_ed_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_13           sounds/shelly/voiceover/campaign/Shelly_036_ed_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_14           sounds/shelly/voiceover/campaign/Shelly_037_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_15           sounds/shelly/voiceover/campaign/Shelly_038_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_16           sounds/shelly/voiceover/campaign/Shelly_039_b_comp2.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_1           sounds/shelly/voiceover/campaign/Shelly_025_ed_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_2           sounds/shelly/voiceover/campaign/Shelly_026_splice_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_5           sounds/shelly/voiceover/campaign/Shelly_028_ed2.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_6           sounds/shelly/voiceover/campaign/Shelly_029_c_splice_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_7           sounds/shelly/voiceover/campaign/Shelly_030_splice_ed2.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_8           sounds/shelly/voiceover/campaign/Shelly_031_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_3_9           sounds/shelly/voiceover/campaign/Shelly_032_ed.ogg	                  0       0       255     4       0
+
+definesound S_SHELLYVO_4_10          sounds/shelly/voiceover/campaign/Shelly_049_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_11          sounds/shelly/voiceover/campaign/Shelly_050_splice.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_12          sounds/shelly/voiceover/campaign/Shelly_051_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_13          sounds/shelly/voiceover/campaign/Shelly_052_e_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_14          sounds/shelly/voiceover/campaign/Shelly_052_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_15          sounds/shelly/voiceover/campaign/Shelly_054_r_splice_ed2.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_1           sounds/shelly/voiceover/campaign/Shelly_040_ed_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_2           sounds/shelly/voiceover/campaign/Shelly_041_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_3           sounds/shelly/voiceover/campaign/Shelly_042_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_4           sounds/shelly/voiceover/campaign/Shelly_043_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_6           sounds/shelly/voiceover/campaign/Shelly_045_splice_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_7           sounds/shelly/voiceover/campaign/Shelly_046_a_splice_ed_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_8           sounds/shelly/voiceover/campaign/Shelly_047_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_9           sounds/shelly/voiceover/campaign/Shelly_048_splice_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_4_16           sounds/shelly/voiceover/campaign/Shelly_088.ogg	                  0       0       255     4       0
+
+definesound S_SHELLYVO_5_1           sounds/shelly/voiceover/campaign/Shelly_055_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_5_2           sounds/shelly/voiceover/campaign/Shelly_057_b_comp2.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_5_4           sounds/shelly/voiceover/campaign/Shelly_058_comp_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_5_5           sounds/shelly/voiceover/campaign/Shelly_061_ed_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_5_6           sounds/shelly/voiceover/campaign/Shelly_062_a_splice_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_5_7           sounds/shelly/voiceover/campaign/Shelly_063_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_5_8           sounds/shelly/voiceover/campaign/Shelly_056_a_splice_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_5_9           sounds/shelly/voiceover/campaign/Shelly_059_comp_ed.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_5_10          sounds/shelly/voiceover/campaign/Shelly_060_splice.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_5_11          sounds/shelly/voiceover/campaign/Shelly_064_splice_ed.ogg                  0       0       255     4       0
+definesound S_SHELLYVO_5_12          sounds/shelly/voiceover/campaign/Shelly_065_b_splice_ed2.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_5_13          sounds/shelly/voiceover/campaign/Shelly_066_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_5_14          sounds/shelly/voiceover/campaign/Shelly_126_comp.ogg	                  0       0       255     4       0
+
+
+definesound S_SHELLYVO_6_10          sounds/shelly/voiceover/campaign/Shelly_077_splice_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_6_1           sounds/shelly/voiceover/campaign/Shelly_067_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_6_2           sounds/shelly/voiceover/campaign/Shelly_068_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_6_3           sounds/shelly/voiceover/campaign/Shelly_071_comp_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_6_4           sounds/shelly/voiceover/campaign/Shelly_072_a_comp_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_6_5           sounds/shelly/voiceover/campaign/Shelly_073_comp.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_6_6           sounds/shelly/voiceover/campaign/Shelly_074_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_6_8           sounds/shelly/voiceover/campaign/Shelly_075_comp_ed.ogg	                  0       0       255     4       0
+definesound S_SHELLYVO_6_9           sounds/shelly/voiceover/campaign/Shelly_076_comp_ed.ogg	                  0       0       255     4       0
+
+definesound S_SHELLYVO_7_1           sounds/shelly/voiceover/campaign/Shelly_078_a_splice_comp.ogg	                  0       0       255     4       0
+
+
+
+definesound S_FANFARE                   sounds/fanfare.ogg                                              0       0       255     0       0
+
+definesound S_WILDLIFE_FROG1            sounds/env/wildlife/frog_ribbit.ogg                             0       0       100     0       0
+definesound S_WILDLIFE_FROG2            sounds/env/wildlife/frog_ribbit_alt.ogg                         0       0       100     0       0
+definesound S_WILDLIFE_FROG3            sounds/env/wildlife/frog_ribbit_alt2.ogg                        0       0       100     0       0
+definesound S_WILDLIFE_OWLHOOT          sounds/env/wildlife/owl_hoot.ogg                                0       0       100     0       0
+definesound S_WILDLIFE_CRICKET          sounds/env/wildlife/cricket.ogg                                 0       0       100     0       0
+definesound S_WILDLIFE_GUSTLEAVES       sounds/env/wildlife/gust_leaves.ogg                             0       0       100     0       0
+definesound S_WILDLIFE_JUNGLE           sounds/env/wildlife/jungle_loop.ogg                             0       0       100     2       0
+definesound S_WILDLIFE_SWAMP            sounds/env/wildlife/swamp_loop.ogg                              0       0       100     2       0
+definesound S_WILDLIFE_TROPICAL         sounds/env/wildlife/tropical_loop.ogg                           0       0       100     2       0
+definesound S_LOCKDOWN_ON_ANNOUNCE        sounds/temp/lockdown.ogg                                      0       0       100     0       0
+
+
+
+appendevent EVENT_OPENMENUSOUND
+    set RETURN S_DOOR_CLANK_HUGE
+endevent
+var sndtmp
+var sndtmp2
+appendevent EVENT_SOUND
+    ifand player[].gm MODE_MENU
+    {
+        switch RETURN
+            case 0 // select (up down)
+                set RETURN S_SWITCH_LEVER02
+                break
+            case 243 // close
+                set RETURN S_IMPACT_REV
+                getp .sound_pitch sndtmp2
+                setp .sound_pitch 1024
+                screensound S_DOOR_CLANK_HUGE
+                setp .sound_pitch sndtmp2
+                break
+            case 2 // enter new menu
+            case 107
+            case 195
+            case 196
+            case 197
+            case 199
+            case 226
+            case 227
+                set RETURN S_DOOR_CLANK_HUGE
+                break
+            case 213
+                set RETURN -1
+                break
+        endswitch
+
+    }
+    else
+    {
+        ifand tiledata[sprite.picnum].gameflags 32
+        {
+            switch RETURN 
+                case S_CULTIST_ROAM1
+                case S_CULTIST_ROAM2
+                case S_CULTIST_ROAM3
+                case S_CULTIST_CHAT1
+                case S_CULTIST_CHAT2
+                case S_CULTIST_CHAT3
+                case S_CULTIST_FIRE1
+                case S_CULTIST_RECOG1
+                case S_CULTIST_RECOG2
+                case S_CULTIST_RECOG3
+                case S_CULTIST_FEAR1
+                case S_CULTIST_FEAR2
+                case S_SHOTGUNNER_ROAM1
+                case S_SHOTGUNNER_ROAM2
+                case S_SHOTGUNNER_ROAM3
+                case S_SHOTGUNNER_CHAT1
+                case S_SHOTGUNNER_CHAT2
+                case S_SHOTGUNNER_CHAT3
+                case S_SHOTGUNNER_FIRE1
+                case S_SHOTGUNNER_RECOG1
+                case S_SHOTGUNNER_RECOG2
+                case S_SHOTGUNNER_RECOG3
+                case S_SHOTGUNNER_FEAR1
+                case S_SHOTGUNNER_FEAR2
+                case S_GREATER_ASCEND
+                case S_GREATER_FLESHBAG
+                case S_GREATER_KILL
+                case S_GREATER_MINE
+                case S_GREATER_UNCLEAN
+                    ife sound_enemy_buffer[RETURN] 0
+                        setarray sound_enemy_buffer[RETURN] 255
+                    else
+                        set RETURN -1
+                    break
+                default
+                    ifg RETURN 511
+                    {
+                        ifl RETURN 658
+                        {
+                            add enemy_max_stepsounds 1
+                            ifg enemy_max_stepsounds ENEMY_MAXSTEPS
+                                set RETURN -1
+                        }
+                    }
+                    break
+            endswitch
+        }
+        switch RETURN
+            case 2
+            case 14
+            case 18
+            case 20
+            case 22
+            case 23
+            case 24
+            case 25
+            case 36
+            case 40
+            case 42
+            case 48
+            case 81
+            case 200
+            case 211
+            case 212
+            case 213
+            case 245
+            case 3000
+                set RETURN -1
+                break
+            case 71
+            case 73
+                ifactor SECTOREFFECTOR
+                {
+                    ife sprite.lotag 17
+                    {
+                        set db_temp RETURN
+                        set RETURN -1
+                    }
+                }
+                break
+            case 158
+                ifactor A_MECHSECT
+                    nullop
+                else
+                    set RETURN -1
+                break
+            case 209
+                ife nogrunting 1
+                    set RETURN -1
+                else ifn p_eol 0
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCH1
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCH2
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCH3
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCH4
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCH5
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCH6
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCH7
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCH8
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCHTALK1
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCHTALK2
+                    set RETURN -1
+                else
+                {
+                    set sndtmp S_SHELLY_SEARCH8
+                    sub sndtmp S_SHELLY_SEARCH1
+                    rand RETURN sndtmp
+                    add RETURN S_SHELLY_SEARCH1
+                }
+                break
+            case 207
+                ife nogrunting 1
+                    set RETURN -1
+                else ifn p_eol 0
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCHTALK1
+                    set RETURN -1
+                else ifactorsound player[].i S_SHELLY_SEARCHTALK2
+                    set RETURN -1
+                else
+                {
+                    stopactorsound player[].i S_SHELLY_SEARCH1
+                    stopactorsound player[].i S_SHELLY_SEARCH2
+                    stopactorsound player[].i S_SHELLY_SEARCH3
+                    stopactorsound player[].i S_SHELLY_SEARCH4
+                    stopactorsound player[].i S_SHELLY_SEARCH5
+                    stopactorsound player[].i S_SHELLY_SEARCH6
+                    stopactorsound player[].i S_SHELLY_SEARCH7
+                    stopactorsound player[].i S_SHELLY_SEARCH8
+                    rand RETURN 1
+                    add RETURN S_SHELLY_SEARCHTALK1
+                }
+                break
+        endswitch
+        ife player[].gm 0
+            nullop
+        else ifg p_eol 0
+        {
+            ifn sprite[].picnum APLAYER
+                set RETURN -1
+        }
+    }
+endevent

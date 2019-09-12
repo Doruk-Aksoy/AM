@@ -1,0 +1,48 @@
+
+appendevent EVENT_HOLODUKEON
+    setvar RETURN -1
+endevent
+appendevent EVENT_USEJETPACK
+    setvar RETURN -1
+endevent
+
+appendevent EVENT_USESTEROIDS
+    setvar RETURN -1
+endevent
+appendevent EVENT_USEJETPACK
+    setvar RETURN -1
+endevent
+appendevent EVENT_USEMEDKIT
+    setvar RETURN -1
+    ifg player[].firstaid_amount 0 ifl sprite[player[].i].extra player[].max_player_health ife p_eol 0
+    {
+        palfrom 15 5 32 5
+        addphealth MEDKIT_HEALTHAMOUNT
+        getp[].firstaid_amount temp
+        sub temp 1
+        setp[].firstaid_amount temp
+        set flash_medkit 3
+        globalsound S_ITEM_HEALTH
+        stopactorsound player[].i S_SHELLY_SEARCHTALK1
+        stopactorsound player[].i S_SHELLY_SEARCHTALK2
+    }
+endevent
+appendevent EVENT_USENIGHTVISION
+    setvar RETURN -1
+    ifg player[].heat_amount 0 ifl p_pup_radar_time 60
+    {
+        palfrom 15 5 32 5
+        set p_pup_radar_time 300
+        getp[].heat_amount temp
+        sub temp 1
+        setp[].heat_amount temp
+        set flash_radar 3
+        setp .sound_pitch -128
+        globalsound S_MINIGUN_PULSE
+        setp .sound_pitch 600
+        globalsound S_MELEE_THUD02
+        setp .sound_pitch 0
+        stopactorsound player[].i S_SHELLY_SEARCHTALK1
+        stopactorsound player[].i S_SHELLY_SEARCHTALK2
+    }
+endevent

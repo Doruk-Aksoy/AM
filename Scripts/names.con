@@ -1,0 +1,1368 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:                                                   
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#  
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, and Evan Ramos
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file contains text labels for most of the programmed objects in the game.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+define SECTOREFFECTOR                   1
+define ACTIVATOR                        2
+define TOUCHPLATE                       3
+define ACTIVATORLOCKED                  4
+define MUSICANDSFX                      5
+define LOCATORS                         6
+define CYCLER                           7
+define MASTERSWITCH                     8
+define RESPAWN                          9
+define GPSPEED                          10
+define FRAMEEFFECT1                     4095
+define DS                               5891
+
+define APLAYER                          1405
+
+define STARTALPHANUM                    2822
+define BIGALPHANUM                      2940
+define MINIFONT                         3072
+
+define HUBSECTION_OLD                   1409
+define A_EXPLOSION_FX                   1247
+define A_EXPLOSION_RELAY                1249
+define HUBSECTION                       5904
+define A_DO_NOT_RENDER                  5886
+define A_LOCKSOUND                      5887
+define A_LADDER                         5888
+define A_CLIP_BARRIER                   5889
+define A_PARTICLE_SPAWNER               5890
+define A_EOL                            5892
+define A_HESKELCAST			5894
+define A_WAYPOINT                       5895
+define A_TOUCHPLATE_PLUS                5896
+define A_MUSICFX_PLUS                   5897
+define A_SOUND_EMITTER                  5899
+define A_LIGHT_FX                       5900
+define A_PROXIMITY_SENSOR               5901
+define A_DIALOG_TRIGGER                 5902
+define A_MOVEGO                         5903
+define A_AUTOSAVE                       5905
+define A_GTFO                           5906
+define A_EGTFO                          5932
+define A_TOILET_FX                      5907
+define A_TAINTED_SECTOR                 5908
+define A_SECRETS_LEFT                   5893
+define A_KILLER_FALL                    5909
+define A_SHOOTER                        5910
+define A_KILLEMALL                      5911
+define A_SECRET                         5912
+define A_SHELLYSOUND                    5913
+define A_BIGHORDEMODE                   5914
+define A_NEWRESPAWN                     5915
+define A_MUSICBEAST                     5916
+define A_QUOTEBUSTER                    5917
+define A_BOX_FX                         5931
+define T_VIEWSCREEN                     502
+
+define T_LOVERBOY_IDLE                  6912
+define P_LOVERBOY                       6912
+define T_LOVERBOY_MUZZLE                6070
+define P_FIREBALL                       6712
+define T_BOWLINGBOMB_IDLE               6940
+define P_BOWLINGBOMB                    6786
+define T_CROSSBOW                       6060
+define P_PLASMA_BOLT                    5946
+define T_MINIGUN_IDLE                   6034
+define T_MINIGUN_IDLE_BARREL            6035
+define T_MINIGUN_IDLE_BELT              6042
+define P_MINIGUN                        5933
+define T_MINIGUN_MUZZLE                 6075
+define T_MINIGUN_BLUR_BARREL            6082
+define T_MINIGUN_BLUR_BELT              6089
+define T_SMG_IDLE                       6006 // 5940
+define P_SMG                            6006 // 5940
+define P_SMG2                           5846
+define T_SMG_MUZZLE                     6072
+define P_TURRET                         7261
+define T_FANNING_HAND                   5938
+define P_FLAMER                         6850
+define P_BOMBETTE                       6806
+define T_SHOTGUN_IDLE                   5954
+define P_SHOTGUN                        5954
+define T_SHOTGUN_MUZZLE                 6071
+define P_GRENADE                        7834
+define T_SHOCKER                        6987
+define T_SHOCKER_HAND                   6983
+define P_SHOCKER                        6987
+define P_NAPALM_BALL                    12905
+define A_NAPALM_FLAME                   7781
+define A_NAPALM_BURST                   12911
+define P_DANCINGQUEEN                   11720
+define P_ACIDYSPIT                      7359
+define A_ACIDYSPIT_TRAIL                7358
+define A_ACIDYSPIT_SPLASH               7368
+define P_MINIMISSILE                    12021
+define P_FLAMINGSKULL                   13120
+define P_DSLAM_THROWN                   6953
+define P_DSLAM_PLACED                   6957
+define T_DSLAM_THROW_IDLE               5783
+define T_DSLAM_PLACE_IDLE               5779
+define P_DART                           5869
+define T_DART_HAND                      5250
+define P_EXPLOSION_SPARK                6817
+define A_EXPLOSION_SPARK                6815
+
+define T_ACCESSHAND                     6951
+define T_IDLE_HAND                      5620
+
+define T_GUNTESTER                      6035
+
+define A_BOMB_ATTRACT                   6797
+
+define A_GENERIC_PARTICLE               6711
+define A_GENERIC_BLOODSPLAT             6715
+define A_GENERIC_BLOODSPLATTER          6896
+define A_GENERIC_DEBRIS                 6722
+define A_FOOTPRINT_1                    6905
+define A_FOOTPRINT_2                    6906
+define A_FOOTPRINT_3                    6907
+define A_FOOTPRINT_4                    6908
+define BULLET                           2595
+define EXPLOSION                        1670
+define A_SPARK1                         6696
+define A_SMOKE1                         6703
+define A_SMOKE2                         8440
+define P_SMOKE2                         8441
+define A_FIRECYCLONE                    7765
+define A_BULLETHOLE                     6710
+define A_BULLETHOLE_GLASS               7064
+define A_BULLETHOLE_METAL               7065
+define A_BULLETHOLE_TILE                7066
+define A_BULLETHOLE_WOOD                7067
+define A_BULLETHOLE_STONE               7068
+define A_BULLETHOLE_FABRIC              7162
+define A_EXPLOSION                      6849
+define A_EXPLOSION_BOTTOM               6893
+define A_RAINSPRITE                     6880
+define A_RAINRIPPLE                     6887
+define P_BLOOD                          7128
+define A_LIGHTNINGBALL                  11968
+define A_ACID_POOL                      6136
+define A_TARGET_ICON                    6801
+
+define P_GIB_SPINE                      8464
+define P_GIB_SKULL                      8475
+define P_GIB_SKULL_LS                   12033
+define P_GIB_SKULL_GR                   12043
+define P_GIB_CHUNK1                     8486
+define P_GIB_INTESTINE                  8499
+define P_GIB_MEAT                       8508
+define P_GIB_LUNG                       8517
+define P_GIB_LIVER                      8526
+define P_GIB_CHUNK2                     8535
+define P_GIB_HEART                      8544
+define P_GIB_EYE                        8553
+define P_GIB_ARM                        12061
+define P_GIB_LEG_LS                     12053
+define P_GIB_LEG_GR                     12069
+define P_GIB_LEG_SECT                   7287
+
+define A_STRINGY_GUTS                   6903
+define A_STRINGY_GUTS2                  6904
+
+// SWITCHES
+
+define A_LIGHTSWITCH_ON                 3585
+define A_LIGHTSWITCH_OFF                3587
+define A_LIGHTSWITCH_BRK                3584
+
+define A_ELEVATOR_SWITCH_BRK            3583
+
+define A_ELEVATOR_DN_SWITCH_OFF         3588
+define A_ELEVATOR_DN_SWITCH_ON          3590
+
+define A_ELEVATOR_UP_SWITCH_OFF         3591
+define A_ELEVATOR_UP_SWITCH_ON          3593
+
+define A_DIPSWITCH_OFF                  3594
+define A_DIPSWITCH_ON                   3596
+define A_DIPSWITCH_BRK                  3580
+
+define A_ROTARYSWITCH_OFF               3597
+define A_ROTARYSWITCH_ON                3599
+define A_ROTARYSWITCH_BRK               3579
+
+define A_LEVERSWITCH_OFF                3600
+define A_LEVERSWITCH_ON                 3604
+define A_LEVERSWITCH_BRK                3578
+
+define A_ISOLATORSWITCH_OFF             3605
+define A_ISOLATORSWITCH_ON              3607
+define A_ISOLATORSWITCH_BRK             3577
+
+define A_BREAKERSWITCH_OFF              3608
+define A_BREAKERSWITCH_ON               3614
+
+define A_DIPSWITCH2_OFF                 3615
+define A_DIPSWITCH2_ON                  3617
+
+define A_PUSHBUTTONSWITCH_OFF           3618
+define A_PUSHBUTTONSWITCH_ON            3620
+define A_PUSHBUTTONSWITCH_BRK           3581
+
+define A_ROTARYSWITCH2_OFF              3621
+define A_ROTARYSWITCH2_ON               3623
+
+define A_LEVERSWITCH2_OFF               3624
+define A_LEVERSWITCH2_ON                3628
+
+define A_BREAKERSWITCH2_OFF             3629
+define A_BREAKERSWITCH2_ON              3635
+define A_BREAKERSWITCH2_BRK             3582
+
+define A_LEVERSWITCH3_OFF               3636
+define A_LEVERSWITCH3_ON                3642
+
+define A_ACCESSCARDSWITCH_SPAWN         7539
+define A_ACCESSCARDSWITCH_ON            7540
+define A_ACCESSCARDSWITCH_OFF           9237
+
+define A_ACCESSCARDSWITCH2_ON           10214
+define A_ACCESSCARDSWITCH2_OFF          10208
+
+define A_BATONSWITCH_OFF                10231
+define A_BATONSWITCH_ON                 10232
+define A_BATONSWITCH_TIMED              10215
+
+define A_VALVESWITCH_1                  3643
+define A_VALVESWITCH_1_CLOSE            3650
+define A_VALVESWITCH_1_BASE             3659
+define A_VALVESWITCH_2                  3651
+define A_VALVESWITCH_2_CLOSE            3658
+define A_VALVESWITCH_2_BASE             3660
+
+define A_CORDSWITCH_OFF                 3663
+define A_CORDSWITCH_ON                  3668
+
+define A_CRACKSWITCH_1                  7442
+define A_CRACKSWITCH_2                  7443
+define A_CRACKSWITCH_3                  7444
+define A_CRACKSWITCH_4                  7445
+define A_CRACKSWITCH_5                  7446
+
+define A_SECTOR_SWITCH                  3744
+define A_RELAY_MULTISWITCH              3745
+define A_COMBO_SEQUENCE_SWITCH          3746
+
+define T_SLIME                          6272
+
+define A_FIRE                           6829
+define A_FIRE2                          7000
+define A_FIRE2_SMG                      7001
+define A_FIRE_SPARK                     6816
+
+define T_PLUG                           6503
+
+define A_DROP                           7133
+
+define A_SHELL1                         6656
+define A_COIN1                          5625
+
+define T_SKYPORTAL                      6143
+define T_BLANK                          6134
+define T_RESERVED_SKYPORTAL             6135
+define T_FORCEFIELD                     10601
+define T_LADDER_1                       8280
+define T_LADDER_1_BROKE_1               9152
+define T_LADDER_1_BROKE_2               9153
+define T_LADDER_2                       8281
+define T_LADDER_3                       8282
+define T_LADDER_4                       8316
+define T_LADDER_5                       8317
+define T_LADDER_6                       8318
+
+define T_VENDING_MACHINE                9254
+define T_VENDING_MACHINE_VEND           5367
+define T_VENDING_MACHINE_DROP           5387
+define T_VENDING_MACHINE_END            5390
+define A_VENDBETWEEN                    5368
+
+define T_VENDING_MACHINE2                9260
+define T_VENDING_MACHINE2_VEND           5335
+define T_VENDING_MACHINE2_DROP           5355
+define T_VENDING_MACHINE2_END            5358
+define A_VENDBETWEEN2                    5336
+
+define T_BALLOON                        14111
+
+define A_URINAL                         9270
+
+define A_GIBBER                         7224
+
+define A_TURRET_BOTTOM                  7259
+define A_TURRET                         7260
+define A_TURRETDEAD                     7281
+define A_MECHSECT                       7300
+define A_MECHSECT_HANG                  7301
+define A_MECHSECT_DEAD1                 7349
+define A_MECHSECT_DEAD2                 7356
+define A_CULTIST                        12096 // 20000
+define A_CULTIST_STAYPUT                12097
+define A_CULTIST_CROUCH                 12192
+define A_CULTIST_DEAD                   12227
+define A_CULTIST_DEADHEAD               12255
+define A_CULTIST_GIBBED                 12249
+define A_GREATER                        12288
+define A_GREATER_STAYPUT                12289
+define A_GREATER_CROUCH                 12384
+define A_GREATER_DEAD1                  12426
+define A_GREATER_DEAD2                  12437
+define A_GREATER_GIBBED                 12459
+define A_SHOTGUNNER                     11796 // 12096
+define A_SHOTGUNNER_STAYPUT             11797 // 12096
+define A_SHOTGUNNER_CROUCH              11892 // 12096
+define A_SHOTGUNNER_DEAD                11927 // 12096
+define A_SHOTGUNNER_GIBBED              11949
+define A_SHOTGUNNER_DEADHEAD            11913
+define A_BRUTE                          12925
+define A_BRUTE_BOTTOM                   12930
+define A_BRUTE_BOTTOM_DEAD              12923
+define A_BRUTE_TOP                      12960
+define A_BRUTE_TOP_DEAD                 13094
+define A_DRONE                          11600
+define A_DIOPEDE_HEAD                   11540
+define A_DIOPEDE_BUTT                   11570
+define A_DEACON                         11450
+define A_DEACON_DEAD                    11512
+define A_ARCHANGEL                      13175
+define A_ARCHANGEL_DEAD                 13301
+define A_WENTEKO                        13350
+define A_WENTEKO_DEAD1                  13498
+define A_WENTEKO_DEAD2                  13486
+define A_NUKEMUTANT                     13600
+define A_NUKEMUTANT_RISE                13685
+define A_NUKEMUTANT_DEAD                13707
+define A_NUKEMUTANT_DEADHEAD            13698
+define A_NUKEMUTANT_GIBBED              13717
+define A_NUKEMUTANT_GDF                 13720
+define A_NUKEMUTANT_GDF_RISE            13785
+define A_NUKEMUTANT_GDF_DEAD            13807
+define A_NUKEMUTANT_GDF_GIBBED          13830
+define A_NUKEMUTANT_GDF_DEADHEAD        13837
+
+define A_PSEUDO_ENEMY                   11392
+define A_HESKEL_BOT                     13850
+
+define A_MECHBOSS_BOTTOM                12496
+define A_MECHBOSS_TOP                   12488
+
+define A_PRACTICE_TARGET                11425
+
+define I_BATON                          209
+define I_LOVERBOY                       210
+define I_LOVERBOY_AMMO                  211
+define I_MEDPACK                        212
+define I_MEDICOMP                       213
+define I_MEDKIT                         214
+define I_BULLETVEST                     215
+define I_ARMORVEST                      216
+define I_ACCESSCARD                     217
+define I_MINIGUN_AMMO                   218
+define I_PLASMACROSSBOW_AMMO            219
+define I_PLASMACROSSBOW                 220
+define I_MINIGUN                        221
+define I_CLUSTERPUCK                    222
+define I_TECHVEST                       223
+define I_SHOTGUN                        224
+define I_SHOTGUN_AMMO                   225
+define I_GRENADELAUNCHER_AMMO           226
+define I_SMG_AMMO                       227
+define I_ARMOR_SHARD                    228
+define I_LOVERBOY_AMMO2                 229
+define I_SMG                            230
+define I_GRENADELAUNCHER                231
+define I_BOWLINGBOMB_PICKUP             232 // easier for usermaps
+define I_SYRINGE                        233
+define I_HAZARDSUIT                     240
+define I_BOMBRUSH                       241
+define I_RADAR                          242
+define I_DKSHOES                        243
+define I_DAMAGEBOOSTER                  244
+define I_BOWLINGBOMB                    6800
+define I_PIZZA_6                        9930
+define I_PIZZA_5                        9931
+define I_PIZZA_4                        9932
+define I_PIZZA_3                        9933
+define I_PIZZA_2                        9934
+define I_PIZZA_1                        9935
+
+define A_SODA_DISPENSER                 5885
+define I_SODA                           9003
+define I_SODA_STAND                     9002
+
+define I_AMMOCRATE                      320
+
+define A_ROACH                          9981
+define A_ROACH_CONTROLLER               9982
+
+define A_RESPAWNICON                    5610
+
+define A_GDF_BODY_1                     11367
+define A_GDF_BODY_2                     11368
+define A_GDF_BODY_3                     11369
+define A_GDF_BODY_4                     11370
+define A_GDF_BODY_5                     11371
+define A_GDF_BODY_6                     11372
+define A_GDF_BODY_7                     11373
+define A_GDF_BODY_8                     11374
+define A_GDF_BODY_9                     11375
+define A_GDF_BODY_10                    11376
+define A_GDF_BODY_11                    11377
+
+define A_CIV_BODY_1						11378
+define A_CIV_BODY_2                     11379
+define A_CIV_BODY_3                     11380
+define A_CIV_BODY_4                     11381
+define A_CIV_BODY_5                     11382
+define A_CIV_BODY_6                     11383
+define A_CIV_BODY_7                     11384
+define A_CIV_BODY_8                     11385
+define A_CIV_BODY_9                     11386
+define A_CIV_BODY_10                    11387
+define A_CIV_BODY_11                    11388
+define A_CIV_BODY_12                    11389
+define A_CIV_BODY_13                    11390
+define A_CIV_BODY_14                    11391
+
+define A_CIV_BODY_15                    11431
+define A_CIV_BODY_16                    11432
+define A_CIV_BODY_17                    11433
+define A_CIV_BODY_18                    11434
+define A_CIV_BODY_19                    11435
+define A_CIV_BODY_20                    11436
+define A_CIV_BODY_21                    11437
+define A_CIV_BODY_22                    11438
+define A_CIV_BODY_23                    11439
+define A_CIV_BODY_24                    11440
+define A_CIV_BODY_25                    11441
+define A_CIV_BODY_26                    11442
+define A_CIV_BODY_27                    11443
+define A_CIV_BODY_28                    11444
+
+
+define A_GENERIC_GIB_SPLASH             11398
+define A_GENERIC_GIB_BODY               11401
+
+// Lights
+
+define A_CAGELIGHT_1_ON                 11268
+define A_CAGELIGHT_1_OFF                11269
+define A_CAGELIGHT_2_ON                 11270
+define A_CAGELIGHT_2_OFF                11271
+define A_CAGELIGHT_3_ON                 11272
+define A_CAGELIGHT_3_OFF                11273
+
+// define T_LIGHT_1_OFF                    8294
+// define T_LIGHT_1_ON                     8295
+// define T_LIGHT_1_BROKE                  8296
+// define T_LIGHT_2_OFF                    8297
+// define T_LIGHT_2_ON                     8298
+// define T_LIGHT_2_BROKE                  8299
+// define T_LIGHT_3_OFF                    8702
+// define T_LIGHT_3_ON                     8703
+// define T_LIGHT_3_BROKE                  8704
+// define T_LIGHT_4_OFF                    8705
+// define T_LIGHT_4_ON                     8706
+// define T_LIGHT_4_BROKE                  8707
+// define T_LIGHT_5_OFF                    8708
+// define T_LIGHT_5_ON                     8709
+// define T_LIGHT_5_BROKE                  8710
+// define T_LIGHT_6_OFF                    8711
+// define T_LIGHT_6_ON                     8712
+// define T_LIGHT_6_BROKE                  8713
+// define T_LIGHT_7_OFF                    8714
+// define T_LIGHT_7_ON                     8715
+// define T_LIGHT_7_BROKE                  8716
+// define T_LIGHT_8_OFF                    8717
+// define T_LIGHT_8_ON                     8718
+// define T_LIGHT_8_BROKE                  8719
+// define T_LIGHT_9_OFF                    8720
+// define T_LIGHT_9_ON                     8721
+// define T_LIGHT_9_BROKE                  8722
+// define T_LIGHT_10_OFF                   8723
+// define T_LIGHT_10_ON                    8724
+// define T_LIGHT_10_BROKE                 8725
+// define T_LIGHT_11_OFF                   8726
+// define T_LIGHT_11_ON                    8727
+// define T_LIGHT_11_BROKE                 8728
+// define T_LIGHT_12_OFF                   8730
+// define T_LIGHT_12_ON                    8731
+// define T_LIGHT_12_BROKE                 8732
+// define T_LIGHT_13_OFF                   8733
+// define T_LIGHT_13_ON                    8734
+// define T_LIGHT_13_BROKE                 8735
+// define T_LIGHT_14_OFF                   8736
+// define T_LIGHT_14_ON                    8737
+// define T_LIGHT_14_BROKE                 8738
+// define T_LIGHT_15_OFF                   8777
+// define T_LIGHT_15_ON                    8778
+// define T_LIGHT_15_BROKE                 8779
+
+// Vents
+
+define A_VENT_BREAKABLE                 6426
+define A_VENT_BROKE                     6427
+define T_GRATE                          6490
+define T_GRATEBROKE                     6491
+define T_FAN                            6492
+// define T_FAN_IDLE                       6493
+define T_FANBROKE                       6496
+
+define A_BLIND_1_CLOSED                 8255
+define A_BLIND_1_OPENED                 8257
+define A_BLIND_2_CLOSED                 10249
+define A_BLIND_2_OPENED                 10251
+define A_BLIND_3_CLOSED                 10253
+define A_BLIND_3_OPENED                 10255
+
+define A_BLIND_1_BROKE                  8254
+define A_BLIND_2_BROKE                  10248
+define A_BLIND_3_BROKE                  10252
+
+// // Glass windows
+
+define A_GLASS_WINDOW_1                 6223
+define A_GLASS_WINDOW_2                 6224
+define A_GLASS_WINDOW_3                 6502
+
+// define A_GLASS_WINDOW_1_BROKE           8124
+// define A_GLASS_WINDOW_3_BROKE           8126
+
+define A_CUBEGLASS_1                  6395
+define A_CUBEGLASS_2                  7943
+
+define A_GLASS_DECO_1                8031
+define A_GLASS_DECO_2                8034
+define A_GLASS_DECO_3                8037
+define A_GLASS_DECO_4                8040
+define A_GLASS_DECO_5                8043
+define A_GLASS_DECO_6                8046
+define A_GLASS_DECO_7                8049
+define A_GLASS_DECO_8                8052
+define A_GLASS_DECO_9                8055
+define A_GLASS_DECO_10               8058
+define A_GLASS_DECO_11               8061
+define A_GLASS_DECO_12               8064
+define A_GLASS_DECO_13               8067
+define A_GLASS_DECO_14               8070
+define A_GLASS_DECO_15               8121
+define A_GLASS_DECO_16               8134
+define A_GLASS_DECO_17               8137
+define A_GLASS_DECO_18               8140
+define A_GLASS_DECO_19               8143
+define A_GLASS_DECO_20               8146
+define A_GLASS_DECO_21               8148
+define A_GLASS_DECO_22               8207
+define A_GLASS_DECO_23               8208
+define A_GLASS_DECO_21_NOBREAK       8156
+
+define A_GLASS_DECO_1_BROKE          8032
+define A_GLASS_DECO_2_BROKE          8035
+define A_GLASS_DECO_3_BROKE          8038
+define A_GLASS_DECO_4_BROKE          8041
+define A_GLASS_DECO_5_BROKE          8044
+define A_GLASS_DECO_6_BROKE          8047
+define A_GLASS_DECO_7_BROKE          8050
+define A_GLASS_DECO_8_BROKE          8053
+define A_GLASS_DECO_9_BROKE          8056
+define A_GLASS_DECO_10_BROKE         8059
+define A_GLASS_DECO_11_BROKE         8062
+define A_GLASS_DECO_12_BROKE         8065
+define A_GLASS_DECO_13_BROKE         8068
+define A_GLASS_DECO_14_BROKE         8071
+define A_GLASS_DECO_15_BROKE         8122
+define A_GLASS_DECO_16_BROKE         8135
+define A_GLASS_DECO_17_BROKE         8138
+define A_GLASS_DECO_18_BROKE         8141
+define A_GLASS_DECO_19_BROKE         8144
+define A_GLASS_DECO_20_BROKE         8147
+define A_GLASS_DECO_21_BROKE         8149
+define A_GLASS_DECO_22_BROKE         8130
+define A_GLASS_DECO_23_BROKE         8132
+
+// // Glass panels
+
+define A_GLASS_PANEL                    6468
+define A_GLASS_PANEL_2                  9940
+define A_GLASS_PANEL_3                  9942
+define A_GLASS_PANEL_4                  10139
+
+// define A_TRAIN_GLASS_WIN_1              8098
+// define A_TRAIN_GLASS_WIN_2              8102
+// define A_CAR_GLASS_WIN_1                9523
+// define A_BOOTH_GLASS_WIN_31             9280
+// define A_BOOTH_GLASS_WIN_32             9285
+// define A_BUS_GLASS_WIN_1_34             9692
+// define A_BUS_GLASS_WIN_2                9696
+
+// for reference
+// define A_GLASS_PANEL_BROKE_1            6110
+// define A_GLASS_PANEL_BROKE_2            6111
+// define A_GLASS_PANEL_BROKE_3            6112
+// define A_GLASS_PANEL_BROKE_4            6113
+// define A_GLASS_PANEL_2_BROKE            8153
+// define A_GLASS_PANEL_3_BROKE            8155
+// define A_GLASS_PANEL_4_BROKE            10137
+// define A_TRAIN_GLASS_WIN_1_BROKE        8099
+// define A_TRAIN_GLASS_WIN_2_BROKE        8103
+// define A_CAR_GLASS_WIN_1_BROKE          9524
+// define A_BOOTH_GLASS_WIN_31_BRK         9281
+// define A_BOOTH_GLASS_WIN_32_BRK         9286
+// define A_BUS_GLASS_WIN_1_BROKE          9693
+// define A_BUS_GLASS_WIN_2_BROKE          9697
+
+// elevator signs
+
+define A_ELEVATOR_OFF                     3669
+define A_ELEVATOR_HALT                    3670
+define A_ELEVATOR_G                       3671
+define A_ELEVATOR_O                       3672
+define A_ELEVATOR_L                       3673
+define A_ELEVATOR_H                       3674
+define A_ELEVATOR_DOWN                    3675
+define A_ELEVATOR_UP                      3686
+
+// Machinery
+
+define A_KEYBOARD_1                     6478
+define A_KEYBOARD_2                     6480
+define A_CASEPANEL_1                    6484
+define A_CASEPANEL_2                    7415
+define A_CASEPANEL_3                    7417
+define A_CASEPANEL_4                    7419
+define A_CASEPANEL_5                    7421
+define A_MONITOR_1_SIDE                 6488
+define A_SERVERSTACK_1                  6630
+define A_TECHPANEL_1                    7485
+define A_TECHPANEL_2                    7520
+define A_TECHPANEL_3                    7559
+define A_TRAFFIC_1                      8771
+define A_TRAFFIC_2                      8772
+define A_TRAFFIC_3                      8773
+define A_TRAFFIC_4                      8774
+define A_TRAFFIC_BROKE                  8775
+// define A_VENDING_1                      9250
+// define A_VENDING_2                      9254
+// define A_VENDING_3                      9260
+// define A_ATM                            9264
+// define A_COFFEE_MACHINE                 9273
+// define A_SCOREBOARD                     9967
+// define A_SCOREBOARD_2                   9968
+
+// define A_VENDING_1_BROKE                9251
+// define A_VENDING_2_BROKE                9255
+// define A_VENDING_3_BROKE                9261
+// define A_COFFEE_MACHINE_BROKE           9274
+// define A_SCOREBOARD_BROKE               9969
+
+define A_AUGMENTATION_PROP_1            11316
+define A_AUGMENTATION_PROP_2            11321
+define A_AUGMENTATION_PROP_3            11329
+define A_AUGMENTATION_PROP_4            11337
+define A_AUGMENTATION_PROP_5            11345
+define A_AUGMENTATION_PROP_6            11353
+
+define A_STATIC_MECHBOTTOM              12573
+define A_STATIC_MECHTOP                 12557
+define A_STATIC_ARCHANGEL               13225
+
+// Monitors
+
+define A_MONITOR_1                      6482
+define A_MONITOR_1_BROKE                6483
+define A_MONITOR_2                      6506 // h
+define A_MONITOR_2_3_BROKE              6514
+define A_MONITOR_3                      6515 // h
+define A_MONITOR_UNDEAD                 5761 // h
+define A_MONITOR_1_BROKE_2              7522
+define A_MONITOR_15                     7578
+define A_MONITOR_16                     7579
+define A_MONITOR_4                      7907
+define A_MONITOR_4_REAL                 7908
+define A_MONITOR_5                      7914 // h
+define A_MONITOR_6                      7915 // h
+define A_MONITOR_7                      7916 // h
+define A_MONITOR_8                      7917
+define A_MONITOR_9                      7922 // h
+define A_MONITOR_10                     7923 // h
+define A_MONITOR_11                     7924 // h
+define A_MONITOR_12                     7925 // h
+define A_MONITOR_13                     7926 // h
+define A_MONITOR_14                     7927 // h
+define A_MONITOR_17                     11137 // h
+define A_MONITOR_HESKEL                 11145 // DO NOT USE
+define A_MONITOR_HESKEL_R               11161 // DO NOT USE
+define A_MONITOR_HESKEL_LG              5734 // DO NOT USE
+define A_MONITOR_HESKEL_R_LG            5733 // DO NOT USE
+define A_MONITOR_STATIC                 11405
+define A_MONITOR_STATIC_LG              5729
+define A_HEALTH_MONITOR_OFF             10126
+define A_HEALTH_MONITOR                 10127
+define A_HEALTH_MONITOR_BRK             10132
+define A_MONITOR_2_3_BROKE_LG           5744 // h
+define A_MONITOR_2_LG                   5753 // h
+define A_MONITOR_3_LG                   5743 // h
+define A_MONITOR_17_LG                  5745 // h
+// define A_MONITOR_18                     10242
+define A_MONITOR_18                     14042
+define A_MONITOR_19                     14040
+define A_MONITOR_19_BRK                 14041
+define A_MONITOR_20                     14042
+define A_MONITOR_20_BRK                 14043
+// define A_HEALTH_MONITOR_2               10505
+
+// Vehicles
+
+// define T_TRAIN_1                        8076
+// define T_TRAIN_1_BROKE                  8077
+// define T_TRAIN_2                        8085
+// define T_TRAIN_2_BROKE                  8086
+// define T_TRAIN_3                        8087
+// define T_TRAIN_3_BROKE                  8088
+// define T_TRAIN_4                        8089
+// define T_TRAIN_4_BROKE                  8090
+// define T_TRAIN_5                        8091
+// define T_TRAIN_5_BROKE                  8092
+// define T_TRAIN_FRONT_1_OFF              8093
+// define T_TRAIN_FRONT_1_ON               8094
+// define T_TRAIN_FRONT_1_BROKE            8095
+// define T_TRAIN_DOOR_1                   8096
+// define T_TRAIN_DOOR_1_BROKE             8097
+// define T_TRAIN_DOOR_2                   8100
+// define T_TRAIN_DOOR_2_BROKE             8101
+// define T_TRAIN_SLOPE_2                  8106
+// define T_TRAIN_SLOPE_2_BROKE            8107
+// define T_TRAIN_SLOPE_3                  8108
+// define T_TRAIN_SLOPE_3_BROKE            8109
+// define T_TRAIN_SLOPE_4                  8110
+// define T_TRAIN_SLOPE_4_BROKE            8111
+// define T_TRAIN_SLOPE_5                  8112
+// define T_TRAIN_SLOPE_5_BROKE            8113
+// define T_TRAIN_SLOPE_6                  8114
+// define T_TRAIN_SLOPE_6_BROKE            8115
+// define T_TRAIN_SLOPE_7                  8116
+// define T_TRAIN_SLOPE_7_BROKE            8117
+// define T_TRAIN_SIDE_2                   8787
+// define T_TRAIN_SIDE_2_BROKE             8788
+// define T_TRAIN_SIDE_3                   8789
+// define T_TRAIN_SIDE_3_BROKE             8790
+// define T_TRAIN_SIDE_4                   8791
+// define T_TRAIN_SIDE_4_BROKE             8792
+// define T_TRAIN_SIDE_5                   8793
+// define T_TRAIN_SIDE_5_BROKE             8794
+// define T_TRAIN_SIDE_FRONT_1_OFF         8795
+// define T_TRAIN_SIDE_FRONT_1_ON          8796
+// define T_TRAIN_SIDE_FRONT_1_BRK         8797
+// define T_TRAIN_SIDE_1                   8798
+// define T_TRAIN_SIDE_1_BROKE             8799
+// define T_CAR_WIN_1                      9382
+// define T_CAR_WIN_1_BRK_1                9383
+// define T_CAR_WIN_1_BRK_2                9384
+// define T_CAR_WIN_1_BRK_3                9385
+// define T_CAR_WIN_1_BRK_4                9386
+// define T_WING_MIRROR_1_1                9393
+// define T_WING_MIRROR_1_2                9394
+// define T_WING_MIRROR_2_1                9396
+// define T_WING_MIRROR_2_2                9397
+// define T_CAR_1                          9412
+// define T_CAR_1_BROKE                    9413
+// define T_CAR_2                          9414
+// define T_CAR_2_BROKE                    9415
+// define T_CAR_3                          9420
+// define T_CAR_3_BROKE                    9421
+// define T_CAR_4                          9422
+// define T_CAR_4_BROKE                    9423
+// define T_CAR_5                          9424
+// define T_CAR_5_BROKE                    9425
+// define T_CAR_6                          9426
+// define T_CAR_6_BROKE                    9427
+// define T_CAR_7                          9428
+// define T_CAR_7_BROKE                    9429
+// define T_CAR_8                          9430
+// define T_CAR_8_BROKE                    9431
+// define T_CAR_9                          9432
+// define T_CAR_9_BROKE                    9433
+// define T_CAR_10                         9434
+// define T_CAR_10_BROKE                   9435
+// define T_CAR_FRONT_1_OFF                9440
+// define T_CAR_FRONT_1_ON                 9441
+// define T_CAR_FRONT_1_BROKE              9442
+// define T_CAR_BACK_1_OFF                 9443
+// define T_CAR_BACK_1_ON                  9444
+// define T_CAR_BACK_1_BROKE               9445
+// define T_CAR_FRONT_2_OFF                9446
+// define T_CAR_FRONT_2_ON                 9447
+// define T_CAR_FRONT_2_BROKE              9448
+// define T_CAR_BACK_2_OFF                 9449
+// define T_CAR_BACK_2_ON                  9450
+// define T_CAR_BACK_2_BROKE               9451
+// define T_CAR_FRONT_3_OFF                9452
+// define T_CAR_FRONT_3_ON                 9453
+// define T_CAR_FRONT_3_BROKE              9454
+// define T_CAR_BACK_3_OFF                 9455
+// define T_CAR_BACK_3_ON                  9456
+// define T_CAR_BACK_3_BROKE               9457
+// define T_CAR_FRONT_4_OFF                9458
+// define T_CAR_FRONT_4_ON                 9459
+// define T_CAR_FRONT_4_BROKE              9460
+// define T_CAR_BACK_4_OFF                 9461
+// define T_CAR_BACK_4_ON                  9462
+// define T_CAR_BACK_4_BROKE               9463
+// define T_CAR_FRONT_5_OFF                9464
+// define T_CAR_FRONT_5_ON                 9465
+// define T_CAR_FRONT_5_BROKE              9466
+// define T_CAR_BACK_5_OFF                 9467
+// define T_CAR_BACK_5_ON                  9468
+// define T_CAR_BACK_5_BROKE               9469
+// define T_CAR_WIN_4                      9480
+// define T_CAR_WIN_4_BROKE                9481
+// define T_CAR_WIN_5                      9482
+// define T_CAR_WIN_5_BROKE                9483
+// define T_CAR_WIN_6                      9484
+// define T_CAR_WIN_6_BROKE                9485
+// define T_CAR_WIN_7                      9486
+// define T_CAR_WIN_7_BROKE                9487
+// define T_CAR_DOOR_1                     9490
+// define T_CAR_DOOR_1_BROKE               9491
+// define T_CAR_WIN_8_OFF                  9492
+// define T_CAR_WIN_8_ON                   9493
+// define T_CAR_WIN_8_BROKE                9494
+// define T_CAR_WIN_9                      9500
+// define T_CAR_WIN_9_BROKE                9501
+// define T_CAR_WIN_10                     9502
+// define T_CAR_WIN_10_BROKE               9503
+// define T_CAR_WIN_11                     9504
+// define T_CAR_WIN_11_BROKE               9505
+// define T_CAR_WIN_12                     9506
+// define T_CAR_WIN_12_BROKE               9507
+// define T_CAR_WIN_13                     9508
+// define T_CAR_WIN_13_BROKE               9509
+// define T_CAR_11                         9540
+// define T_CAR_11_BROKE                   9541
+// define T_CAR_12                         9542
+// define T_CAR_12_BROKE                   9543
+// define T_CAR_FRONT_6_OFF                9550
+// define T_CAR_FRONT_6_ON                 9551
+// define T_CAR_FRONT_6_BROKE              9552
+// define T_CAR_FRONT_7_OFF                9553
+// define T_CAR_FRONT_7_ON                 9554
+// define T_CAR_FRONT_7_BROKE              9555
+// define T_CAR_FRONT_8_OFF                9556
+// define T_CAR_FRONT_8_ON                 9557
+// define T_CAR_FRONT_8_BROKE              9558
+// define T_CAR_FRONT_9_OFF                9559
+// define T_CAR_FRONT_9_ON                 9560
+// define T_CAR_FRONT_9_BROKE              9561
+// define T_CAR_BACK_6_OFF                 9562
+// define T_CAR_BACK_6_ON                  9563
+// define T_CAR_BACK_6_BROKE               9564
+// define T_CAR_BACK_7_OFF                 9565
+// define T_CAR_BACK_7_ON                  9566
+// define T_CAR_BACK_7_BROKE               9567
+// define T_CAR_PLATE_1                    9568
+// define T_CAR_PLATE_1_BROKE              9569
+// define T_CAR_DOOR_2                     9570
+// define T_CAR_DOOR_2_BROKE               9571
+// define T_CAR_DOOR_3                     9572
+// define T_CAR_DOOR_3_BROKE               9573
+// define T_CAR_WIN_14_OFF                 9580
+// define T_CAR_WIN_14_ON                  9581
+// define T_CAR_WIN_14_BROKE               9582
+// define T_CAR_WIN_15_OFF                 9583
+// define T_CAR_WIN_15_ON                  9584
+// define T_CAR_WIN_15_BROKE               9585
+// define T_CAR_PLATE_2                    9590
+// define T_CAR_PLATE_2_BROKE              9591
+// define T_CAR_PLATE_3                    9592
+// define T_CAR_PLATE_3_BROKE              9593
+// define T_CAR_WIN_2                      9600
+// define T_CAR_WIN_2_BRK_1                9601
+// define T_CAR_WIN_2_BRK_2                9602
+// define T_CAR_WIN_2_BRK_3                9603
+// define T_CAR_WIN_2_BRK_4                9604
+// define T_CAR_WIN_3                      9605
+// define T_CAR_WIN_3_BRK_1                9606
+// define T_BUS_DISPLAY                    9610
+// define T_BUS_DISPLAY_BROKE              9611
+// define T_BUS_DISPLAY_2                  9612
+// define T_BUS_DISPLAY_3                  9613
+// define T_BUS_DISPLAY_4                  9614
+// define T_BUS_DISPLAY_5                  9615
+// define T_BUS_DISPLAY_6                  9616
+// define T_BUS_DISPLAY_7                  9617
+// define T_BUS_DISPLAY_8                  9618
+// define T_BUS_DISPLAY_9                  9619
+// define T_BUS_FRONT_1_OFF                9632
+// define T_BUS_FRONT_1_ON                 9633
+// define T_BUS_FRONT_1_BROKE              9634
+// define T_BUS_1                          9640
+// define T_BUS_1_BROKE                    9641
+// define T_BUS_2                          9642
+// define T_BUS_2_BROKE                    9643
+// define T_BUS_3                          9644
+// define T_BUS_3_BROKE                    9645
+// define T_BUS_4                          9646
+// define T_BUS_4_BROKE                    9647
+// define T_BUS_FRONT_2_OFF                9650
+// define T_BUS_FRONT_2_ON                 9651
+// define T_BUS_FRONT_2_BROKE              9652
+// define T_BUS_BACK_1_OFF                 9653
+// define T_BUS_BACK_1_ON                  9654
+// define T_BUS_BACK_1_BROKE               9655
+// define T_BUS_FRONT_3_OFF                9656
+// define T_BUS_FRONT_3_ON                 9657
+// define T_BUS_FRONT_3_BROKE              9658
+// define T_BUS_BACK_2_OFF                 9659
+// define T_BUS_BACK_2_ON                  9660
+// define T_BUS_BACK_2_BROKE               9661
+// define T_BUS_DOOR_1                     9670
+// define T_BUS_DOOR_1_BROKE               9671
+// define T_BUS_DOOR_2                     9672
+// define T_BUS_DOOR_2_BROKE               9673
+// define T_BUS_DOOR_3                     9674
+// define T_BUS_DOOR_3_BROKE               9675
+// define T_BUS_DOOR_4                     9676
+// define T_BUS_DOOR_4_BROKE               9677
+// define T_CAR_WIN_16                     9680
+// define T_CAR_WIN_16_BROKE               9681
+// define T_BUS_DOOR_5                     9690
+// define T_BUS_DOOR_5_BROKE               9691
+// define T_BUS_DOOR_6                     9694
+// define T_BUS_DOOR_6_BROKE               9695
+// define T_BUS_DOOR_7                     9698
+// define T_BUS_DOOR_7_BROKE               9699
+// define T_BUS_DOOR_8                     9700
+// define T_BUS_DOOR_8_BROKE               9701
+// define T_BUS_DISPLAY_10                 9710
+// define T_BUS_DISPLAY_11                 9711
+// define T_BUS_DISPLAY_12                 9712
+// define T_BUS_DISPLAY_13                 9713
+// define T_BUS_DISPLAY_14                 9714
+// define T_BUS_DISPLAY_15                 9715
+// define T_BUS_DISPLAY_16                 9716
+// define T_BUS_DISPLAY_17                 9717
+// define T_CAR_SLOPE_1_BROKE              9779
+// define T_CAR_SLOPE_1                    9780
+// define T_CAR_WIN_SLOPE_1                9787
+// define T_CAR_WIN_SLOPE_1_BROKE          9788
+// define T_CAR_13                         9790
+// define T_CAR_13_BROKE                   9791
+// define T_CAR_14                         9792
+// define T_CAR_14_BROKE                   9793
+// define T_CAR_15                         9800
+// define T_CAR_15_BROKE                   9801
+// define T_CAR_16                         9802
+// define T_CAR_16_BROKE                   9803
+// define T_CAR_SIDE_1                     9804
+// define T_CAR_SIDE_1_BROKE               9805
+// define T_CAR_FRONT_SIDE_1_OFF           9806
+// define T_CAR_FRONT_SIDE_1_ON            9807
+// define T_CAR_FRONT_SIDE_1_BROKE         9808
+// define T_CAR_BACK_SIDE_3_OFF            9809
+// define T_CAR_BACK_SIDE_5_ON             9810
+// define T_CAR_BACK_SIDE_1_BROKE          9811
+// define T_CAR_FRONT_SIDE_2_OFF           9812
+// define T_CAR_FRONT_SIDE_2_ON            9813
+// define T_CAR_FRONT_SIDE_2_BROKE         9814
+// define T_CAR_BACK_SIDE_4_OFF            9815
+// define T_CAR_BACK_SIDE_6_ON             9816
+// define T_CAR_BACK_SIDE_2_BROKE          9817
+// define T_CAR_WIN_SIDE_1                 9818
+// define T_CAR_WIN_SIDE_1_BROKE           9819
+// define T_CAR_WIN_SIDE_2                 9822
+// define T_CAR_WIN_SIDE_2_BROKE           9823
+// define T_BUS_DISPLAY_SIDE               9824
+// define T_BUS_DISPLAY_SIDE_BROKE         9825
+// define T_BUS_FRONT_SIDE_1_OFF           9827
+// define T_BUS_FRONT_SIDE_1_ON            9828
+// define T_BUS_FRONT_SIDE_1_BROKE         9829
+// define T_BUS_FRONT_SIDE_2_OFF           9830
+// define T_BUS_FRONT_SIDE_2_ON            9831
+// define T_BUS_FRONT_SIDE_2_BROKE         9832
+// define T_BUS_BACK_SIDE_1_OFF            9833
+// define T_BUS_BACK_SIDE_1_ON             9834
+// define T_BUS_BACK_SIDE_1_BROKE          9835
+// define T_BUS_FRONT_SIDE_3_OFF           9836
+// define T_BUS_FRONT_SIDE_3_ON            9837
+// define T_BUS_FRONT_SIDE_3_BROKE         9838
+// define T_BUS_BACK_SIDE_2_OFF            9839
+// define T_BUS_BACK_SIDE_2_ON             9840
+// define T_BUS_BACK_SIDE_2_BROKE          9841
+// define T_CAR_WIN_SIDE_3                 9842
+// define T_CAR_WIN_SIDE_3_BROKE           9843
+// define T_CAR_DOOR_4                     9844
+// define T_CAR_DOOR_4_BROKE               9845
+// define T_BUS_DOOR_9                     9846
+// define T_BUS_DOOR_9_BROKE               9847
+// define T_BUS_DOOR_10                    9848
+// define T_BUS_DOOR_10_BROKE              9849
+// define T_BUS_DOOR_11                    9850
+// define T_BUS_DOOR_11_BROKE              9851
+// define T_BUS_DOOR_12                    9852
+// define T_BUS_DOOR_12_BROKE              9853
+
+// Wheels
+
+define A_TIRE1                          9333
+define A_TIRE7                          9337
+define A_TIRE2                          9339
+define A_TIRE8                          9343
+define A_TIRE3                          9345
+define A_TIRE9                          9349
+define A_TIRE4                          9351
+define A_TIRE10                         9355
+define A_TIRE5                          9357
+define A_TIRE11                         9361
+define A_TIRE6                          9363
+define A_TIRE12                         9367
+// define A_TIRE13                         9783
+
+// for reference
+// define A_TIRE1_BROKE                    9336
+// define A_TIRE7_BROKE                    9338
+// define A_TIRE2_BROKE                    9342
+// define A_TIRE8_BROKE                    9344
+// define A_TIRE3_BROKE                    9348
+// define A_TIRE9_BROKE                    9350
+// define A_TIRE4_BROKE                    9354
+// define A_TIRE10_BROKE                   9356
+// define A_TIRE5_BROKE                    9360
+// define A_TIRE11_BROKE                   9362
+// define A_TIRE6_BROKE                    9366
+// define A_TIRE12_BROKE                   9368
+// define A_TIRE13_BROKE                   9784
+
+// Paintings
+
+define A_FRAMED_PIC_1                   7537
+define A_FRAMED_PIC_2                   7538
+define A_FRAMED_PIC_3                   7591
+define A_FRAMED_PIC_4                   7594
+define A_FRAMED_PIC_1_BROKE             8861
+define A_FRAMED_PIC_2_BROKE             8863
+define A_FRAMED_PIC_3_BROKE             8865
+define A_FRAMED_PIC_4_BROKE             8867
+define A_FRAMED_PIC_5                   8868
+define A_FRAMED_PIC_5_BROKE             8869
+define A_FRAMED_PIC_6                   8870
+define A_FRAMED_PIC_6_BROKE             8871
+define A_FRAMED_PIC_7                   8872
+define A_FRAMED_PIC_7_BROKE             8873
+define A_FRAMED_PIC_8                   8874
+define A_FRAMED_PIC_8_BROKE             8875
+define A_FRAMED_PIC_9                   8876
+define A_FRAMED_PIC_9_BROKE             8877
+define A_FRAMED_PIC_10                  8878
+define A_FRAMED_PIC_10_BROKE            8879
+define A_FRAMED_PIC_11                  8880
+define A_FRAMED_PIC_11_BROKE            8881
+define A_FRAMED_PIC_12                  8882
+define A_FRAMED_PIC_12_BROKE            8883
+define A_FRAMED_PIC_13                  8884
+define A_FRAMED_PIC_13_BROKE            8885
+define A_FRAMED_PIC_14                  8886
+define A_FRAMED_PIC_14_BROKE            8887
+define A_FRAMED_PIC_15                  8888
+define A_FRAMED_PIC_15_BROKE            8889
+define A_FRAMED_PIC_16                  8890
+define A_FRAMED_PIC_16_BROKE            8891
+define A_FRAMED_PIC_17                  8892
+define A_FRAMED_PIC_17_BROKE            8893
+define A_FRAMED_PIC_18                  8894
+define A_FRAMED_PIC_18_BROKE            8895
+define A_FRAMED_PIC_19                  8896
+define A_FRAMED_PIC_19_BROKE            8897
+define A_FRAMED_PIC_20                  8898
+define A_FRAMED_PIC_20_BROKE            8899
+define A_FRAMED_PIC_21                  8940
+define A_FRAMED_PIC_21_BROKE            8941
+define A_FRAMED_PIC_22                  8942
+define A_FRAMED_PIC_22_BROKE            8943
+define A_FRAMED_PIC_23                  8944
+define A_FRAMED_PIC_23_BROKE            8945
+define A_FRAMED_PIC_24                  8946
+define A_FRAMED_PIC_24_BROKE            8947
+define A_FRAMED_PIC_25                  8948
+define A_FRAMED_PIC_25_BROKE            8949
+define A_FRAMED_PIC_26                  8950
+define A_FRAMED_PIC_26_BROKE            8951
+define A_FRAMED_PIC_27                  8952
+define A_FRAMED_PIC_27_BROKE            8953
+define A_FRAMED_PIC_28                  8954
+define A_FRAMED_PIC_28_BROKE            8955
+define A_FRAMED_PIC_29                  8958
+define A_FRAMED_PIC_29_BROKE            8959
+define A_FRAMED_PIC_30                  8960
+define A_FRAMED_PIC_30_BROKE            8961
+define A_FRAMED_PIC_31                  10980
+define A_FRAMED_PIC_31_BROKE            10981
+define A_FRAMED_PIC_32                  10982
+define A_FRAMED_PIC_32_BROKE            10983
+define A_FRAMED_PIC_33                  10984
+define A_FRAMED_PIC_33_BROKE            10985
+define A_FRAMED_PIC_34                  10986
+define A_FRAMED_PIC_34_BROKE            10987
+define A_FRAMED_PIC_35                  10988
+define A_FRAMED_PIC_35_BROKE            10989
+define A_FRAMED_PIC_36                  10990
+define A_FRAMED_PIC_36_BROKE            10991
+define A_FRAMED_PIC_37                  10992
+define A_FRAMED_PIC_37_BROKE            10993
+define A_FRAMED_PIC_38                  10994
+define A_FRAMED_PIC_38_BROKE            10995
+define A_FRAMED_PIC_39                  10996
+define A_FRAMED_PIC_39_BROKE            10997
+define A_FRAMED_PIC_40                  10998
+define A_FRAMED_PIC_40_BROKE            10999
+define A_FRAMED_PIC_41                  11000
+define A_FRAMED_PIC_41_BROKE            11001
+define A_FRAMED_PIC_42                  11002
+define A_FRAMED_PIC_42_BROKE            11003
+define A_FRAMED_PIC_43                  11004
+define A_FRAMED_PIC_43_BROKE            11005
+define A_FRAMED_PIC_44                  11006
+define A_FRAMED_PIC_44_BROKE            11007
+define A_FRAMED_PIC_45                  11008
+define A_FRAMED_PIC_45_BROKE            11009
+define A_FRAMED_PIC_46                  11010
+define A_FRAMED_PIC_46_BROKE            11011
+define A_FRAMED_PIC_47                  11012
+define A_FRAMED_PIC_47_BROKE            11013
+define A_FRAMED_PIC_48                  11014
+define A_FRAMED_PIC_48_BROKE            11015
+define A_FRAMED_PIC_49                  11016
+define A_FRAMED_PIC_49_BROKE            11017
+define A_FRAMED_PIC_50                  11018
+define A_FRAMED_PIC_50_BROKE            11019
+define A_FRAMED_PIC_51                  11020
+define A_FRAMED_PIC_51_BROKE            11021
+define A_FRAMED_PIC_52                  11022
+define A_FRAMED_PIC_52_BROKE            11023
+define A_FRAMED_PIC_53                  11024
+define A_FRAMED_PIC_53_BROKE            11025
+define A_FRAMED_PIC_54                  11026
+define A_FRAMED_PIC_54_BROKE            11027
+define A_FRAMED_PIC_55                  11028
+define A_FRAMED_PIC_55_BROKE            11029
+define A_FRAMED_PIC_56                  11030
+define A_FRAMED_PIC_56_BROKE            11031
+define A_FRAMED_PIC_57                  11032
+define A_FRAMED_PIC_57_BROKE            11033
+define A_FRAMED_PIC_58                  11034
+define A_FRAMED_PIC_58_BROKE            11035
+define A_FRAMED_PIC_59                  11036
+define A_FRAMED_PIC_59_BROKE            11037
+define A_FRAMED_PIC_60                  11038
+define A_FRAMED_PIC_60_BROKE            11039
+define A_FRAMED_PIC_61                  11040
+define A_FRAMED_PIC_61_BROKE            11041
+define A_FRAMED_PIC_62                  11042
+define A_FRAMED_PIC_62_BROKE            11043
+define A_FRAMED_PIC_63                  8962
+define A_FRAMED_PIC_63_BROKE            8963
+define A_FRAMED_PIC_64                  8956
+define A_FRAMED_PIC_64_BROKE            8957
+
+// // Misc objects
+
+define A_HAND_DRYER                     8020
+define A_SKYLIGHTNING                   9131
+define A_SKYBEAM                        9138
+define A_PAYPHONE                       9166
+define A_BIGASSFAN                      10280
+define A_BIGASSFAN_BLOODY               10304
+define A_BIGASSSAW                      11200
+define A_BIGASSSAW_BLOODY               11204
+define A_RIBBON                         11409
+define A_RIBBON_BLOW                    11413
+
+define A_NAPKIN_PAPER                   10959
+define A_TOILET_PAPER_SCRAP             9299
+define A_PAPER_TOWEL_SCRAP              9296
+
+define A_CAMERA                         621
+define A_CAMERA_2                       629
+define A_FIREEXT                        6540
+define A_GARBAGE                        6543
+define A_GARBAGE_DMG_1                  6544
+define A_GARBAGE_DMG_2                  6545
+define A_TRASHCAN_DMG_1                 6546
+define A_TRASHCAN_DMG_2                 6547
+define A_BUCKET_1                       6556
+define A_BROOM_1                        6557
+define A_PAPERTOWEL                     6564
+define A_CLOCK                          6565
+define A_CLOCKBROKE                     6566
+define A_TRASHCAN                       6569
+define A_MOP_1                          6582
+define A_GLASSCLEANER                   6583
+define A_DETERGENT                      6584
+define A_HANDSOAP                       6585
+define A_TOILETPAPER                    6612
+define A_GASCAN                         6620
+define A_HYDRANT_1                      7553
+define A_CHAIR_1                        7791
+define A_CHAIR_1_DMG                    7798
+define A_CHAIR_2                        7805
+define A_CHAIR_2_DMG                    7812
+define A_JUG_1                          7929
+define A_JUG_2                          7930
+define A_POTPLANT_1                     7932
+define A_POTPLANT_2                     10660
+define A_POTPLANT_3                     10661
+define A_POTPLANT_4                     10662
+define A_POTPLANT_5                     10663
+define A_REDSWINGLINE                   7934
+// define A_HYDRANT_2                      8614
+define A_CEILING_LAMP_OFF               8739
+define A_CEILING_LAMP_ON                8740
+define A_LAMP_OFF                       8741
+define A_LAMP                           8748
+define A_LAMP_FLOOR_OFF                 8755
+define A_LAMP_FLOOR                     8756
+// define A_STREET_LAMP_6_OFF              8978
+// define A_STREET_LAMP_6                  8979
+// define A_STREET_LAMP_6_BROKE            8980
+define A_STREET_LAMP_7_OFF              8982
+define A_STREET_LAMP_7                  8983
+define A_STREET_LAMP_7_BROKE            8984
+define A_STREETLAMP_5_OFF               8986
+define A_STREETLAMP_5                   8991
+define A_STREETLAMP_5_BROKE             8996
+// define A_TRASHCAN_OPEN                  9210
+// define A_TRASHCAN_OPEN_DMG_1            9211
+// define A_TRASHCAN_OPEN_DMG_2            9212
+define A_TRASHCAN_LID                   9213
+define A_GARBAGE_DEAD                   9221
+define A_TRASHCAN_DEAD                  9222
+define A_CHAIR_BOTTOM                   9223
+define A_CHAIR_BOTTOM_2                 9230
+// define A_MANNEQUIN_1                    9902
+// define A_MANNEQUIN_2                    9903
+// define A_MANNEQUIN_3                    9904
+// define A_DOLL_HEAD                      9911
+// define A_CAKE                           9916
+define A_TRASHBIN                       9918
+define A_DAVE                           12032
+// define A_BLIMP                          9965
+define A_SERUM_HANGER                   10110
+
+define A_RAKE                           5703
+define A_SHOVEL                         5704
+
+define A_BARSTOOL                       10949    //  25,25
+define A_STOOL                          10948    // 20,20
+define A_DART                           10976    // 13,12
+define T_DARTBOARD_SWITCH               10975    // 13,12
+define A_MEATGIB                        10977    // 16,14
+define A_BIGTHERMOS                     10952    // 16,15
+define A_TOGOCOFFEE                     10954    // 16,12
+define A_BURGER                         10958    // 14,14
+define A_FLATTRAY                       10969    // 18,18    CSTAT 32 (FLAT)
+define A_BLUESAUCE                      10955    // 15,12
+define A_LIGHTSAUCE                     10964    // 15,12
+define A_DARKSAUCE                      10963    //15,12
+define A_FRENCHFRIES                    10957    // 14,13
+define A_TOGOCOCK                       10953    // 16,15
+define A_TACO                           10979    // 14,10
+define A_HOTDOG                         10956    // 14,11
+define A_TOGOCHINESE                    10962    // 14,14
+define A_FLATTRAYPIC                    10970    // 18,18    CSTAT 32 (FLAT)
+define A_SAUSAGE                        10978    // 15,12
+define A_MCMONSTER                      10965    // 14,14
+define A_BURGERPATTY                    11290    // 14,14
+
+define A_PIZZA_LID                      9928
+define A_ARCADE_BUTTON                  14052
+define A_ARCADE_STICK_BASE              14054
+define A_ARCADE_STICK                   14056
+define A_MIKE                           14068
+
+// for reference
+// define A_FIREEXT_DMG                    6541
+// define A_HYDRANT_1_BROKE                7558
+// define A_HYDRANT_2_BROKE                8619
+
+// Barrels
+
+define A_BARREL_2                       7819
+define A_BARREL_1                       7824
+define A_BARREL_GIB                     7885
+define A_CANISTER_1                     7829
+// define A_BARREL_3                       7880
+define A_CANISTER_2                     8780
+define A_UNBREAKABLE                    9983
+define A_SHOCKCANISTER                  10147
+define A_SHOCKCANISTER_DMG              10153
+define A_SHOCKCANISTER_BROKE            10159
+
+// for reference
+// define A_BARREL_2_DMG_1                 7820
+// define A_BARREL_2_DMG_2                 7821
+// define A_BARREL_1_DMG_1                 7825
+// define A_BARREL_1_DMG_2                 7826
+// define A_CANISTER_1_DMG_1               7830
+// define A_CANISTER_1_DMG_2               7831
+// define A_UNBREAKABLE_DMG_1              9984
+// define A_UNBREAKABLE_DMG_2              9985
+// define A_SHOCKCANISTER_DMG              10153
+
+// Tableware
+
+define A_COFFEEPOT                      6550
+define A_BOTTLE_1                       6551
+define A_BOTTLE_2                       6552
+define A_SODA_1                         6553
+define A_TEACUP_1                       6554
+define A_COFFEEMUG_1                    6555
+define A_WATERGLASS_EMPTY               6558
+define A_WATERGLASS_FULL                6559
+define A_SHAKER_EMPTY                   6560
+define A_SHAKER_FULL_1                  6561
+define A_SHAKER_FULL_2                  6562
+define A_PLATE_DESSERT                  6563
+define A_PLATE                          6580
+define A_PLATE_STACK                    6581
+define A_BEAKER_1                       7928
+define A_BEAKER_2                       7933
+define A_BEAKER_3                       7931
+define A_BONG                           7935
+define A_BOTTLE_2_EMPTY                 8826
+define A_SODASIDE_1                     9069
+define A_BOTTLESIDE_1                   9082
+define A_MARTINIGLASS_EMPTY             9943
+define A_MARTINIGLASS_FULL              9944
+define A_CHAMPAGNEGLASS_EMPTY           9945
+define A_CHAMPAGNEGLASS_FULL            9946
+define A_WINEGLASS_EMPTY                9947
+define A_WINEGLASS_FULL                 9948
+define A_BEERGLASS_EMPTY                9949
+define A_BEERGLASS_FULL                 9950

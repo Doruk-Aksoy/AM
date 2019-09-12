@@ -1,0 +1,1652 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:                                                   
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#  
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, and Evan Ramos
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file contains many important global hooks, variables, and operations, as
+well as management of some otherwise complex functions. All scripts (CONs) are
+included from this file.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+
+var temp
+var temp2
+var temp3
+var temp4
+var temp5
+var temp6
+var temp7
+var temp8
+var temp9
+var itervar
+var episode_skip
+var bbomb_mode 0 GAMEVAR_NODEFAULT GAMEVAR_SERIALIZE
+var game_session_stat 0 GAMEVAR_NORESET GAMEVAR_SERIALIZE
+array gamestate 256
+array gamestate_temp 256
+
+var counter 0 2
+var counter2 0 2
+var counter3 0 2
+
+array walls_x 16384 GAMEARRAY_RESTORE
+array walls_y 16384 GAMEARRAY_RESTORE
+array tainted 4096 GAMEARRAY_RESTORE GAMEARRAY_BOOLEAN
+array e_gtfo 4096 GAMEARRAY_RESTORE GAMEARRAY_UINT8
+array gtfo 4096 GAMEARRAY_RESTORE GAMEARRAY_UINT8
+array sect_activator 4096 GAMEARRAY_RESTORE GAMEARRAY_BOOLEAN
+array sectpal 8193 GAMEARRAY_RESTORE GAMEARRAY_UINT8
+array wallpal 16384 GAMEARRAY_RESTORE GAMEARRAY_UINT8
+
+// for hitscans
+var h_ang // only needed because doing cos/sin on readonly vars causes a crash
+var h_zvel
+var h_cos
+var h_sin
+var hitsect
+var hitwall
+var hitsprite
+var hitx
+var hity
+var hitz
+var ref_hitsect -1 0
+var ref_hitx
+var ref_hity
+var ref_hitz
+var lam_hit -1 0
+var lam_hitx -1 0
+var lam_hity -1 0
+var lam_hitz -1 0
+var lam_hitsect -1 0
+var se_hitag 0 2
+var se_lotag 0 2
+var ps_flash 0 2
+var ps_flash_col -1 2
+var ps_master_id -1 2
+var enemy_init 0 2
+var enemy_init_z 0 2
+var enemy_ife 0 2
+var enemy_hz 0 2
+var enemy_hang 0 2
+var enemy_headsound 0 2
+var enemy_idle_count 0 2
+var enemy_shocked 0 2
+var enemy_gibbed 0 2
+var enemy_endoftheline -1 2
+var enemy_headache 0 2
+var enemy_shotgun_xv 0 2
+var enemy_shotgun_yv 0 2
+var enemy_crouched 0 2
+var enemy_smg_flame 0 2
+var enemy_smg_flame_id -1 2
+var enemy_dontsleep 0 2
+var enemy_minigun_dmg 0 2
+var e_us_count 0 2
+var ms_faller 0 2
+var smgf_temp
+var smgf_counter 0 2
+var spring_xv 0 2
+var spring_yv 0 2
+var spring_zv 0 2
+var georgemichael -1 0 // wake me up, before you go go (bad guys)
+var turret_match -1 2
+var ms_flashpal 0 2
+var fryall
+var skip_enter_autosave
+var skip_autosave 0 131072
+var nosavespam -1 0
+var weapon_switch_skip_reload 1 0
+var load_game
+var load_text 0 131072
+var early_use
+var curr_screen 0
+var curr_screen_count 0
+var curr_screen_o_count 0
+var curr_screen_totalclock 0
+var curr_screen_fade_count 0
+var intro_screen_do
+var outro_screen_do
+var outro_screen_stage
+var outro_screen_log -1 0
+var fly 0 131072 // debug, lets you fly around a map
+var skip_see 0 131072 // debug, skip seeing player on patrols
+var footloose 0 131072
+var pause_ai 0 131072
+var see_breadcrumbs 0 131072
+var last_see_breadcrumbs 0 131072
+var queued 0 2 // use this to mark objects as part of the sprite queue for safety reasons
+var heskel_sectnum -1
+
+var g_do_use_prompt 15 0
+var g_opaque_shelly 0 0 // set to 1 make shelly's view model non transparent
+
+var g_playtics 0 131072
+var g_timed_game 0 0 // kiosk mode = 1
+var g_version 3 0
+var need_eol
+var eol_stage
+var eol_relay
+var g_shot_crosshair 0 0
+var shot_cross_buns 0 1
+var cheevo_tracker 0 131072
+var c_256 0 131072
+var final_cheevos
+var old_cheevos
+
+// no more cyclone
+/* var cyclone_mod_xv 0 2
+var cyclone_mod_yv 0 2 */
+var particle_type 0 2
+var particle_force_pal 0 2
+var particle_force_shade 0 2
+var particle_shift_shade 0 2
+var particle_shift_repeat 0 2
+var particle_ignore_distance 0 2
+var particle_trigger
+
+var debris_type 0 2
+var debris_force_qstate 0 2
+var actor_moveable 0 2
+var actor_crack 0 2
+var actor_static 0 2
+var actor_gib 0 2
+var actor_moveable_xv 0 2
+var actor_moveable_yv 0 2
+var prop_barrel_type 0 2
+var prop_adjustmass 0 2
+var prop_noprop 0 2
+var prop_angvel 0 2
+var smoke_offset 0 2
+var explosion_nosmoke 0 2
+var explosion_silent 0 2
+var explosion_nospark 0 2
+var way_nearest -1 0
+var flash_medkit 0 1
+var flash_radar 0 1
+var flash_keycards
+var flash_ammo 0 1
+var flash_wasweaponammo 0 1
+var flash_hp 0 1
+var flash_armor 0 1
+var flash_weapons 0 1
+
+var actor_switch 0 2
+var actor_switch_usable 0 2
+var htzvel 0 2
+var dialog_trigger -1 0
+var hud_health 0 1
+var hud_armor 0 1
+var hud_ammo 0 1
+var hud_packs 0 1
+var hud_radar 0 1
+var hud_bombs 0 1
+var p_goodx 0 1
+var p_goody 0 1
+var p_goodz 0 1
+var p_goodsect -1 1
+var p_goodxv 0 1
+var p_goodyv 0 1
+var p_armor_type 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_roll_fast
+var p_entertime 0 1
+var p_quickbaton 0 1
+var p_quickbaton_last 0 1
+var p_secret_quote
+var p_secrets_area 0 131072
+var p_secrets_area_got 0 131072
+var p_secrets_show 0 1
+var p_lower_obj 0 1
+var p_pizza_health 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_pizza_count 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_airleft 390 131073
+var p_pup_bomb_time 0 131073
+var p_pup_bomb_before 0 131073
+var p_pup_bomb_ammo 0 131073
+var p_pup_bomb_got 0 131073
+var p_pup_old_kickback 0 131073
+var p_pup_reset_fire 0 131073
+var p_pup_radar_time 0 131073
+var p_pup_damage_time 0 131073
+var p_pup_jump_time 0 131073
+var p_ladder_last -1 1
+var p_add_ks 0 2
+var p_card_holdtime 0 1
+var crossbow_fire_amt 0 1
+var dialog_display
+var shakeitbaby
+var shakeitbabymed
+var shakeitbabylow
+var shakeitbabysm
+var shakeitbabysm_fu
+var shakeitbabysm_fu_c
+var shakeitbaby_killer
+var enemy_max_stepsounds
+var p_target
+var p_terminate_hs 0 1
+var p_target_count
+var p_eol
+var p_face_idle
+var p_face_angry
+var p_face_grin
+var p_footpal
+var splat_noblend 0 2
+var p_lastline 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_wantline
+var p_line_iskill
+var p_skiplastgib -1 GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_skiplastkill -1 GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_hazard_amount 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_firstgrenade 0 131073
+var p_idle_timer 0 131073
+var p_dontdie 0 1
+var p_whitefade 0 1
+var p_dragobj -1 1
+array sound_playback 4096 GAMEARRAY_BOOLEAN
+array sound_kill_buffer 4096 GAMEARRAY_UINT8
+array sound_enemy_buffer 4096 GAMEARRAY_UINT8
+var nogrunting
+var force_sndbuffer
+var force_kill_sndbuffer
+var myfavoriteguns
+var minigun -1 0
+
+var showtime
+var begin_world_tics
+var end_world_tics
+var show_debug_menu 0 1
+var this_timer
+var this_timer_buffer
+var stagger_update
+
+var begin_display_tics
+var end_display_tics
+
+var db_temp 0 2
+var db_odd 0 2
+var db_once 0 2
+var debris_add_size 0 2
+var debris_add_vel 0 2
+var dwall_temp
+var is_pickup 0 2
+
+var weapon1_realclip 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var weapon1_cleared 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var weapon2_realclip 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var weapon3_realclip 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var weapon6_realclip 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var weapon7_realclip 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+
+var need_spot_sound 0 2
+
+include scripts/tokens.con
+
+var p_end_game_time WHITEFADE_TIME 0
+array walls_field 16384 GAMEARRAY_RESTORE GAMEARRAY_UINT16
+var num_fields
+
+array pre_surface_type 30721 GAMEARRAY_UINT8 GAMEARRAY_RESTORE // MAXTILES + 1
+array pre_surface_damage 30721 GAMEARRAY_UINT16 GAMEARRAY_RESTORE // MAXTILES + 1
+array preloadactivations 65536 GAMEARRAY_RESTORE GAMEARRAY_BOOLEAN
+array activateshit 65536 GAMEARRAY_RESTORE GAMEARRAY_BOOLEAN
+array gameflag32 16384
+var num_flag32
+array fanlist 16384
+var fanlist_num
+array se_displayrooms 16384 GAMEARRAY_RESTORE
+var se_displayrooms_num
+array se_game 16384 GAMEARRAY_RESTORE
+var se_game_num
+array radar_targets_pup 16384
+var radar_targets_num
+array tp_list 16384 GAMEARRAY_RESTORE
+var tp_total
+array nades 16384 GAMEARRAY_RESTORE GAMEARRAY_BOOLEAN
+array nades2 16384 GAMEARRAY_RESTORE
+var num_nades
+var bowled_strike
+var debug_hubsection
+
+include scripts/names.con
+
+defstate is_item
+    set temp6 0
+    switch sprite[temp].picnum
+        case I_LOVERBOY
+        case I_LOVERBOY_AMMO
+        case I_LOVERBOY_AMMO2
+        case I_MEDPACK
+        case I_MEDICOMP
+        case I_MEDKIT
+        case I_BULLETVEST
+        case I_ARMORVEST
+        case I_TECHVEST
+        case I_MINIGUN_AMMO
+        case I_PLASMACROSSBOW_AMMO
+        case I_PLASMACROSSBOW
+        case I_MINIGUN
+        case I_BOWLINGBOMB
+        case I_ACCESSCARD
+        case I_SHOTGUN
+        case I_SHOTGUN_AMMO
+        case I_GRENADELAUNCHER
+        case I_GRENADELAUNCHER_AMMO
+        case I_ARMOR_SHARD
+        case I_SMG
+        case I_SMG_AMMO
+        case I_HAZARDSUIT
+        case I_BOMBRUSH
+        case I_RADAR
+        case I_DKSHOES
+        case I_DAMAGEBOOSTER
+        case I_CLUSTERPUCK
+        case I_BOWLINGBOMB_PICKUP
+            set temp6 1
+            setav[temp].is_pickup 1
+            break
+        case A_HESKELCAST
+            rand temp7 255
+            setav[temp].counter2 temp7
+            break
+    endswitch
+ends
+
+onevent EVENT_PREWORLD
+    set bowled_strike 0
+    set num_flag32 0
+    set fanlist_num 0
+    set radar_targets_num 0
+    set tp_total 0
+    ife playervar[myconnectindex].shot_cross_buns 1
+        ifg playervar[myconnectindex].p_pup_damage_time 0
+            actorsound player[myconnectindex].i 505 // S_DING
+    setpv[myconnectindex].shot_cross_buns 0
+    ifg enemy_max_stepsounds ENEMY_MAXSTEPS
+        set enemy_max_stepsounds 0
+    else ifg enemy_max_stepsounds 0
+        sub enemy_max_stepsounds 1
+    for temp range 4096
+    {
+        set temp2 sound_enemy_buffer[temp]
+        ifg temp2 0
+        {
+            sub temp2 1
+            setarray sound_enemy_buffer[temp] temp2
+        }
+    }
+    for temp8 range num_nades
+    {
+        setarray fanlist[fanlist_num] nades2[temp8]
+        add fanlist_num 1
+    }
+    for temp sprofstat STAT_ACTOR
+    {
+        ifand tiledata[sprite[temp].picnum].gameflags 32
+        {
+            setarray gameflag32[num_flag32] temp
+            add num_flag32 1
+            setarray radar_targets_pup[radar_targets_num] temp
+            add radar_targets_num 1
+            
+            ifg actorvar[temp].ps_master_id -1
+                seta[temp].httimetosleep 300
+            else ife actorvar[temp].enemy_dontsleep 1 // force from R2
+            {
+                seta[temp].httimetosleep 300
+                changespritestat temp STAT_ACTOR
+                ifl actorvar[temp].enemy_init 1
+                {
+                    ifactor A_TURRET
+                        nullop
+                    else
+                        setav[temp].enemy_init 1
+                }
+            }
+            ifg sprite[temp].extra 0
+            {
+                getav[temp].enemy_init temp2
+                ife temp2 0
+                {
+                    geta[temp].sectnum temp2
+                    ifl sprite[temp].z sector[temp2].ceilingz
+                        seta[temp].z sector[temp2].ceilingz
+                    else ifg sprite[temp].z sector[temp2].floorz
+                        seta[temp].z sector[temp2].floorz
+                }
+            }
+            geta[temp].sectnum temp2
+            ife sector[temp2].lotag 64
+            {
+                gets[temp2].hitag georgemichael
+                ifg georgemichael 1
+                {
+                    ife activateshit[georgemichael] 1
+                    {
+                        ifactor A_TURRET
+                            nullop
+                        else
+                            setav[temp].enemy_init 1
+                        getav[temp].se_lotag georgemichael
+                        ifand georgemichael 1
+                            xor georgemichael 1
+                        setav[temp].se_lotag georgemichael
+                        setav[temp].se_hitag 0
+                    }
+                }
+            }
+        }
+        else
+        {
+            state is_item
+            ife temp6 1
+            {
+                set temp6 temp
+                inv temp6
+                ife temp6 0
+                    set temp6 32768
+                setarray radar_targets_pup[radar_targets_num] temp6
+                add radar_targets_num 1
+            }
+            ife sprite[temp].picnum A_TOUCHPLATE_PLUS
+            {
+                    setarray tp_list[tp_total] temp
+                    add tp_total 1
+            }
+        }
+        set temp4 0
+        ife actorvar[temp].actor_moveable 1
+            set temp4 1
+        ifand tiledata[sprite[temp].picnum].gameflags 32
+            set temp4 1
+        ife sprite[temp].picnum P_BOWLINGBOMB
+            set temp4 1
+        ife sprite[temp].picnum A_RIBBON
+            set temp4 1
+        ife temp4 1
+        {
+            setarray fanlist[fanlist_num] temp
+            add fanlist_num 1
+        }
+        ife sprite[temp].picnum HUBSECTION
+        {
+            ife debug_hubsection -1
+                set debug_hubsection temp
+            else ifg debug_hubsection -1
+                ifn debug_hubsection temp
+                    set debug_hubsection -2
+        }
+       /* ife sprite[temp].picnum HUBSECTION_OLD
+            ifg debug_hubsection -1
+                add debug_hubsection 1 */
+    }
+    for temp sprofstat STAT_ZOMBIEACTOR
+    {
+        ifand tiledata[sprite[temp].picnum].gameflags 32
+        {
+            setarray gameflag32[num_flag32] temp
+            add num_flag32 1
+            setarray radar_targets_pup[radar_targets_num] temp
+            add radar_targets_num 1
+            ifle sprite[temp].extra 0
+            {
+                seta[temp].httimetosleep 300
+                changespritestat temp STAT_ACTOR
+            }
+            else ife VOLUME EP_HORDE // horde
+            {
+                seta[temp].httimetosleep 300
+                changespritestat temp STAT_ACTOR
+            }
+            else ifg actorvar[temp].ps_master_id -1 // movers
+            {
+                seta[temp].httimetosleep 300
+                changespritestat temp STAT_ACTOR
+            }
+            else ife actorvar[temp].enemy_dontsleep 1 // force from R2
+            {
+                seta[temp].httimetosleep 300
+                changespritestat temp STAT_ACTOR
+            }
+            ifg sprite[temp].extra 0
+            {
+                getav[temp].enemy_init temp2
+                ife temp2 0
+                {
+                    geta[temp].sectnum temp2
+                    ifl sprite[temp].z sector[temp2].ceilingz
+                        seta[temp].z sector[temp2].ceilingz
+                    else ifg sprite[temp].z sector[temp2].floorz
+                        seta[temp].z sector[temp2].floorz
+                }
+            }
+            geta[temp].sectnum temp2
+            ife sector[temp2].lotag 64
+            {
+                gets[temp2].hitag georgemichael
+                ifg georgemichael 1
+                {
+                    ife activateshit[georgemichael] 1
+                    {
+                        changespritestat temp STAT_ACTOR
+                        ifactor A_TURRET
+                            nullop
+                        else
+                            setav[temp].enemy_init 1
+                        getav[temp].se_lotag georgemichael
+                        ifand georgemichael 1
+                            xor georgemichael 1
+                        setav[temp].se_lotag georgemichael
+                        setav[temp].se_hitag 0
+                    }
+                }
+            }
+        }
+        else
+        {
+            state is_item
+            ife temp6 1
+            {
+                ifrnd 64
+                {
+                    seta[temp].httimetosleep 64
+                    changespritestat temp STAT_ACTOR
+                }
+                set temp6 temp
+                inv temp6
+                ife temp6 0
+                    set temp6 32768
+                setarray radar_targets_pup[radar_targets_num] temp6
+                add radar_targets_num 1
+            }
+        }
+    }
+    ife debug_hubsection -1
+    {
+        redefinequote 11 debug: This level is missing a HUBSECTION!
+        echo 11
+        set debug_hubsection -3
+    }
+    else ife debug_hubsection -2
+    {
+        redefinequote 11 debug: This level has too many HUBSECTIONs!
+        echo 11
+        set debug_hubsection -3
+    }
+    ife stagger_update 1
+    {
+        set this_timer end_world_tics
+        mul this_timer 100
+        div this_timer 33
+        
+        set temp 0
+        ifg this_timer 25
+        {
+            set temp 1
+            set this_timer_buffer this_timer
+        }
+        ifg this_timer_buffer 0
+            set temp 1
+        ife temp 1
+        {
+            shiftr this_timer_buffer 1
+            set temp this_timer_buffer
+            sub this_timer_buffer 100
+            ifg this_timer_buffer 0
+                set this_timer_buffer 100
+            else
+                inv this_timer_buffer
+            mul this_timer_buffer 120
+            div this_timer_buffer 100
+            inittimer this_timer_buffer
+            qputs 11 %ld
+            qsprintf 11 11 this_timer_buffer
+            setp[myconnectindex].ftq 11
+            setp[myconnectindex].fta 99
+            set this_timer_buffer temp
+        }
+        else
+            inittimer 120
+    }
+    getticks begin_world_tics
+endevent
+onevent EVENT_DISPLAYSTART
+    getticks begin_display_tics
+endevent
+
+include scripts/sounds.con
+include scripts/music.con
+include scripts/text.con
+include scripts/levels.con
+include scripts/customize.con
+
+include scripts/subroutines.con
+
+include scripts/surfaces.con
+include scripts/draw.con
+include scripts/sectors.con
+
+include scripts/weapons.con
+include scripts/pickups.con
+include scripts/switches.con
+include scripts/props.con
+
+include scripts/dialog.con
+include scripts/player.con
+include scripts/screens.con
+include scripts/menu.con
+include scripts/inventory.con
+
+include scripts/particles.con
+
+include scripts/enemies.con
+/*
+array tilelist MAXTILES GAMEARRAY_BOOLEAN
+appendevent EVENT_WORLD
+    set temp 0
+    whilen temp MAXTILES
+    {
+        ifn gotpic[temp] 0
+        {
+            ifn tilelist[temp] 1
+            {
+                setarray tilelist[temp] 1
+                addlogvar temp
+            }
+        }
+        add temp 1
+    }
+endevent
+*/
+
+defstate process_lines
+    ifn p_line_iskill 0
+        ifg force_kill_sndbuffer 0
+            break
+    set temp3 temp2
+    sub temp3 temp
+    abs temp3 // failsafe
+
+    set temp7 temp
+    set temp5 temp3
+    add temp5 temp
+    add temp5 1
+
+    set temp6 0
+    whilen temp7 temp5
+    {
+        ife sound_playback[temp7] 1
+            add temp6 1
+        add temp7 1
+    }
+
+    set temp5 temp3
+    add temp5 1
+    ifge temp6 temp5
+    {
+        set temp7 0
+        whilen temp7 1
+        {
+            ife p_line_iskill 0
+            {
+                rand temp4 temp3
+                add temp4 temp
+                set p_lastline temp4
+                actorsound player[].i temp4
+                set temp7 1
+            }
+            else
+            {
+                rand temp4 temp3
+                add temp4 temp
+                ifg temp5 1
+                {
+                    ifn temp4 p_skiplastgib ifn temp4 p_skiplastkill
+                    {
+                        set temp6 sound_kill_buffer[temp4]
+                        ife temp6 0
+                        {
+                            set p_lastline temp4
+                            actorsound player[].i temp4
+                            set force_kill_sndbuffer TALK_KILLSND_DELAY
+                        }
+                        set temp7 1
+                    }
+                }
+                else
+                {
+                    set temp6 sound_kill_buffer[temp4]
+                    ife temp6 0
+                    {
+                        set p_lastline temp4
+                        actorsound player[].i temp4
+                        set force_kill_sndbuffer TALK_KILLSND_DELAY
+                    }
+                    set temp7 1
+                }
+            }
+        }
+        set temp7 temp
+        set temp5 temp3
+        add temp5 temp
+        add temp5 1
+
+        whilen temp7 temp5
+        {
+            setarray sound_playback[temp7] 0
+            add temp7 1
+        }
+        setarray sound_playback[p_lastline] 1
+        ifn p_line_iskill 0
+        {
+            setarray sound_kill_buffer[p_lastline] temp3
+            for itervar range temp3
+            {
+                set temp5 itervar
+                add temp5 temp
+                set temp7 sound_kill_buffer[temp5]
+                sub temp7 1
+                clamp temp7 0 255
+                setarray sound_playback[temp5] temp7
+            }
+        }
+    }
+    else
+    {
+        set temp7 0
+        whilen temp7 1
+        {
+            rand temp4 temp3
+            add temp4 temp
+            ife sound_playback[temp4] 0
+            {
+                ifn p_line_iskill 0
+                    set force_kill_sndbuffer TALK_KILLSND_DELAY
+                set temp7 1
+                set p_lastline temp4
+                actorsound player[].i temp4
+                setarray sound_playback[temp4] 1
+            }
+        }
+    }
+    set p_line_iskill 0
+ends
+defstate stop_searching_lady
+    stopactorsound player[].i S_SHELLY_SEARCHTALK1
+    stopactorsound player[].i S_SHELLY_SEARCHTALK2
+ends
+
+defstate buffer_sounds
+    ife force_sndbuffer 0
+    {
+        ifand p_wantline 1
+            set force_sndbuffer 20
+        else ifand p_wantline 2
+            set force_sndbuffer 15
+        break
+    }
+    else
+        set force_sndbuffer 0
+ends
+defstate player_sounds
+    setu[].vm_player myconnectindex
+    ifg force_kill_sndbuffer 0
+        sub force_kill_sndbuffer 1
+    ifn p_lastline 0
+    {
+        ifactorsound player[].i p_lastline
+        {
+            add p_face_angry 1
+            stopactorsound player[].i S_SHELLY_SEARCH1
+            stopactorsound player[].i S_SHELLY_SEARCH2
+            stopactorsound player[].i S_SHELLY_SEARCH3
+            stopactorsound player[].i S_SHELLY_SEARCH4
+            stopactorsound player[].i S_SHELLY_SEARCH5
+            stopactorsound player[].i S_SHELLY_SEARCH6
+            stopactorsound player[].i S_SHELLY_SEARCH7
+            stopactorsound player[].i S_SHELLY_SEARCH8
+            stopactorsound player[].i S_SHELLY_SEARCHTALK1
+            stopactorsound player[].i S_SHELLY_SEARCHTALK2
+            set p_wantline 0
+            break
+        }
+    }
+    set p_lastline 0
+    setu[].vm_sprite player[].i
+    ifinwater
+    {
+        set force_sndbuffer 0
+        set p_wantline 0
+        set myfavoriteguns 0
+        stopactorsound player[].i S_SHELLY_SEARCH1
+        stopactorsound player[].i S_SHELLY_SEARCH2
+        stopactorsound player[].i S_SHELLY_SEARCH3
+        stopactorsound player[].i S_SHELLY_SEARCH4
+        stopactorsound player[].i S_SHELLY_SEARCH5
+        stopactorsound player[].i S_SHELLY_SEARCH6
+        stopactorsound player[].i S_SHELLY_SEARCH7
+        stopactorsound player[].i S_SHELLY_SEARCH8
+        stopactorsound player[].i S_SHELLY_SEARCHTALK1
+        stopactorsound player[].i S_SHELLY_SEARCHTALK2
+        set temp 0
+        ifactorsound player[].i S_SHELLY_GRUNT2
+            set temp 1
+        else ifactorsound player[].i S_SHELLY_HURT01
+            set temp 1
+        else ifactorsound player[].i S_SHELLY_HURT02
+            set temp 1
+        else ifactorsound player[].i S_SHELLY_HURT03
+            set temp 1
+        else ifactorsound player[].i S_SHELLY_HURTBAD01
+            set temp 1
+        else ifactorsound player[].i S_SHELLY_HURTBAD02
+            set temp 1
+        else ifactorsound player[].i S_SHELLY_HURTBAD03
+            set temp 1
+        else ifactorsound player[].i S_SHELLY_HURTFATAL01
+            set temp 1
+        else ifactorsound player[].i S_SHELLY_HURTFATAL02
+            set temp 1
+
+        ife temp 1
+        {
+            rand temp 1
+            add temp S_SHELLY_BREATH1
+            actorsound player[].i temp
+        }
+        stopactorsound player[].i S_SHELLY_HURT01
+        stopactorsound player[].i S_SHELLY_HURT02
+        stopactorsound player[].i S_SHELLY_HURT03
+        stopactorsound player[].i S_SHELLY_HURTBAD01
+        stopactorsound player[].i S_SHELLY_HURTBAD02
+        stopactorsound player[].i S_SHELLY_HURTBAD03
+        stopactorsound player[].i S_SHELLY_HURTFATAL01
+        stopactorsound player[].i S_SHELLY_HURTFATAL02
+        stopactorsound player[].i S_SHELLY_GRUNT2
+        break
+    }
+    ifn p_wantline 0
+    {
+        rand temp 255
+        ifg force_sndbuffer 0
+        {
+            sub force_sndbuffer 1
+            ifn force_sndbuffer 0
+                break
+            else
+            {
+                set temp TALK_HIGHPRIO_FREQ
+                set force_sndbuffer 1
+            }
+        }
+        else ife force_sndbuffer 0
+        {
+            ifn myfavoriteguns 0
+            {
+                ifand p_wantline 4
+                {
+                    state stop_searching_lady
+                    set temp S_SHELLYVO_PUPSHOTSND1
+                    set temp2 S_SHELLYVO_PUPSHOTSND2
+                    state process_lines
+                }
+                else ifand p_wantline 8
+                {
+                    state stop_searching_lady
+                    set temp S_SHELLYVO_PUPSMGSND1
+                    set temp2 S_SHELLYVO_PUPSMGSND1
+                    state process_lines
+                }
+                else ifand p_wantline 16
+                {
+                    state stop_searching_lady
+                    set temp S_SHELLYVO_PUPCHAINSND1
+                    set temp2 S_SHELLYVO_PUPCHAINSND1
+                    state process_lines
+                }
+                else ifand p_wantline 32
+                {
+                    state stop_searching_lady
+                    set temp S_SHELLYVO_PUPBOMBSND1
+                    set temp2 S_SHELLYVO_PUPBOMBSND2
+                    state process_lines
+                }
+                else ifand p_wantline 64
+                {
+                    state stop_searching_lady
+                    set temp S_SHELLYVO_PUPBOWSND1
+                    set temp2 S_SHELLYVO_PUPBOWSND1
+                    state process_lines
+                }
+                else ifand p_wantline 128
+                {
+                    state stop_searching_lady
+                    set temp S_SHELLYVO_PUPSHOTSND3
+                    set temp2 S_SHELLYVO_PUPSHOTSND3
+                    state process_lines
+                }
+                else ifand p_wantline 2048
+                {
+                    state stop_searching_lady
+                    set temp S_SHELLYVO_PUPLAMSND1
+                    set temp2 S_SHELLYVO_PUPLAMSND3
+                    state process_lines
+                }
+                else ifand p_wantline 4096
+                {
+                    state stop_searching_lady
+                    set temp S_SHELLYVO_PUPSMGSND2
+                    set temp2 S_SHELLYVO_PUPSMGSND2
+                    state process_lines
+                }
+                
+                set myfavoriteguns 0
+                break
+            }
+        }
+        ifle temp TALK_HIGHPRIO_FREQ
+        {
+            ifand p_wantline 1
+            {
+                state buffer_sounds
+                ifg force_sndbuffer 1
+                    break
+                state stop_searching_lady
+                set temp S_SHELLYVO_GIBSND1
+                set temp2 S_SHELLYVO_GIBSND12
+                set p_line_iskill 1
+                state process_lines
+                set p_skiplastgib p_lastline
+            }
+            else ifand p_wantline 2
+            {
+                state buffer_sounds
+                ifg force_sndbuffer 1
+                    break
+                state stop_searching_lady
+                set temp S_SHELLYVO_KILLSND1
+                set temp2 S_SHELLYVO_KILLSND11
+                set p_line_iskill 1
+                state process_lines
+                set p_skiplastkill p_lastline
+            }
+            else ifand p_wantline TALK_BOMBRUSH
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPBOMBRUSH1
+                set temp2 S_SHELLYVO_PUPBOMBRUSH1
+                state process_lines
+            }
+            else ifand p_wantline TALK_DAMAGE
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPDAMAGE1
+                set temp2 S_SHELLYVO_PUPDAMAGE1
+                state process_lines
+            }
+            else ifand p_wantline TALK_HAZARD
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPHAZARD1
+                set temp2 S_SHELLYVO_PUPHAZARD1
+                state process_lines
+            }
+            else ifand p_wantline TALK_BOOTS
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPBOOTS1
+                set temp2 S_SHELLYVO_PUPBOOTS2
+                state process_lines
+            }
+        }
+        else ifrnd TALK_MEDPRIO_FREQ
+        {
+            ifand p_wantline 4
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPSHOTSND1
+                set temp2 S_SHELLYVO_PUPSHOTSND2
+                state process_lines
+            }
+            else ifand p_wantline 8
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPSMGSND1
+                set temp2 S_SHELLYVO_PUPSMGSND1
+                state process_lines
+            }
+            else ifand p_wantline 16
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPCHAINSND1
+                set temp2 S_SHELLYVO_PUPCHAINSND1
+                state process_lines
+            }
+            else ifand p_wantline 32
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPBOMBSND1
+                set temp2 S_SHELLYVO_PUPBOMBSND2
+                state process_lines
+            }
+            else ifand p_wantline 64
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPBOWSND1
+                set temp2 S_SHELLYVO_PUPBOWSND1
+                state process_lines
+            }
+            else ifand p_wantline 128
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPSHOTSND3
+                set temp2 S_SHELLYVO_PUPSHOTSND3
+                state process_lines
+            }
+            else ifand p_wantline 256
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPARMORSND1
+                set temp2 S_SHELLYVO_PUPARMORSND2
+                state process_lines
+            }
+            else ifand p_wantline 512
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPHEALSND1
+                set temp2 S_SHELLYVO_PUPHEALSND2
+                state process_lines
+            }
+            else ifand p_wantline TALK_RADAR
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPRADAR1
+                set temp2 S_SHELLYVO_PUPRADAR1
+                state process_lines
+            }
+            else ifand p_wantline 4096
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPSMGSND2
+                set temp2 S_SHELLYVO_PUPSMGSND2
+                state process_lines
+            }
+            else ifand p_wantline TALK_EAT
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPHEALSND3
+                set temp2 S_SHELLYVO_PUPHEALSND3
+                state process_lines
+            }
+            else ifand p_wantline TALK_SODA
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPHEALSND4
+                set temp2 S_SHELLYVO_PUPHEALSND4
+                state process_lines
+            }
+        }
+        else ifrnd TALK_LOWPRIO_FREQ
+        {
+            ifand p_wantline 1024
+            {
+                state stop_searching_lady
+                set temp S_SHELLYVO_PUPGENERIC1
+                set temp2 S_SHELLYVO_PUPGENERIC6
+                state process_lines
+            }
+        }
+        set p_wantline 0
+    }
+ends
+
+defstate echo_cheevo
+    ifand old_cheevos 1
+    {
+        qputs 11 Unlocked: Shaken, Not Stirred
+        echo 11
+    }
+    ifand old_cheevos 2
+    {
+        qputs 11 Unlocked: Altar of Sacrifice
+        echo 11
+    }
+    ifand old_cheevos 4
+    {
+        qputs 11 Unlocked: The Future of Law Enforcement
+        echo 11
+    }
+    ifand old_cheevos 8
+    {
+        qputs 11 Unlocked: Hunter, Killed
+        echo 11
+    }
+    ifand old_cheevos 16
+    {
+        qputs 11 Unlocked: Brutalized
+        echo 11
+    }
+    ifand old_cheevos 32
+    {
+        qputs 11 Unlocked: Express Elevator
+        echo 11
+    }
+    ifand old_cheevos 64
+    {
+        qputs 11 Unlocked: Babycide
+        echo 11
+    }
+    ifand old_cheevos 128
+    {
+        qputs 11 Unlocked: Capital Defense
+        echo 11
+    }
+    ifand old_cheevos 256
+    {
+        qputs 11 Unlocked: Firepower Matters
+        echo 11
+    }
+     // elsewhere
+   /* ifand old_cheevos 512
+    {
+        qputs 11 Unlocked: Stash House %ld/50
+        qsprintf 11 11 gamestate[4]
+        echo 11
+    }
+    ifand old_cheevos 1024
+    {
+        qputs 11 Unlocked: Cowabunga! %ld/30
+        qsprintf 11 11 gamestate[5]
+        echo 11
+    }
+    ifand old_cheevos 2048
+    {
+        qputs 11 Unlocked: Addicted %ld/20
+        qsprintf 11 11 gamestate[6]
+        echo 11
+    }
+    ifand old_cheevos 4096
+    {
+        qputs 11 Unlocked: Demanufacture %ld/100
+        qsprintf 11 11 gamestate[7]
+        echo 11
+    }
+    ifand old_cheevos 8192
+    {
+        qputs 11 Unlocked: Bad Mojo %ld/20
+        qsprintf 11 11 gamestate[8]
+        echo 11
+    }
+    ifand old_cheevos 16384
+    {
+        qputs 11 Unlocked: Arachnophobia %ld/20
+        qsprintf 11 11 gamestate[9]
+        echo 11
+    }
+    ifand old_cheevos 32768
+    {
+        qputs 11 Unlocked: Overkill %ld/30
+        qsprintf 11 11 gamestate[10]
+        echo 11
+    }
+    ifand old_cheevos 65536
+    {
+        qputs 11 Unlocked: Cranium do'or %ld/20
+        qsprintf 11 11 gamestate[11]
+        echo 11
+    } */
+    ifand old_cheevos 131072
+    {
+        qputs 11 Unlocked: Like Tears... In Rain
+        echo 11
+    }
+    ifand old_cheevos 262144
+    {
+        qputs 11 Unlocked: Diddle for the Middle
+        echo 11
+    }
+    ifand old_cheevos 524288
+    {
+        qputs 11 Unlocked: Peanuts and Cracker Jacks
+        echo 11
+    }
+    ifand old_cheevos 1048576
+    {
+        qputs 11 Unlocked: All Doors Are Locked
+        echo 11
+    }
+    ifand old_cheevos 2097152
+    {
+        qputs 11 Unlocked: Wasted!
+        echo 11
+    }
+    ifand old_cheevos 4194304
+    {
+        qputs 11 Unlocked: The Owls Are Not What They Seem
+        echo 11
+    }
+    ifand old_cheevos 8388608
+    {
+        qputs 11 Unlocked: Complete and Total Meltdown
+        echo 11
+    }
+    ifand old_cheevos 16777216
+    {
+        qputs 11 Unlocked: Terminated!
+        echo 11
+    }
+    ifand old_cheevos 33554432
+    {
+        qputs 11 Unlocked: Ultimate Failure
+        echo 11
+    }
+    // elsewhere
+    /* ifand old_cheevos 67108864
+    {
+        qputs 11 Unlocked: Demolition Turkey %ld/3
+        qsprintf 11 11 gamestate[12]
+        echo 11
+    } */
+    ifand old_cheevos 134217728
+    {
+        qputs 11 Unlocked: Dedicated
+        echo 11
+    }
+    ifand old_cheevos 268435456
+    {
+        qputs 11 Unlocked: T-shirt
+        echo 11
+    }
+    ifand old_cheevos 536870912
+    {
+        qputs 11 Unlocked: Ion Fury
+        echo 11
+    }
+ends
+
+defstate count_cheevola
+    ifand cheevo_tracker 512
+    {
+        qputs 11 Unlocked: Stash House %ld/50
+        qsprintf 11 11 gamestate[4]
+        echo 11
+        // unlock_cheevos_count cheevo_512 gamestate[4]
+        ifl gamestate[4] 50
+            xor cheevo_tracker 512
+    }
+    ifand cheevo_tracker 1024
+    {
+        qputs 11 Unlocked: Cowabunga! %ld/30
+        qsprintf 11 11 gamestate[5]
+        echo 11
+        // unlock_cheevos_count cheevo_1024 gamestate[5]
+        ifl gamestate[5] 30
+            xor cheevo_tracker 1024
+    }
+    ifand cheevo_tracker 2048
+    {
+        qputs 11 Unlocked: Addicted %ld/20
+        qsprintf 11 11 gamestate[6]
+        echo 11
+        // unlock_cheevos_count cheevo_2048 gamestate[6]
+        ifl gamestate[6] 20
+            xor cheevo_tracker 2048
+    }
+    ifand cheevo_tracker 4096
+    {
+        qputs 11 Unlocked: Demanufacture %ld/100
+        qsprintf 11 11 gamestate[7]
+        echo 11
+        // unlock_cheevos_count cheevo_4096 gamestate[7]
+        ifl gamestate[7] 100
+            xor cheevo_tracker 4096
+    }
+    ifand cheevo_tracker 8192
+    {
+        qputs 11 Unlocked: Bad Mojo %ld/20
+        qsprintf 11 11 gamestate[8]
+        echo 11
+        // unlock_cheevos_count cheevo_8192 gamestate[8]
+        ifl gamestate[8] 20
+            xor cheevo_tracker 8192
+    }
+    ifand cheevo_tracker 16384
+    {
+        qputs 11 Unlocked: Arachnophobia %ld/20
+        qsprintf 11 11 gamestate[9]
+        echo 11
+        // unlock_cheevos_count cheevo_16384 gamestate[9]
+        ifl gamestate[9] 20
+            xor cheevo_tracker 16384
+    }
+    ifand cheevo_tracker 32768
+    {
+        qputs 11 Unlocked: Overkill %ld/30
+        qsprintf 11 11 gamestate[10]
+        echo 11
+        // unlock_cheevos_count cheevo_32768 gamestate[10]
+        ifl gamestate[10] 30
+            xor cheevo_tracker 32768
+    }
+    ifand cheevo_tracker 65536
+    {
+        qputs 11 Unlocked: Cranium do'or %ld/20
+        qsprintf 11 11 gamestate[11]
+        echo 11
+        // unlock_cheevos_count cheevo_65536 gamestate[11]
+        ifl gamestate[11] 20
+            xor cheevo_tracker 65536
+    }
+    ifand cheevo_tracker 67108864
+    {
+        qputs 11 Unlocked: Demolition Turkey %ld/3
+        qsprintf 11 11 gamestate[12]
+        echo 11
+        ifl gamestate[12] 3
+            xor cheevo_tracker 67108864
+    }
+ends
+defstate spoiled_cheevos
+    ife VOLUME EP_MAIN
+        ife LEVEL EP_MAIN_ZONE_5_END
+            ife activateshit[16014] 1
+                or cheevo_tracker 32
+    
+    ife VOLUME EP_MAIN
+        ife LEVEL EP_MAIN_ZONE_6_END
+            ife activateshit[300] 1
+                or cheevo_tracker 64
+    ife VOLUME EP_MAIN
+        ife c_256 511
+        {
+            or cheevo_tracker 256
+            or c_256 512
+        }
+    ife VOLUME EP_MAIN
+        ife LEVEL 11
+            ife activateshit[16666] 1
+                or cheevo_tracker 4194304
+ends
+defstate crunchy_cheevos
+    // or cheevo_tracker <cheevo>
+    state spoiled_cheevos
+    ifn cheevo_tracker 0
+    {
+        redefinequote 115 gamestate.bin
+        readarrayfromfile gamestate 115
+        
+        state count_cheevola
+        set old_cheevos gamestate[3]
+        ife old_cheevos 536870911
+            or cheevo_tracker 536870912
+        set final_cheevos old_cheevos
+        or final_cheevos cheevo_tracker
+        xor old_cheevos final_cheevos
+        // unlock_cheevos old_cheevos
+        state echo_cheevo
+        setarray gamestate[3] final_cheevos
+        writearraytofile gamestate 115
+        set cheevo_tracker 0
+    }
+ends
+
+var p_strikesound_delay
+define STRIKESOUND_DELAY 1800
+appendevent EVENT_WORLD
+    swaparrays activateshit preloadactivations
+    resizearray preloadactivations 0
+    resizearray preloadactivations 65536
+    ifg p_strikesound_delay 0
+        sub p_strikesound_delay 1
+    ifge bowled_strike 3
+    {
+    //    qputs 11 STRIKE
+     //   echo 11
+        actorsound player[myconnectindex].i S_BBOMB_STRIKE
+        ife p_strikesound_delay 0 ifle p_lastline 0
+        {
+            rand temp 255
+            ifle temp 96
+            {
+                set p_strikesound_delay 300
+                set p_lastline S_SHELLYVO_BOMB_STRIKE
+                actorsound player[].i p_lastline
+                
+                redefinequote 115 gamestate.bin
+                readarrayfromfile gamestate 115
+                set temp gamestate[12]
+                ifl temp 3
+                {
+                    add temp 1
+                    setarray gamestate[12] temp
+                    writearraytofile gamestate 115
+                    or cheevo_tracker 67108864
+                }
+            }
+        }
+        else
+            or p_wantline 1
+    }
+    getticks end_world_tics
+    sub end_world_tics begin_world_tics
+    state player_sounds
+    state crunchy_cheevos
+endevent
+appendevent EVENT_DISPLAYEND
+    getticks end_display_tics
+    sub end_display_tics begin_display_tics
+endevent
+/*
+var frame1
+var frame2
+var frame3 65536 0
+var frame4
+var ratesec1
+var ratesec2
+
+appendevent EVENT_DISPLAYREST
+    gettimedate ratesec1 temp temp2 temp3 temp4 temp5 temp6 temp7
+    add frame1 1
+    ifn ratesec1 ratesec2
+    {
+        set frame2 frame1
+        ifg totalclock 240
+        {
+            ifl frame1 frame3
+                set frame3 frame1
+            ifg frame1 frame4
+                set frame4 frame1
+        }
+        set frame1 0
+        set ratesec2 ratesec1
+    }
+    redefinequote 12 %ld
+    qsprintf 12 12 frame2
+    gametextz STARTALPHANUM 560 4 12 0 6 529 0 0 xdim ydim 16384
+    ifg totalclock 240
+    {
+        redefinequote 12 %ld
+        qsprintf 12 12 frame3
+        gametextz STARTALPHANUM 560 12 12 0 9 529 0 0 xdim ydim 16384
+
+        redefinequote 12 %ld
+        qsprintf 12 12 frame4
+        gametextz STARTALPHANUM 560 20 12 0 5 529 0 0 xdim ydim 16384
+    }
+endevent
+*/
+
+//
+// All code below this point stays here only temporarily until taxonomized and moved into a separate file.
+//
+
+definegamefuncname      gamefunc_Move_Forward           Forward
+definegamefuncname      gamefunc_Move_Backward          Backward
+definegamefuncname      gamefunc_Turn_Left              Turn_Left
+definegamefuncname      gamefunc_Turn_Right             Turn_Right
+definegamefuncname      gamefunc_Strafe                 Strafe
+definegamefuncname      gamefunc_Fire                   Fire
+definegamefuncname      gamefunc_Open                   Use/Open
+definegamefuncname      gamefunc_Run                    Walk
+// definegamefuncname      gamefunc_AutoRun                Toggle_Run/Walk
+undefinegamefunc        gamefunc_AutoRun
+definegamefuncname      gamefunc_Jump                   Jump
+definegamefuncname      gamefunc_Crouch                 Crouch
+undefinegamefunc        gamefunc_Look_Up
+undefinegamefunc        gamefunc_Look_Down
+undefinegamefunc        gamefunc_Look_Left
+undefinegamefunc        gamefunc_Look_Right
+definegamefuncname      gamefunc_Strafe_Left            Strafe_Left
+definegamefuncname      gamefunc_Strafe_Right           Strafe_Right
+// undefinegamefunc        gamefunc_Aim_Up
+// undefinegamefunc        gamefunc_Aim_Down
+definegamefuncname      gamefunc_Weapon_1               Electrifryer
+definegamefuncname      gamefunc_Weapon_2               Loverboy
+definegamefuncname      gamefunc_Weapon_3               Disperser
+definegamefuncname      gamefunc_Weapon_4               Penetrator
+definegamefuncname      gamefunc_Weapon_5               Chaingun
+definegamefuncname      gamefunc_Weapon_6               Bowling_Bombs
+definegamefuncname      gamefunc_Weapon_7               Disperser_Grenades
+definegamefuncname      gamefunc_Weapon_8               Ion_Bow
+definegamefuncname      gamefunc_Weapon_9               Clusterpuck
+// undefinegamefunc        gamefunc_Weapon_9
+// definegamefuncname      gamefunc_Weapon_10              HIDE_HUD_WEAPON
+undefinegamefunc        gamefunc_Weapon_10
+undefinegamefunc        gamefunc_Inventory
+undefinegamefunc        gamefunc_Inventory_Left
+undefinegamefunc        gamefunc_Inventory_Right
+undefinegamefunc        gamefunc_Holo_Duke
+undefinegamefunc        gamefunc_Jetpack
+definegamefuncname        gamefunc_NightVision          Radar
+definegamefuncname      gamefunc_MedKit                 MedKit
+// definegamefuncname      gamefunc_TurnAround             Debug_Menu
+// temp name for bugs I hate.
+
+// definegamefuncname      gamefunc_TurnAround             SECRET_DEBUG_MENU!
+
+undefinegamefunc        gamefunc_TurnAround
+undefinegamefunc        gamefunc_SendMessage
+definegamefuncname      gamefunc_Map                    Map
+definegamefuncname      gamefunc_Shrink_Screen          Shrink_Screen
+definegamefuncname      gamefunc_Enlarge_Screen         Enlarge_Screen
+// undefinegamefunc        gamefunc_Center_View
+undefinegamefunc        gamefunc_Holster_Weapon
+undefinegamefunc        gamefunc_Show_Opponents_Weapon
+definegamefuncname      gamefunc_Map_Follow_Mode        Map_Follow_Mode
+undefinegamefunc        gamefunc_See_Coop_View
+undefinegamefunc        gamefunc_Mouse_Aiming
+undefinegamefunc        gamefunc_Toggle_Crosshair
+definegamefuncname      gamefunc_Steroids               Reload
+definegamefuncname      gamefunc_Quick_Kick             Quick_Swap_Electrifryer
+definegamefuncname      gamefunc_Next_Weapon            Next_Weapon
+definegamefuncname      gamefunc_Previous_Weapon        Previous_Weapon
+undefinegamefunc        gamefunc_Show_Console
+undefinegamefunc        gamefunc_Show_DukeMatch_Scores
+undefinegamefunc        gamefunc_Dpad_Select
+undefinegamefunc        gamefunc_Dpad_Aiming
+undefinegamefunc        gamefunc_Alt_Weapon
+
+ck 23 50
+
+dc      CHEAT_CORNHOLIO         god
+dc      CHEAT_STUFF             afk
+udc     CHEAT_SCOTTY 
+udc     CHEAT_COORDS 
+udc     CHEAT_VIEW 
+udc     CHEAT_TIME 
+udc     CHEAT_UNLOCK 
+dc      CHEAT_CASHMAN           lonely
+dcd     CHEAT_CASHMAN           Solve Loneliness
+udc     CHEAT_ITEMS 
+udc     CHEAT_RATE 
+udc     CHEAT_SKILL 
+udc     CHEAT_BETA 
+// definequote 105
+dc      CHEAT_HYPER             lifted
+dcd     CHEAT_HYPER             Toggle Flying
+dc      CHEAT_MONSTERS          mobile
+dcd     CHEAT_MONSTERS          Pause AI
+dc      CHEAT_TODD              likemax
+definequote 99                  Feel the Payne
+dc      CHEAT_SHOWMAP           lost
+udc     CHEAT_KROZ 
+dc      CHEAT_ALLEN             dumb
+definequote 79                  Break the Map
+dc      CHEAT_CLIP              free
+udc     CHEAT_WEAPONS 
+udc     CHEAT_INVENTORY 
+udc     CHEAT_KEYS 
+dc      CHEAT_DEBUG             realbuilder
+dc      CHEAT_COMEGETSOME       d4n
+
+
+// re-use hard coded stuff
+// shouldn't go in names.con because we don't want the editor to use these names
+
+dynamicremap
+
+// define EXPLOSION2 A_EXPLOSION
+define EXPLOSION2BOT A_EXPLOSION_BOTTOM
+
+define GRATE1 T_GRATE
+define BGRATE1 T_GRATEBROKE
+define FANSPRITE T_FAN
+define FANSPRITEBROKE T_FANBROKE
+
+define FLOORSLIME T_SLIME
+
+// define PLUG T_PLUG
+
+// define GLASS T_GLASS
+// define GLASS2 T_GLASS2
+
+define W_SCREENBREAK 6514
+
+define W_SCREENBREAK1 6506
+define W_SCREENBREAK2 6515
+
+define W_TECHWALL1 6482
+define W_HITTECHWALL1 6483
+define W_TECHWALL2 6484
+define W_HITTECHWALL2 6485
+define W_TECHWALL3 6506
+define W_HITTECHWALL3 6514
+define W_TECHWALL4 6488
+define W_HITTECHWALL4 6489
+define W_TECHWALL5 6478
+define W_HITTECHWALL5 6479
+define W_TECHWALL6 6480
+define W_HITTECHWALL6 6481
+define W_TECHWALL10 6515
+define W_HITTECHWALL10 6514
+define W_TECHWALL15 7578
+define W_HITTECHWALL15 7522
+define W_TECHWALL16 7579
+define W_HITTECHWALL16 7522
+define ATM 7907
+define ATMBROKE 6483
+
+define FOOTPRINTS A_FOOTPRINT_1
+define FOOTPRINTS2 A_FOOTPRINT_2
+define FOOTPRINTS3 A_FOOTPRINT_3
+define FOOTPRINTS4 A_FOOTPRINT_4
+define OOZ A_STRINGY_GUTS
+define OOZ2 A_STRINGY_GUTS2

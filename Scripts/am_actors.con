@@ -159,6 +159,68 @@ useractor notenemy AM_BRUTE_MUZZLEFLASH
 		killit
 enda
 
+spritenoshade AM_A_GENERICMUZZLE
+spritenopal AM_A_GENERICMUZZLE
+
+action AC_A_GENERICMUZZLE 0 7 1 1 3
+useractor notenemy AM_A_GENERICMUZZLE
+	ifaction 0 {
+		action AC_A_GENERICMUZZLE
+		geta .cstat am_tmp
+		xor am_tmp 32768
+		seta .cstat am_tmp
+	}
+	
+	// randomized appearance
+	ifactioncount 1 {
+		rand temp 6
+		geta .htg_t 3 temp2
+		add temp2 temp
+		mod temp2 7
+		seta .htg_t 3 temp2
+	}
+	
+	ifn tp_owner -1 {
+		geta[tp_owner].x am_x
+		geta[tp_owner].y am_y
+		geta[tp_owner].ang am_ang
+		seta .x am_x
+		seta .y am_y
+		seta .ang am_ang
+		add am_y 208
+		add am_x 96
+		rotatepoint sprite.x sprite.y am_x am_y am_ang am_x2 am_y2
+		
+		seta .x am_x2
+		seta .y am_y2
+	}
+	
+	ifl sprite.htg_t 0 counter {
+		geta .xrepeat am_tmp
+		add am_tmp 2
+		seta .xrepeat am_tmp
+		geta .yrepeat am_tmp
+		add am_tmp 2
+		seta .yrepeat am_tmp
+	}
+	else ifand am_estate 1 {
+		geta .xrepeat am_tmp
+		sub am_tmp 1
+		seta .xrepeat am_tmp
+		geta .yrepeat am_tmp
+		sub am_tmp 1
+		seta .yrepeat am_tmp
+	}
+	
+	geta[].shade am_tmp
+	add am_tmp 2
+	seta[].shade am_tmp
+	
+	// extra determines lifetime
+	ife sprite.extra sprite.htg_t 0
+		killit
+enda
+
 defstate make_frame_effect
 	seta[RETURN].owner THISACTOR
 	seta[RETURN].mdflags 16

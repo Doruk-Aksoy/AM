@@ -7,6 +7,7 @@ define AM_S_AMMOBONUS			3001
 define AM_S_DANCINGQUEENFIRE	3010
 
 // ENEMIES
+// SEEKER DRONE
 define AM_S_SEEKERDRONE_ACT		2833
 define AM_S_SEEKERDRONE_FIRE	2834
 define AM_S_SEEKERDRONE_DIE1	2835
@@ -14,6 +15,35 @@ define AM_S_SEEKERDRONE_DIE2	2836
 define AM_S_SEEKERDRONE_DIE3	2837
 define AM_S_SEEKERDRONE_DIE4	2838
 define AM_S_SEEKERDRONE_HIT		2839
+
+// EXO DUDE
+define AM_S_EXODUDE_SEE1		1200
+define AM_S_EXODUDE_SEE2		1201
+define AM_S_EXODUDE_ACT1		1202
+define AM_S_EXODUDE_ACT2		1203
+define AM_S_EXODUDE_PAIN1		1204
+define AM_S_EXODUDE_PAIN2		1205
+define AM_S_EXODUDE_PAIN3		1206
+define AM_S_EXODUDE_PAIN4		1207
+define AM_S_EXODUDE_DIE1		1208
+define AM_S_EXODUDE_DIE2		1209
+define AM_S_EXODUDE_DIE3		1210
+define AM_S_EXODUDE_DIE4		1211
+define AM_S_EXODUDE_ARMOR1		1212
+define AM_S_EXODUDE_ARMOR2		1213
+define AM_S_EXODUDE_ARMOR3		1214
+define AM_S_EXODUDE_ARMOR4		1215
+define AM_S_EXODUDE_ARMORUP		1216
+define AM_S_EXODUDE_ARMOREND	1217
+define AM_S_EXODUDE_ARMORUSE	1218
+define AM_S_EXODUDE_HIT1		1219
+define AM_S_EXODUDE_HIT2		1220
+define AM_S_EXODUDE_HIT3		1221
+define AM_S_EXODUDE_ATK1		1222
+define AM_S_EXODUDE_ATK2		1223
+define AM_S_EXODUDE_WALK		1224
+define AM_S_EXODUDE_FALL		1225
+define AM_S_EXODUDE_RAILCHRG	1226
 
 // there are 4 these, and in IF it's also leaving the other 2 slots empty
 define AM_S_SHOTGUNFIRE_1		3002
@@ -44,6 +74,7 @@ definesound AM_S_TRIFIRE_4      	Sounds/AM/Weapons/Pistol/fire4.ogg 		-64     64
 definesound AM_S_DANCINGQUEENFIRE	Sounds/AM/Enemies/dqfire.ogg			-190	190		192		0		  0
 
 // ENEMIES
+// SEEKER DRONE
 definesound AM_S_SEEKERDRONE_ACT	Sounds/AM/Enemies/SeekerDrone/DRONSND.ogg	-224	224		100		0		  8192
 definesound AM_S_SEEKERDRONE_FIRE	Sounds/AM/Enemies/SeekerDrone/DRONFIRE.ogg	-224	224		100		0		  6400
 definesound AM_S_SEEKERDRONE_DIE1	Sounds/AM/Enemies/SeekerDrone/DRONDIE1.ogg	-224	224		100		0		  0
@@ -51,3 +82,32 @@ definesound AM_S_SEEKERDRONE_DIE2	Sounds/AM/Enemies/SeekerDrone/DRONDIE2.ogg	-22
 definesound AM_S_SEEKERDRONE_DIE3	Sounds/AM/Enemies/SeekerDrone/DRONDIE3.ogg	-224	224		100		0		  0
 definesound AM_S_SEEKERDRONE_DIE4	Sounds/AM/Enemies/SeekerDrone/DRONDIE4.ogg	-224	224		100		0		  0
 definesound AM_S_SEEKERDRONE_HIT	Sounds/AM/Enemies/SeekerDrone/DRONHIT.ogg	-224	224		100		0		  9576
+
+// EXO DUDE
+definesound AM_S_EXODUDE_SEE1		Sounds/AM/Enemies/ExoDude/exosee1.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_SEE2		Sounds/AM/Enemies/ExoDude/exosee2.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_ACT1		Sounds/AM/Enemies/ExoDude/exoact1.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_ACT2		Sounds/AM/Enemies/ExoDude/exoact2.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_PAIN1		Sounds/AM/Enemies/ExoDude/exopain1.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_PAIN2		Sounds/AM/Enemies/ExoDude/exopain2.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_PAIN3		Sounds/AM/Enemies/ExoDude/exopain3.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_PAIN4		Sounds/AM/Enemies/ExoDude/exopain4.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_DIE1		Sounds/AM/Enemies/ExoDude/exodie1.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_DIE2		Sounds/AM/Enemies/ExoDude/exodie2.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_DIE3		Sounds/AM/Enemies/ExoDude/exodie3.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_DIE4		Sounds/AM/Enemies/ExoDude/exodie4.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_ARMOR1		Sounds/AM/Enemies/ExoDude/exoarmor1.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_ARMOR2		Sounds/AM/Enemies/ExoDude/exoarmor2.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_ARMOR3		Sounds/AM/Enemies/ExoDude/exoarmor3.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_ARMOR4		Sounds/AM/Enemies/ExoDude/exoarmor4.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_ARMORUP	Sounds/AM/Enemies/ExoDude/exoarmorup.wav	-64		64		100		0		  0
+definesound AM_S_EXODUDE_ARMOREND	Sounds/AM/Enemies/ExoDude/exoarmorend.wav	-64		64		100		0		  0
+definesound AM_S_EXODUDE_ARMORUSE	Sounds/AM/Enemies/ExoDude/exoarmoruse.wav	-64		64		100		0		  0
+definesound AM_S_EXODUDE_HIT1		Sounds/AM/Enemies/ExoDude/exohit1.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_HIT2		Sounds/AM/Enemies/ExoDude/exohit2.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_HIT3		Sounds/AM/Enemies/ExoDude/exohit3.wav		-64		64		100		0		  0
+definesound AM_S_EXODUDE_ATK1		Sounds/AM/Enemies/ExoDude/exoatk1.wav		-64		64		100		0		  4096
+definesound AM_S_EXODUDE_ATK2		Sounds/AM/Enemies/ExoDude/exoatk2.wav		-64		64		100		0		  4096
+definesound AM_S_EXODUDE_WALK		Sounds/AM/Enemies/ExoDude/exowalk.ogg		-32		32		100		0		  4096
+definesound AM_S_EXODUDE_FALL		Sounds/AM/Enemies/ExoDude/exofall.ogg		-32		32		100		0		  -2048
+definesound AM_S_EXODUDE_RAILCHRG	Sounds/AM/Enemies/ExoDude/exochrg.ogg		-64		64		100		0		  4096

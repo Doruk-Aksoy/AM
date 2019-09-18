@@ -4220,6 +4220,7 @@ ends
 defstate crouch_momentum
     ifp pducking
     {
+		set p_crouching 1
         ifg p_crouch_z 1
         {
             sub p_crouch_z 1
@@ -4239,8 +4240,10 @@ defstate crouch_momentum
         ifinwater
             set p_crouch_z 0
     }
-    else
+    else {
         set p_crouch_z 0
+		set p_crouching 0
+	}
 ends
 
 defstate cap_screensize

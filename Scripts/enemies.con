@@ -2065,6 +2065,7 @@ defstate enemy_update_sector
         case A_CULTIST
         case A_MECHBOSS_BOTTOM
         case A_WENTEKO
+		case AM_EXODUDE
             break
         case A_DEACON
         case A_DRONE
@@ -2583,6 +2584,7 @@ defstate enemy_do_move
                                 ifactor A_GREATER set temp 1
                                 else ifactor A_CULTIST set temp 1
                                 else ifactor A_SHOTGUNNER set temp 1
+								else ifactor AM_EXODUDE set temp 1
                                 
                                 ife temp 1
                                 {
@@ -2714,6 +2716,7 @@ defstate enemy_do_move
             case A_CULTIST
             case A_GREATER
             case A_SHOTGUNNER
+			case AM_EXODUDE
                 getflorzofslope sprite.sectnum sprite.x sprite.y e_movetemp2
                 getceilzofslope sprite.sectnum sprite.x sprite.y e_movetemp3
                 sub e_movetemp2 12288
@@ -3213,6 +3216,7 @@ defstate enemy_body_code
                 killit
                 break
             case A_BRUTE_TOP_DEAD
+			case AM_EXODUDE_DEAD
                 rand gib_temp 3
                 add gib_temp 8
                 for itervar range gib_temp
@@ -3231,10 +3235,16 @@ defstate enemy_body_code
                 state skull_gibs
                 espawn A_GENERIC_GIB_SPLASH
                 set gib_temp sprite.xrepeat
-                shiftr gib_temp 1
+				ifn sprite.picnum AM_EXODUDE_DEAD
+					shiftr gib_temp 1
+				else
+					sub gib_temp 9
                 seta[RETURN].xrepeat gib_temp
                 set gib_temp sprite.yrepeat
-                shiftr gib_temp 1
+				ifn sprite.picnum AM_EXODUDE_DEAD
+					shiftr gib_temp 1
+				else
+					sub gib_temp 9
                 seta[RETURN].yrepeat gib_temp
                 killit
                 break
@@ -18247,7 +18257,6 @@ useractor enemy A_NUKEMUTANT_GDF 100 AC_MUTANT_GDF_IDLE
         set need_spot_sound 90
         ifl sprite.htg_t 2 2
         {
-            set face_target enemy_target
             set face_target enemy_target
             state face_actor
             seta .ang face_return

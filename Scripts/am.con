@@ -43,10 +43,11 @@ appendevent EVENT_SPAWN
 			}
 		break
 		case AM_BRUTE_MUZZLEFLASH
+			sizeat 11 11
+		case AM_A_GENERICMUZZLE
 		    cstat 130
 			seta .blend 255
 			seta .shade 0
-			sizeat 11 11
 			geta .htflags temp
 			or temp SFLAG_NOCLIP
 			seta .htflags temp
@@ -57,6 +58,7 @@ appendevent EVENT_SPAWN
 				cstator 8
 			cstator 32768
 		break
+		
 	endswitch
 endevent
 

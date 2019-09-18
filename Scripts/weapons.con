@@ -1931,14 +1931,14 @@ defstate weapon_projectiles
                     seta[temp].blend 255
                     seta[temp].cstat 2
                     seta[temp].shade -70
-                    ifspawnedby APLAYER
+                    /*ifspawnedby APLAYER
                         ifn other_smg_toggle 0
                         {
                             geta .extra temp3
                             shiftl temp3 2
                             div temp3 5
                             seta .extra temp3
-                        }
+                        }*/
                 }
                 break
             case P_MINIMISSILE
@@ -6031,17 +6031,16 @@ onevent EVENT_DOFIRE
             getprojectile[P_SMG2].extra smg_extra
             getprojectile[P_SMG2].extra_rand smg_extra_rand
             set fuckup_aim2_r 1
-            getp[].q16horiz temp
+            /*getp[].horiz temp
             set temp2 fuckup_aim2
             set temp3 temp2
             shiftr temp3 3
             add temp2 temp3
-            inv temp2
+			inv temp2
             shiftl temp2 16
-            sub temp temp2
-            setp[].q16horiz temp
-            getp[].q16ang temp
-
+            add temp temp2
+            setp[].horiz temp*/
+			
             ifn other_smg_toggle 0
             {
                 set temp3 smg_extra
@@ -6055,13 +6054,38 @@ onevent EVENT_DOFIRE
                 inv temp3
                 setprojectile[P_SMG2].extra_rand temp3
                 set fuckup_aim2_r 2
-                inv temp2
-                add temp 524288
-                // and temp 2047
-                // shiftl temp 16
+                /*inv temp2
+                add temp 524288*/
+                //and temp 2047
+                //shiftl temp 16
             }
-            sub temp temp2
+			// range -fuckup_aim2 to fuckup_aim2, can be half if only 1 smg is used
+			getp[].q16ang temp
+			set temp2 fuckup_aim2
+			shiftl temp2 19
+			rand p_smg_randang1 temp2
+			set temp2 fuckup_aim2
+			shiftl temp2 18
+			sub p_smg_randang1 temp2
+			ifn other_smg_toggle 0
+				shiftl p_smg_randang1 1
+			shiftr p_smg_randang1 2
+			add temp p_smg_randang1
+            //sub temp temp2
             setp[].q16ang temp
+			
+			getp .horiz temp
+			set temp2 fuckup_aim2
+			rand p_smg_randhoriz1 temp2
+			set temp2 fuckup_aim2
+			shiftr temp2 1
+			sub p_smg_randhoriz1 temp2 
+			ifn other_smg_toggle 0
+				shiftl p_smg_randhoriz1 1
+			mul p_smg_randhoriz1 3
+			div p_smg_randhoriz1 7
+			sub temp p_smg_randhoriz1
+			setp .horiz temp
         }
     }
 endevent
@@ -6769,7 +6793,7 @@ defstate player_weapon_mods
                 setprojectile[P_LOVERBOY].extra_rand WEAPON1_DMG
                 getp[].horiz temp
                 set temp2 fuckup_aim
-                shiftr temp2 1
+                shiftr temp2 2
                 add temp temp2
                 setp[].horiz temp
                 getp[].ang temp
@@ -8265,26 +8289,32 @@ defstate player_weapon_mods
             setprojectile[P_SMG2].extra_rand smg_extra_rand
             ifg fuckup_aim2_r 0
             {
-                
-                getp[].q16horiz temp
+                /*getp[].horiz temp
                 set temp2 fuckup_aim2
                 set temp3 temp2
                 shiftr temp3 3
                 add temp2 temp3
-                inv temp2
+				ife p_smg_fuckdir1 1
+					inv temp2
                 shiftl temp2 16
                 add temp temp2
-                setp[].q16horiz temp
+                setp[].horiz temp*/
                 getp[].q16ang temp
-
-                ife fuckup_aim2_r 2
+				set temp3 p_smg_randang1
+                /*ife fuckup_aim2_r 2
                 {
                     inv temp2
                     add temp 133693440
                     // and temp 2047
-                }
-                add temp temp2
+                }*/
+				sub temp temp3 // the opposite must happen here to revert changes from DOFIRE event
+                //add temp temp2
                 setp[].q16ang temp
+				
+				getp .horiz temp
+				add temp p_smg_randhoriz1
+				setp .horiz temp
+				
                 set fuckup_aim2_r 0
             }
 
@@ -8492,24 +8522,43 @@ defstate player_weapon_mods
                         set kickback_other 7
                 }
                 getp[].q16ang temp7
-                getp[].q16horiz temp6
+                getp[].horiz temp6
                 
-                getp[].q16horiz temp
+                /*getp[].horiz temp
                 set temp2 fuckup_aim2
                 set temp3 temp2
                 shiftr temp3 3
                 add temp2 temp3
-                inv temp2
+				inv temp2
                 shiftl temp2 16
                 sub temp temp2
-                setp[].q16horiz temp
+                setp[].horiz temp*/
                 getp[].q16ang temp
-                inv temp2
+                /*inv temp2
                 add temp 133955584
                 // and temp 2047
-                add temp temp2
-
+                add temp temp2*/
+				set temp3 fuckup_aim2
+				shiftl temp3 19
+				rand temp2 temp3
+				set temp3 fuckup_aim2
+				shiftl temp3 18
+				sub temp2 temp3
+				// range -fuckup_aim2 to fuckup_aim2
+				// shiftl temp2 1 // x2 inaccurate
+				shiftr temp2 1
+				add temp temp2
                 setp[].q16ang temp
+				
+				getp .horiz temp
+				rand temp2 fuckup_aim2
+				set temp3 fuckup_aim2
+				shiftr temp3 1
+				sub temp2 temp3
+				mul temp2 6 // x2 inaccurate
+				div temp2 7
+				sub temp temp2
+				setp .horiz temp
                 
                 ife kickback_other 1
                 {
@@ -8540,7 +8589,7 @@ defstate player_weapon_mods
                     sound S_LAVANAIL_FLESH
                     sound S_SMG_SINGLE
                     setp[].q16ang temp7
-                    setp[].q16horiz temp6
+                    setp[].horiz temp6
                     eshoot A_SHELL1
                         geta[].ang temp2
                         set temp4 sprite[].ang
@@ -8687,7 +8736,7 @@ defstate player_weapon_mods
                 ife kickback_other 26
                     sound S_SMG_CLIPIN
                 
-                setp[].ang temp7
+                //setp[].ang temp7
                 ifn kickback_other 0
                     add kickback_other 1
                 ifge kickback_other WEAPON3_TOTALTIME
@@ -8717,7 +8766,7 @@ defstate player_weapon_mods
                         set main_smg_fired 0
                 }
                 setp[].q16ang temp7
-                setp[].q16horiz temp6
+                setp[].horiz temp6
         }
         else ifn player.kickback_pic 0
             set main_smg_fired 3

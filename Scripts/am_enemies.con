@@ -1,10 +1,55 @@
 appendevent EVENT_SPAWN
+	ifspawnedby RESPAWN {
+		switch sprite.picnum
+			case AM_SEEKERDRONE
+			case AM_EXODUDE:
+			case AM_EXODUDE_STAYPUT:
+				geta .owner respawntemp
+				seta .ang sprite[respawntemp].ang // use the respawners angle
+				ifg sprite[respawntemp].xvel 0
+					geta[respawntemp].xvel se_hitag
+				ifg sprite[respawntemp].zvel 0
+					geta[respawntemp].zvel se_lotag
+
+				ife sprite[sprite.owner].pal 10 // looks red sometimes
+					seta[sprite.owner].pal 9
+				ifn sprite[sprite.owner].pal 9
+					setav .enemy_init 1
+				else
+					changespritestat THISACTOR STAT_ZOMBIEACTOR
+				set enemy_spawn_health sprite.extra
+				
+				ife sprite.picnum AM_EXODUDE_STAYPUT {
+					seta .picnum AM_EXODUDE
+					seta .htactorstayput sprite.sectnum
+					seta .extra AM_EXODUDE_HEALTH
+				}
+			break
+		endswitch
+	}
 	switch sprite.picnum
 		case AM_SEEKERDRONE
             sizeat 40 40
             cstat 257
             state clear_enemy_vels
             state enemy_spawn_checkhitag
+		break
+		case AM_EXODUDE:
+		case AM_EXODUDE_STAYPUT:
+			cstat 257
+			sizeat 33 33
+			state clear_enemy_vels
+            state enemy_spawn_checkhitag
+			set enemy_spawn_health sprite.extra
+			ife sprite.picnum AM_EXODUDE_STAYPUT {
+				seta .picnum AM_EXODUDE
+				seta .htactorstayput sprite.sectnum
+				seta .extra AM_EXODUDE_HEALTH
+			}
+		break
+		case AM_EXODUDE_DEAD:
+            sizeat 33 33
+            cstat 256
 		break
 	endswitch
 endevent
@@ -16,6 +61,27 @@ appendevent EVENT_EGS
 				geta[sprite.owner].pal ms_flashpal
 				seta .pal ms_flashpal
 			}
+		break
+		case AM_P_EXORAILHIT
+			seta .mdflags 16
+			cstat 32768
+		break
+		case AM_P_EXORAILTRAIL
+			cstat 32768
+		break
+		case AM_P_EXORAIL
+			cstat 32768
+		break
+	endswitch
+endevent
+
+appendevent EVENT_LOADACTOR
+	switch sprite.picnum
+		case AM_EXODUDE_DEAD
+			ifg sprite.lotag 0 {
+                geta .lotag se_lotag
+                seta .lotag 0
+            }
 		break
 	endswitch
 endevent
@@ -54,6 +120,89 @@ useractor notenemy AM_T_SEEKERDRONE_MTRAIL 0 AC_SEEKERDRONE_MISSILE3
 	cstat 2
 	ifactioncount 4
 		killit
+enda
+
+defineprojectile AM_P_EXORAIL PROJ_WORKSLIKE 1048577
+defineprojectile AM_P_EXORAIL PROJ_SOUND -1
+defineprojectile AM_P_EXORAIL PROJ_DECAL -1
+defineprojectile AM_P_EXORAIL PROJ_SPAWNS AM_P_EXORAILHIT
+defineprojectile AM_P_EXORAIL PROJ_EXTRA 20
+defineprojectile AM_P_EXORAIL PROJ_EXTRA_RAND 0
+defineprojectile AM_P_EXORAIL PROJ_TRAIL AM_P_EXORAILTRAIL
+defineprojectile AM_P_EXORAIL PROJ_TOFFSET 7
+defineprojectile AM_P_EXORAIL PROJ_TXREPEAT 20
+defineprojectile AM_P_EXORAIL PROJ_TYREPEAT 20
+defineprojectile AM_P_EXORAIL PROJ_SXREPEAT 20
+defineprojectile AM_P_EXORAIL PROJ_SYREPEAT 20
+defineprojectile AM_P_EXORAIL PROJ_TNUM 360
+defineprojectile AM_P_EXORAIL PROJ_OFFSET 14354
+
+spritenopal AM_P_EXORAILHIT
+spritenopal AM_P_EXORAILTRAIL
+spritenoshade AM_P_EXORAILHIT
+spritenoshade AM_P_EXORAILTRAIL
+
+appendevent EVENT_ANIMATESPRITES
+	ifactor AM_P_EXORAILHIT {
+		// change its look
+		settspr .tsprpicnum 7071
+		settspr .tsprpal 12
+	}
+endevent
+
+action AM_P_IDLE 0 1 1 1 1
+useractor notenemy AM_P_EXORAILTRAIL 0
+	ifaction 0 {
+		action AM_P_IDLE
+		spritepal 12
+		cstat 2
+	}
+	ifcount 18
+		killit
+	ifcount 3 {
+		geta .xrepeat temp
+		sub temp 1
+		seta .xrepeat temp
+		geta .yrepeat temp
+		sub temp 1
+		seta .yrepeat temp
+	}
+enda
+
+useractor notenemy AM_P_EXORAILHIT 1
+	ifaction 0 {
+		action AM_P_IDLE
+		rand temp 2
+		add temp AM_S_EXODUDE_HIT1
+		sound temp
+		cstat 2
+		seta .blend 129
+		
+		for itervar range 3 {
+			espawn A_SMOKE2
+			rand temp 12
+			sub temp 24
+			seta[RETURN].xvel temp
+			rand temp 12
+			sub temp 24
+			seta[RETURN].zvel temp
+			seta[RETURN].xrepeat 6
+			seta[RETURN].yrepeat 6
+		}
+	}
+	ifcount 18
+		killit
+	ifcount 3 {
+		geta .xrepeat temp
+		sub temp 1
+		seta .xrepeat temp
+		geta .yrepeat temp
+		sub temp 1
+		seta .yrepeat temp
+		geta .z temp
+		sub temp 16
+		seta .z temp
+	}
 enda
 
 defstate seekerdrone_shoot
@@ -621,7 +770,7 @@ useractor enemy AM_SEEKERDRONE AM_SEEKERDRONE_HEALTH AC_SEEKERDRONE_IDLE
 		state move_actor
 		
 		// seed additional angle/turning adjustments to lower predictability
-		ifrnd 32 ife enemy_target player.i {
+		ifrnd 32 ife enemy_target player.i ife cansee_return 1 {
 			ife deacon_ac 0 {
 				getangle temp4 enemy_xv enemy_yv
 				geta .ang att_return
@@ -658,44 +807,46 @@ useractor enemy AM_SEEKERDRONE AM_SEEKERDRONE_HEALTH AC_SEEKERDRONE_IDLE
 		seta .ang temp7
 		
 		// turn slowly (consistently) toward target
-		set att_target enemy_target
-		set att_noclamp 1
-		state angle_to_target
-		set temp att_return
-		shiftr temp 4
-		set temp2 temp
-		abs temp2
-		ife temp 0 ifn att_return 0 {
-			ifl temp2 4
-				set temp att_return
-			else {
-				set temp 1
-				ifl att_return 0
-					inv temp
+		ife cansee_return 1 {
+			set att_target enemy_target
+			set att_noclamp 1
+			state angle_to_target
+			set temp att_return
+			shiftr temp 4
+			set temp2 temp
+			abs temp2
+			ife temp 0 ifn att_return 0 {
+				ifl temp2 4
+					set temp att_return
+				else {
+					set temp 1
+					ifl att_return 0
+						inv temp
+				}
 			}
-		}
-		geta .ang temp2
-		sub temp2 temp
-		and temp2 2047
-		seta .ang temp2
-		
-		set temp2 move_xv
-		set temp3 move_yv
-		// move back from player if too close
-		ife enemy_target player.i {
-			ifpdistl 1576 {
-				set face_target enemy_target
-				state face_actor
-				add face_return 1024
-				and face_return 2047
-				geta .ang temp4
-				seta .ang face_return
-				set move_v 16
-				state move_actor
-				seta .ang temp4
-				ifand temp4 6 {
-					add enemy_xv temp2
-					add enemy_yv temp3
+			geta .ang temp2
+			sub temp2 temp
+			and temp2 2047
+			seta .ang temp2
+			
+			set temp2 move_xv
+			set temp3 move_yv
+			// move back from player if too close
+			ife enemy_target player.i {
+				ifpdistl 1576 {
+					set face_target enemy_target
+					state face_actor
+					add face_return 1024
+					and face_return 2047
+					geta .ang temp4
+					seta .ang face_return
+					set move_v 16
+					state move_actor
+					seta .ang temp4
+					ifand temp4 6 {
+						add enemy_xv temp2
+						add enemy_yv temp3
+					}
 				}
 			}
 		}
@@ -703,7 +854,7 @@ useractor enemy AM_SEEKERDRONE AM_SEEKERDRONE_HEALTH AC_SEEKERDRONE_IDLE
 		add enemy_yv move_yv
 		
 		// jitter left and right movement to create strafing patterns
-		ife enemy_target player.i
+		ife enemy_target player.i ife cansee_return 1
 		{
 			ifrnd 64
 				add enemy_xv 8
@@ -722,6 +873,11 @@ useractor enemy AM_SEEKERDRONE AM_SEEKERDRONE_HEALTH AC_SEEKERDRONE_IDLE
 			shiftr enemy_xv 2
 			shiftr enemy_yv 2
 		}
+		
+		geta .ang temp7
+		state enemy_do_move
+		set drone_obstruction e_move_return // save to prevent later clobber
+		seta .ang temp7
 		
 		set temp am_estate
 		and temp 4
@@ -811,13 +967,8 @@ useractor enemy AM_SEEKERDRONE AM_SEEKERDRONE_HEALTH AC_SEEKERDRONE_IDLE
 				movesprite THISACTOR 0 0 -4096 CLIPMASK0 temp7
 			}
 		}
-		
-		geta .ang temp7
-		state enemy_do_move
-		set drone_obstruction e_move_return // save to prevent later clobber
-		seta .ang temp7
 
-		ifrnd 8
+		ifrnd 16
 			ife enemy_shoot 0
 				ife cansee_return 1
 					ife enemy_target player.i ifaction AC_SEEKERDRONE_IDLE
@@ -943,4 +1094,884 @@ useractor enemy AM_SEEKERDRONE AM_SEEKERDRONE_HEALTH AC_SEEKERDRONE_IDLE
 			}
 		}
 	}
+enda
+
+spriteshadow AM_EXODUDE
+spriteshadow AM_EXODUDE_DEAD
+
+eventloadactor AM_EXODUDE
+    state enemy_load_init
+    ifn se_hitag 0
+        sleeptime 300 // make sure to wake up enemy so they can patrol even if the player is far away
+enda
+
+eventloadactor AM_EXODUDE_DEAD
+	
+enda
+
+defstate exo_move
+	set enemy_search 1
+	set temp 30
+	ifactioncount 2
+		sub temp 9
+	ldist temp3 THISACTOR enemy_target
+	ifl temp3 6400
+		add temp 15
+	set move_v temp
+	state move_actor
+	set enemy_xv move_xv
+	set enemy_yv move_yv
+	ife enemy_target player.i 
+	  ife cansee_return 1 
+	    ifpdistl 640 {
+			set enemy_xv 0
+			set enemy_yv 0
+			set enemy_shoot 1
+		}
+		
+	state enemy_do_move
+ends
+
+defstate exo_decide_attack
+	sleeptime 300
+	set enemy_shoot 1
+	set enemy_smg_flame sprite.shade
+	ifpdistl 10800 {
+		// auto sg
+		set shot_delay 42
+		set am_estate 1
+		// sound
+        ifpdistl ENEMY_SOUND_DIST {
+			rand temp 1
+			add temp S_SHOTGUN_RELOAD1
+			setp .sound_pitch -512
+			sound temp
+			setp .sound_pitch 0
+		}
+	}
+	else {
+		set shot_delay 55
+		set am_estate 2
+        ifpdistl ENEMY_SOUND_DIST
+			sound AM_S_EXODUDE_RAILCHRG
+	}
+ends
+
+defstate exo_railhitspawner
+	set face_target enemy_target
+	state face_actor
+	set h_ang face_return
+	cos h_cos h_ang
+	sin h_sin h_ang
+	ldist am_tmp THISACTOR enemy_target
+	geta .z h_zvel
+	sub h_zvel sprite.z
+	ife enemy_target player.i {
+		getpv .p_crouching temp2
+		ife temp2 1 {
+			sub h_zvel 1576
+			set temp 1
+		}
+		else {
+			sub h_zvel 3352
+			set temp 0
+		}
+	}
+	shiftl h_zvel 14
+	div h_zvel am_tmp
+	hitscan sprite.x sprite.y sprite.z sprite.sectnum h_cos h_sin h_zvel hitsect hitwall hitsprite hitx hity hitz CLIPMASK_HITSCAN
+	ifn hitsprite -1 {
+		// hit something, so spawn it at that position
+		espawn AM_P_EXORAILHIT
+		seta[RETURN].pal 12
+		seta[RETURN].xrepeat 20
+		seta[RETURN].yrepeat 20
+		sub h_ang 1024 // flip
+		and h_ang 2047
+		sin h_sin h_ang
+		cos h_cos h_ang
+		shiftr h_cos 6
+		shiftr h_sin 6
+		add hitx h_cos
+		add hity h_sin
+		seta[RETURN].x hitx
+		seta[RETURN].y hity
+		ifn temp 1
+			sub hitz 3352
+		seta[RETURN].z hitz
+	}
+ends
+
+action AC_EXODUDE_IDLE 8 1 8 1 1 1
+action AC_EXODUDE_WALK 0 3 8 1 20 1
+action AC_EXODUDE_STEP2 8 1 8 1 20 1 // needed for oscillation backwards
+action AC_EXODUDE_SHOCKED 32 1 8 1 1 1
+action AC_EXODUDE_FIRE 24 1 8 1 16 1
+action AC_EXODUDE_PAIN 32 1 8 1 24 1
+action AC_EXODUDE_DIE 40 7 1 1 7
+useractor enemy AM_EXODUDE AM_EXODUDE_HEALTH AC_EXODUDE_IDLE
+	// don't accidently update for wrong pals
+	ifspritepal 0
+		nullop
+	else ifspritepal 69
+		nullop
+	else ifspritepal 72
+		nullop
+	else ife actorvar.ms_flashpal 0
+		setav .ms_flashpal sprite.pal
+	seta .pal ms_flashpal
+	clipdist 80
+	
+    ife enemy_skipshade 0 {
+        ifoutside
+            seta .shade sector.ceilingshade
+        else
+            seta .shade sector.floorshade
+        geta .shade temp
+        sub temp 4
+        seta .shade temp
+    }
+    else
+        set enemy_skipshade 0
+		
+	set cansee_target player.i
+    set cansee_height 10240
+    getceilzofslope sprite.sectnum sprite.x sprite.y temp
+    geta .z temp2
+    sub temp2 cansee_height
+    ifl temp2 temp
+        set cansee_height 5120
+    state cansee_actor
+    
+    state enemy_lotag_checkclear
+    state enemy_check_pause
+    ife eps_return 1
+        break
+
+    state e_wakemeup
+    ife skip_see 1 {
+        set cansee_return 0
+        set enemy_cantsee 5
+    }
+    ife cansee_return 1 ife skip_see 0 {
+        ifand se_lotag 1 {
+            set cansee_return 0
+            set enemy_cantsee 5
+        }
+        else
+            set se_hitag 0
+    }
+	
+    ife cansee_return 1 {
+        set enemy_cantsee 0
+        set enemy_target player.i
+        set way_current -1
+		ife need_spot_sound 0 {
+			set need_spot_sound 160
+			rand temp 1
+			add temp AM_S_EXODUDE_SEE1
+			soundvar temp
+		}
+		ifaction AC_EXODUDE_IDLE {
+			ifn am_estate 0 {
+				ifge userdef.player_skill 3 {
+					ifactioncount 6 {
+						ifand am_estate 1 {
+							stopactorsound THISACTOR S_SHOTGUN_RELOAD1
+							stopactorsound THISACTOR S_SHOTGUN_RELOAD2
+						}
+						action AC_EXODUDE_WALK
+						set am_estate 0
+					}
+				}
+				else ifactioncount 12 { // little bit pause if easy difficulties are used
+					ifand am_estate 1 {
+						stopactorsound THISACTOR S_SHOTGUN_RELOAD1
+						stopactorsound THISACTOR S_SHOTGUN_RELOAD2
+					}
+					action AC_EXODUDE_WALK
+					set am_estate 0
+				}
+			}
+			else
+				action AC_EXODUDE_WALK
+		}
+    }
+	else ifand am_estate 2 {
+		action AC_EXODUDE_WALK
+		set am_estate 0
+	}
+	
+	ifg need_spot_sound 1 {
+		sub need_spot_sound 1
+		ife need_spot_sound 1 {
+			ifrnd 32 {
+				ifaction AC_EXODUDE_WALK {
+					rand temp 1
+					add temp AM_S_EXODUDE_ACT1
+					sound temp
+				}
+				else ifaction AC_EXODUDE_STEP2 {
+					rand temp 1
+					add temp AM_S_EXODUDE_ACT1
+					sound temp
+				}
+			}
+			set need_spot_sound 160
+		}
+	}
+	
+	state enemy_do_target_icon
+    ife cansee_return_o 1
+        state enemy_checkw1alt
+    fall
+    ife enemy_thisisahack 1 {
+        ifn sector.lotag 1
+            set enemy_thisisahack 0
+        seta .htbposz sprite.z
+    }
+    state enemy_check_init
+    ife enemy_init_return 1
+        break
+	
+	ifaction AC_EXODUDE_DIE {
+        ifmove AM_ENEMY_SEARCH
+            move AM_ENEMY_SEARCH_STOP
+        cstat 0
+        set enemy_xv 0
+        set enemy_yv 0
+        state enemy_do_move
+        state dying_blood
+        ife enemy_gibbed 1
+            cstat 32768
+        ifactioncount 7 {
+			sound AM_S_EXODUDE_FALL
+            state enemy_die_resolve
+			strength CORPSE_HEALTH
+			action AC_ENEMY_BODY
+			cstat 256
+			state enemy_die_cleartags
+			cactor AM_EXODUDE_DEAD
+        }
+        break
+    }
+	
+	state pup_damage_adjust
+	
+	// do damage scaling of exo here
+	ifg sprite.htextra 0 {
+		ife sprite.htowner THISACTOR
+			seta .htextra -1
+		geta .htextra temp4
+        ife sprite.htowner player.i {
+			ife sprite.htpicnum BULLET {
+				// 25% damage from bullets
+				shiftr temp4 2
+				switch player.curr_weapon
+					case WEAPON_SMG 
+						ifg p_pup_damage_time 0
+							clamp temp4 0 12
+						else
+							clamp temp4 0 6
+						set temp temp4
+						shiftr temp 3
+						add enemy_minigun_dmg temp
+					break
+					case WEAPON_MINIGUN
+						shiftr temp4 1
+						add enemy_minigun_dmg temp4
+					break
+					case WEAPON_LOVERBOY
+						ifn weapon1_alt 0 {
+							// 50% bonus from loverboy
+							set temp2 temp4
+							shiftr temp2 1
+							add temp4 temp2
+						}
+						add enemy_minigun_dmg temp4
+					break
+					default
+						add enemy_minigun_dmg temp4
+					break
+				endswitch
+				seta .htextra temp4
+			}
+			else ife sprite.htpicnum P_SMG2 {
+				shiftr temp4 1
+				ifg p_pup_damage_time 0
+						clamp temp4 0 12
+					else
+						clamp temp4 0 6
+				add enemy_minigun_dmg temp4
+				seta .htextra temp4
+			}
+			else ife sprite.htpicnum P_PLASMA_BOLT {
+				shiftr temp4 2
+				add enemy_minigun_dmg temp4
+				clamp temp4 0 100
+				seta .htextra temp4
+			}
+			else ifg sprite.extra 0 {
+				set temp5 enemy_minigun_dmg
+				shiftr temp5 3
+				add enemy_minigun_dmg temp5
+			}
+			clamp enemy_minigun_dmg 0 65536
+		}
+	}
+	
+	ifhitweapon {
+        geta .owner temp5
+        ifn temp5 -1 ifn temp5 THISACTOR ifn temp5 player.i {
+            ife sprite[temp5].picnum A_SHOCKCANISTER_BROKE
+                seta .htpicnum P_SHOCKER
+            else ife sprite[temp5].picnum A_SHOCKCANISTER
+                seta .htpicnum P_SHOCKER
+        }
+		
+		rand temp 2
+        add temp S_BULLET_METAL1
+        soundvar temp
+
+		ife cansee_return 1
+			ifrnd 96
+				state e_fp
+		ifrnd 127
+			state spawn_blood
+
+		ifwasweapon P_PLASMA_BOLT {
+			geta .ang temp
+            geta .htang temp2
+            seta .ang temp2
+
+            ifg sprite.extra 0 {
+                set move_v temp4
+				shiftr move_v 1
+                state move_actor
+                add enemy_xv move_xv
+                add enemy_yv move_yv
+            }
+            seta .ang temp
+		}
+		
+        ifwasweapon P_SHOCKER {
+            add enemy_shocked 1
+            ifg enemy_shocked 3
+                set enemy_shocked 1
+            set temp2 temp4
+            mul temp2 enemy_shocked
+            shiftr temp2 2
+            geta .extra temp3
+            sub temp3 temp2
+            sub temp3 temp2
+            seta .extra temp3
+        }
+		set temp3 temp4
+		shiftr temp3 1
+		set move_v temp3
+		geta .ang temp3
+		seta .ang sprite.htang
+		state move_actor
+		seta .ang temp
+		add enemy_shotgun_xv move_xv
+		add enemy_shotgun_yv move_yv
+		clamp enemy_shotgun_xv -256 256
+		clamp enemy_shotgun_yv -256 256
+		state enemy_do_move
+		seta .ang temp3
+
+        ifdead {
+			seta .shade enemy_smg_flame
+            stopsound AM_S_EXODUDE_ACT1
+            stopsound AM_S_EXODUDE_ACT2       
+            stopsound AM_S_EXODUDE_SEE1
+            stopsound AM_S_EXODUDE_SEE2
+			stopsound AM_S_EXODUDE_PAIN1
+			stopsound AM_S_EXODUDE_PAIN2
+			stopsound AM_S_EXODUDE_PAIN3
+			stopsound AM_S_EXODUDE_PAIN4
+			stopsound AM_S_EXODUDE_ARMOR1
+			stopsound AM_S_EXODUDE_ARMOR2
+			stopsound AM_S_EXODUDE_ARMOR3
+			stopsound AM_S_EXODUDE_ARMOR4
+			
+			state enemy_die_friction
+            state enemy_clearw1alt
+            cstat 0
+            shiftl enemy_shotgun_xv 1
+            shiftl enemy_shotgun_yv 1
+            state dying_blood
+            action AC_EXODUDE_DIE
+			rand temp4 3
+			add temp4 AM_S_EXODUDE_DIE1
+			sound temp4
+			set need_spot_sound 160
+            break
+        }
+		else {
+			ifn enemy_shocked 0
+				action AC_EXODUDE_SHOCKED
+			else {
+				ifge enemy_minigun_dmg 40 {
+					set enemy_minigun_dmg 0
+					action AC_EXODUDE_PAIN
+					
+					ifpdistl ENEMY_SOUND_DIST  {
+						set e_lastsnd_temp 0
+						whilen e_lastsnd_temp 1 {
+							randvar temp 3
+							add temp AM_S_EXODUDE_PAIN1
+							ifn temp e_lesser_lastsnd
+								set e_lastsnd_temp 1
+						}
+						sound temp
+						set e_lesser_lastsnd temp
+					}
+				}
+				else ifrnd 96 {
+					ifpdistl ENEMY_SOUND_DIST  {
+						set e_lastsnd_temp 0
+						whilen e_lastsnd_temp 1 {
+							randvar temp 3
+							add temp AM_S_EXODUDE_PAIN1
+							ifn temp e_lesser_lastsnd
+								set e_lastsnd_temp 1
+						}
+						sound temp
+						set e_lesser_lastsnd temp
+					}
+				}
+			}
+		}
+    }
+	
+    ifaction AC_EXODUDE_PAIN {
+		set enemy_shoot 0
+		seta .shade enemy_smg_flame
+        ifactioncount 2 {
+			ifrnd 127 {
+				action AC_EXODUDE_FIRE
+				state exo_decide_attack
+			}
+			else
+				action AC_EXODUDE_WALK
+		}
+        set enemy_init 1      
+		ifn enemy_shotgun_xv 0
+            state enemy_do_move
+        else ifn enemy_shotgun_yv 0
+            state enemy_do_move
+		ife enemy_shoot 0
+			break
+    }
+	else ifaction AC_EXODUDE_SHOCKED {
+        ifand sprite.htg_t 2 1 {
+            seta .shade -127
+            set enemy_skipshade 1
+			spritepal 69
+        }
+        
+        soundonce S_AMB_NEONFLICKR01
+        soundonce S_AMB_NEONFLICKR02
+        ifn enemy_shocked 0 {
+			set temp enemy_shocked
+			shiftl temp 2
+			ife sprite.htg_t 2 temp {
+				action AC_EXODUDE_IDLE
+				stopactorsound THISACTOR S_AMB_NEONFLICKR01
+				stopactorsound THISACTOR S_AMB_NEONFLICKR02
+			}
+            set enemy_shocked 0
+        }
+        else
+			action AC_EXODUDE_PAIN
+        break
+    }
+    else
+        seta .pal ms_flashpal
+
+    ife enemy_init 0 {
+        getp .i att_target
+        state angle_to_target
+        ldist temp THISACTOR player.i
+        set temp2 att_return
+        div temp2 36
+        ife temp2 0
+            set temp2 1
+        else {
+            shiftr temp2 2
+            mul temp2 3
+            ife temp2 0
+                set temp2 1
+        }
+        set temp3 CULTIST_CONE
+        div temp3 temp2
+        set temp4 0
+        ife cansee_return 1
+            set temp4 1
+        else ifn hitwall -1 {
+            set surface_type wall[hitwall].picnum
+            state get_surface_type
+
+            set temp5 0
+            ifand wall[hitwall].cstat 16
+                set temp5 1
+            ifand wall[hitwall].cstat 32
+                set temp5 1
+			// if this wall has a maskwall
+            ife temp5 1 {
+                // this trick lets us determine if we're in between the ceiling and floor
+                // and should be in the masked area
+                getw[hitwall].nextsector temp5
+                ifn temp5 -1 {
+                    ifl hitz sector[temp5].floorz ifg sprite.z sector[temp5].ceilingz {
+                        getw[hitwall].nextwall temp5
+                        getw[temp5].overpicnum surface_type // get the masked texture if so
+                        state get_surface_type
+                    }
+                }
+            }
+            ife surface_type SURFACE_GLASS ifl wall[hitwall].shade 7 ifn wall[hitwall].blend 130 {
+                ifand wall[hitwall].cstat 128 {
+                    ifand wall[hitwall].cstat 16 {
+                        state enemy_hitscan_glass
+                        ife e_glass_hitscan_return 1
+                            set temp4 1
+                    }
+                    ifand wall[hitwall].cstat 32 {
+                        state enemy_hitscan_glass
+                        ife e_glass_hitscan_return 1
+                            set temp4 1
+                    }
+                }
+            }
+        }
+        ife temp4 1 {
+            ifl temp temp3
+                set enemy_init 1
+            else ifl sprite.extra enemy_spawn_health
+                set enemy_init 1
+            else ifl att_return 448
+                set enemy_init 1
+            else {
+                state enemy_do_move
+                break
+            }
+        }
+        else {
+            state enemy_do_move
+            break
+        }
+    }
+	
+	// movement
+    ifrnd 8
+        nullop
+    else
+        state e_fps
+		
+	ifaction AC_EXODUDE_WALK {
+		state exo_move
+		add enemy_stepcounter 1
+		ifg shot_delay 0
+			sub shot_delay 1
+		// oscillate the walk animation
+		ifactioncount 3
+			action AC_EXODUDE_STEP2
+	}
+	else ifaction AC_EXODUDE_STEP2 {
+		state exo_move
+		add enemy_stepcounter 1
+		ifg shot_delay 0
+			sub shot_delay 1
+		ifactioncount 1
+			action AC_EXODUDE_WALK
+	}
+	else ifn enemy_shoot 1 {
+		set enemy_xv 0
+		set enemy_yv 0
+		set enemy_stepcounter 0
+		set enemy_shoot 0
+	}
+		
+	ifg enemy_stepcounter 12 {
+		sound AM_S_EXODUDE_WALK
+		set enemy_stepcounter 0
+	}
+	
+	getu .player_skill temp
+	add temp 1
+	shiftl temp 2
+	rand temp2 255
+	ife cansee_return 1 ife enemy_shoot 0 ife shot_delay 0 {
+		// guaranteed to attack if close in skill 4, no fuckin around
+		ifge userdef.player_skill 4 ifpdistl 3200
+			set temp temp2
+		ifge temp temp2 {
+			state exo_decide_attack
+			action AC_EXODUDE_FIRE
+		}
+	}
+	
+	ife enemy_shoot 1 {
+		ifn shot_delay 0 {
+			set need_spot_sound 160
+			set temp shot_delay
+			mod temp 4
+			ife temp 0 {
+				set face_target enemy_target
+				state face_actor
+				seta .ang face_return
+			}
+			
+			ife am_estate 2 { // railgun state
+				ifg shot_delay 16 {
+					ifand shot_delay 1 {
+						set temp5 enemy_smg_flame
+						add temp5 7
+						seta .shade temp5
+						// create particles that come towards the muzzle
+					}
+					else
+						seta .shade enemy_smg_flame
+				}
+				else ife shot_delay 16 {
+					// fire the railgun
+					geta .x am_x
+					geta .y am_y
+					geta .z am_z
+					sub am_z 2880
+					seta .z am_z
+					geta .ang am_ang
+					sub am_ang 512
+					and am_ang 2047
+					cos temp am_ang
+					sin temp2 am_ang
+					shiftr temp 7
+					shiftr temp2 7
+					add temp am_x
+					add temp2 am_y
+					seta .x temp
+					seta .y temp2
+					setprojectile[AM_P_EXORAIL].offset 1576
+					getprojectile[AM_P_EXORAIL].extra temp
+					getu .player_skill temp2
+					sub temp2 4
+					inv temp2
+					mul temp2 3
+					sub temp temp2
+					setprojectile[AM_P_EXORAIL].extra temp
+					state exo_railhitspawner
+					shoot AM_P_EXORAIL
+					
+					// restoration
+					seta .x am_x
+					seta .y am_y
+					add am_z 2880
+					seta .z am_z
+					setprojectile[AM_P_EXORAIL].extra 20
+					setprojectile[AM_P_EXORAIL].offset 448
+					// muzzle
+					geta .ang am_ang
+					
+					add am_y 24
+					add am_x 48
+					rotatepoint sprite.x sprite.y am_x am_y am_ang am_x2 am_y2
+					
+					seta .x am_x2
+					seta .y am_y2
+					sub am_z 12048
+					seta .z am_z
+					
+					espawn AM_A_GENERICMUZZLE
+					seta[RETURN].xrepeat 12
+					seta[RETURN].yrepeat 12
+					seta[RETURN].extra 16
+					seta[RETURN].pal 12
+					setav[RETURN].counter 5
+					setav[RETURN].am_estate 1
+					
+					sub am_y 24
+					sub am_x 48
+					add am_z 12048
+					seta .x am_x
+					seta .y am_y
+					seta .z am_z
+					
+					// sound
+					rand temp2 1
+					add temp2 AM_S_EXODUDE_ATK1
+					ifpdistl ENEMY_SOUND_DIST
+						sound temp2
+				}
+			}
+			else ife am_estate 1 { // autoshotgun state
+				set temp3 shot_delay
+				mod temp3 9
+				ife temp3 0 {
+					// light fix
+					seta .shade enemy_smg_flame
+					// proj
+					geta .x am_x
+					geta .y am_y
+					geta .z am_z
+					set am_z2 am_z
+					ifpdistl 900
+						add am_z 1576
+					else {
+						geta .ang am_ang
+						sub am_ang 512
+						and am_ang 2047
+						cos temp am_ang
+						sin temp2 am_ang
+						shiftr temp 7
+						shiftr temp2 7
+						add temp am_x
+						add temp2 am_y
+						seta .x temp
+						seta .y temp2
+					}
+					setprojectile[P_LOVERBOY].offset 1576
+					setprojectile[P_LOVERBOY].extra 2
+					setprojectile[P_LOVERBOY].extra_rand 1
+					getu .vm_distance temp
+					add temp 256
+					shiftr temp 7
+					clamp temp 16 64
+					setprojectile[P_LOVERBOY].tnum temp
+					sub am_z 1576
+					seta .z am_z
+					
+					shoot P_LOVERBOY
+					shoot P_LOVERBOY
+					shoot P_LOVERBOY
+					shoot P_LOVERBOY
+					shoot P_LOVERBOY
+					shoot P_LOVERBOY
+					shoot P_LOVERBOY
+					seta .x am_x
+					seta .y am_y
+					seta .z am_z2
+					// restore defaults
+					setprojectile[P_LOVERBOY].extra WEAPON1_DMG
+					setprojectile[P_LOVERBOY].extra_rand WEAPON1_DMG
+					setprojectile[P_LOVERBOY].workslike 1
+					setprojectile[P_LOVERBOY].tnum 32
+					setprojectile[P_LOVERBOY].offset 448
+					// muzzle
+					geta .x am_x
+					geta .y am_y
+					geta .z am_z
+					geta .ang am_ang
+					
+					add am_y 24
+					add am_x 48
+					rotatepoint sprite.x sprite.y am_x am_y am_ang am_x2 am_y2
+					
+					seta .x am_x2
+					seta .y am_y2
+					sub am_z 12048
+					seta .z am_z
+					
+					espawn AM_A_GENERICMUZZLE
+					seta[RETURN].xrepeat 10
+					seta[RETURN].yrepeat 10
+					seta[RETURN].extra 12
+					seta[RETURN].pal 12
+					
+					sub am_y 24
+					sub am_x 48
+					add am_z 12048
+					seta .x am_x
+					seta .y am_y
+					seta .z am_z
+					
+					// sound
+					getp .sound_pitch temp
+					randvar temp3 64
+					add temp3 512
+					add temp temp3
+					setp .sound_pitch temp
+
+					rand temp2 1
+					add temp2 S_SHOTGUN_FIRE1
+					ifpdistl ENEMY_SOUND_DIST
+						sound temp2
+
+					sub temp temp3
+					setp .sound_pitch temp
+				}
+				else {
+					set temp5 enemy_smg_flame
+					add temp5 7
+					seta .shade temp5
+				}
+			}
+			sub shot_delay 1
+			ife shot_delay 0 {
+				ifand am_estate 1 {
+					rand temp 1
+					add temp S_SHOTGUN_RELOAD1
+					ifpdistl ENEMY_SOUND_DIST
+						sound temp
+				}
+				resetactioncount
+			}
+			set temp 0
+			ifpdistg 10799
+				set temp 2
+			ife cansee_return 0
+				set temp 1
+			ifn temp 0 {
+				// abort shooting sequence
+				ifand am_estate 2 {
+					ife temp 1 ifrnd 16 { // no sight => chance to abort railgun
+						set enemy_shoot 0
+						set shot_delay 36
+						ifge userdef.player_skill 3
+							sub shot_delay 18
+						action AC_EXODUDE_IDLE
+					}
+				}
+				else ifl userdef.player_skill 4 {
+					ifrnd 64 { // some chance to not abort and continue firing anyways
+						set enemy_shoot 0
+						set shot_delay 48
+						ifge userdef.player_skill 3
+							sub shot_delay 16
+						action AC_EXODUDE_WALK
+					}
+				}
+				else ife temp 2 {
+					// opt for railgun option immediately
+					set enemy_shoot 1
+					set shot_delay 55
+					set am_estate 2
+					ifpdistl ENEMY_SOUND_DIST
+						sound AM_S_EXODUDE_RAILCHRG
+				}
+			}
+		}
+		else {
+			// fire ended
+			seta .shade enemy_smg_flame
+			set temp 2
+			ifge userdef.player_skill 4
+				sub temp 1
+			ife sprite.htg_t 2 temp {
+				set enemy_shoot 0
+				set shot_delay 48
+				ifge userdef.player_skill 3
+					sub shot_delay 16
+				action AC_EXODUDE_IDLE
+			}
+		}
+	}
+	state resetlookangle
+enda
+
+spriteshadow AM_EXODUDE_DEAD
+useractor notenemy AM_EXODUDE_DEAD CORPSE_HEALTH
+	clipdist 64
+	state enemy_body_code
 enda

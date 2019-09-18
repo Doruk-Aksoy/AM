@@ -15,6 +15,14 @@ define AM_SEEKERDRONE_MISSILEHIT 	11753
 define AM_SEEKERDRONE				11759
 define AM_SEEKERDRONE_HEALTH		20
 
+define AM_EXODUDE					12843
+define AM_EXODUDE_STAYPUT			12844
+define AM_EXODUDE_DEAD				12889
+define AM_P_EXORAILTRAIL			5950
+define AM_P_EXORAIL					5951
+define AM_P_EXORAILHIT				5952
+define AM_EXODUDE_HEALTH			200
+
 // QUOTE DEFS
 definequote 1000      ^15AMMO BOOSTER! ^92Ammo capacities increased by 10%.
 definequote 1001      ^15STAMINA BOOST! ^92Health capacity increased by 5.
@@ -48,6 +56,7 @@ define AM_DIOPEDE_YELLOW_HEALTH				125
 define AM_DIOPEDE_YELLOW_BUTT_HEALTH		30
 define AM_DIOPEDE_YELLOW_DIST				160
 
+define AM_A_GENERICMUZZLE					5994
 define AM_BRUTE_MUZZLEFLASH					6003
 
 define AM_FIRECYCLONE_PULLDIST				8192
@@ -81,3 +90,6 @@ var p_ammocap_bonus 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
 var p_update_ammocap 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
 // hold how many stamina boosts the player picked up
 var p_stamina_boosts 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_smg_randang1 0 1
+var p_smg_randhoriz1 0 1
+var p_crouching 0 1

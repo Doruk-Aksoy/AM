@@ -1,0 +1,1433 @@
+var dialog_portrait
+var dialog_counter 300 0
+var dialog_numlines
+array dialog_linecount 4
+var dialog_lineslow
+var dialog_temp
+var dialog_index
+var conv_state
+
+eventloadactor A_DIALOG_TRIGGER
+    seta[].cstat 32768
+    geta[].lotag se_lotag
+    geta[].hitag se_hitag
+    seta[].lotag 0
+    seta[].hitag 0
+enda
+
+useractor notenemy A_DIALOG_TRIGGER
+    ifl se_hitag 1
+    {
+        ife sprite[].sectnum player[].cursectnum
+        {
+            set dialog_index se_lotag
+            set conv_state 0
+            killit
+        }
+    }
+    else
+    {
+        ife activateshit[se_hitag] 1
+        {
+            set dialog_index se_lotag
+            set conv_state 0
+            set dialog_trigger -1
+            killit
+        }
+    }
+    ife dialog_index se_lotag
+        killit
+enda
+
+defstate conv_one
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 180
+            set dialog_portrait 0
+            redefinequote 203 This is Colonel Harrison.
+            redefinequote 204 Squad, what's your status?
+            redefinequote 205
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 210
+                set dialog_portrait 1
+                redefinequote 203 Colonel, we've found the
+                redefinequote 204 bomb here in an abandoned
+                redefinequote 205 tunnel beneath the Institute.
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 2
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 90
+                set dialog_portrait 0
+                redefinequote 203 Can you disarm it?
+                redefinequote 204
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 3
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 180
+                set dialog_portrait 1
+                redefinequote 203 It seems to use some kind
+                redefinequote 204 detonator we've never even
+                redefinequote 205 seen before.
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 4
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 240
+                set dialog_portrait 0
+                redefinequote 203 Well keep working on it
+                redefinequote 204 while I have a look around
+                redefinequote 205 the building.
+                redefinequote 206 . . .  Harrison out.
+                add conv_state 1
+            }
+            break
+        case 5
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_48
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 120
+            set dialog_portrait 0
+            redefinequote 203 Alright I'm in.
+            redefinequote 204 What's your status?
+            redefinequote 205
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 150
+                set dialog_portrait 1
+                redefinequote 203 Colonel we've reached the
+                redefinequote 204 basement.
+                redefinequote 205 ...No sign of Heskel.
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 2
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 90
+                set dialog_portrait 2
+                redefinequote 203 Oh, but I'm right here.
+                redefinequote 204
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 3
+            ife dialog_display 83
+            {
+                set dialog_numlines 0
+                set temp 0
+                whilen temp 4
+                {
+                    setarray dialog_linecount[temp] 0
+                    add temp 1
+                }
+                set dialog_display 7
+                set dialog_counter 240
+                set dialog_portrait 2
+                redefinequote 203 Welcome to the Institute!
+                redefinequote 204 I hope you don't mind a
+                redefinequote 205 few extra guests,
+                redefinequote 206 but I do love a party!
+                add conv_state 1
+            }
+            break
+        case 4
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_49
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 150
+            set dialog_portrait 2
+            redefinequote 203 Woopsie!
+            redefinequote 204 Looks like I forgot
+            redefinequote 205 to wrap your present!
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 120
+                set dialog_portrait 1
+                redefinequote 203 We've got a man down!
+                redefinequote 204
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 2
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 135
+                set dialog_portrait 0
+                redefinequote 203 I'm gonna send you
+                redefinequote 204 to the scrap heap!
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 3
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_50
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 135
+            set dialog_portrait 1
+            redefinequote 203 We've got multiple
+            redefinequote 204 casualities, more
+            redefinequote 205 wounded.
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 128
+            {
+                set dialog_numlines 0
+                set temp 0
+                whilen temp 4
+                {
+                    setarray dialog_linecount[temp] 0
+                    add temp 1
+                }
+                set dialog_display 7
+                set dialog_counter 195
+                set dialog_portrait 1
+                redefinequote 203 We couldn't even see
+                redefinequote 204 the bomb that did it.
+                redefinequote 205 This is all that's left.
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 2
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 120
+                set dialog_portrait 0
+                redefinequote 203 Some kind of triggering
+                redefinequote 204 mechanism...
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 3
+            ife dialog_display 113
+            {
+                set dialog_numlines 0
+                set temp 0
+                whilen temp 4
+                {
+                    setarray dialog_linecount[temp] 0
+                    add temp 1
+                }
+                set dialog_display 7
+                set dialog_counter 195
+                set dialog_portrait 0
+                redefinequote 203 Call for a medic and
+                redefinequote 204 sweep the area.
+                redefinequote 205 I'll take care of Heskel.
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 4
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_51
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 135
+            set dialog_portrait 2
+            redefinequote 203 Well this has been
+            redefinequote 204 a pleasure, but I
+            redefinequote 205 must be off.
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 128
+            {
+                set dialog_numlines 0
+                set temp 0
+                whilen temp 4
+                {
+                    setarray dialog_linecount[temp] 0
+                    add temp 1
+                }
+                set dialog_display 7
+                set dialog_counter 195
+                set dialog_portrait 2
+                redefinequote 203 You see, this whole
+                redefinequote 204 building is going to
+                redefinequote 205 blow soon!
+                redefinequote 206 Surprise!
+                add conv_state 1
+            }
+            break
+        case 2
+            ife dialog_display 188
+            {
+                set dialog_numlines 0
+                set temp 0
+                whilen temp 4
+                {
+                    setarray dialog_linecount[temp] 0
+                    add temp 1
+                }
+                set dialog_display 7
+                set dialog_counter 195
+                set dialog_portrait 2
+                redefinequote 203 After all, I can't have
+                redefinequote 204 you rummaging through my
+                redefinequote 205 labs now, can I?
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 3
+            ife dialog_display 188
+            {
+                set dialog_numlines 0
+                set temp 0
+                whilen temp 4
+                {
+                    setarray dialog_linecount[temp] 0
+                    add temp 1
+                }
+                set dialog_display 7
+                set dialog_counter 75
+                set dialog_portrait 2
+                redefinequote 203 Ta-ta!
+                redefinequote 204
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 4
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+defstate conv_52
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 180
+            set dialog_portrait 2
+            redefinequote 203 Impossible!
+            redefinequote 204 No matter. I have many
+            redefinequote 205 more presents for you
+            redefinequote 206 today.
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 180
+                set dialog_portrait 1
+                redefinequote 203 Colonel, Heskel's
+                redefinequote 204 bird still hasn't been
+                redefinequote 205 spotted.
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 2
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+defstate conv_53
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 180
+            set dialog_portrait 2
+            redefinequote 203 Bon Appetite!
+            redefinequote 204 Don't let a little blood
+            redefinequote 205 spoil your appetite.
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+defstate conv_54
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 135
+            set dialog_portrait 0
+            redefinequote 203 Hmm, this key should
+            redefinequote 204 let me through.
+            redefinequote 205
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 150
+                set dialog_portrait 1
+                redefinequote 203 Alright Colonel, we've
+                redefinequote 204 reached a safe zone.
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 2
+            ife dialog_display 143
+            {
+                set dialog_numlines 0
+                set temp 0
+                whilen temp 4
+                {
+                    setarray dialog_linecount[temp] 0
+                    add temp 1
+                }
+                set dialog_display 7
+                set dialog_counter 240
+                set dialog_portrait 1
+                redefinequote 203 HQ says if you can find
+                redefinequote 204 an uplink terminal we
+                redefinequote 205 can track what Heskel
+                redefinequote 206 is up to next.
+                add conv_state 1
+            }
+            break
+        case 3
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 60
+                set dialog_portrait 0
+                redefinequote 203 Roger.
+                redefinequote 204
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 4
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+defstate conv_55
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 120
+            set dialog_portrait 2
+            redefinequote 203 Can't you just die already?
+            redefinequote 204
+            redefinequote 205
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 90
+                set dialog_portrait 0
+                redefinequote 203 Yippee ki-yay
+                redefinequote 204
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 2
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+defstate conv_56
+        switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 150
+            set dialog_portrait 0
+            redefinequote 203 Uplink complete.
+            redefinequote 204 Data should be headed
+            redefinequote 205 your way.
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 180
+                set dialog_portrait 2
+                redefinequote 203 I hope you enjoy blank
+                redefinequote 204 files...
+                redefinequote 205 and my last little
+                redefinequote 206 gift for you.
+                add conv_state 1
+            }
+            break
+        case 2
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 120
+                set dialog_portrait 1
+                redefinequote 203 Colonel, you're not
+                redefinequote 204 gonna like this...
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 3
+            ife dialog_display 113
+            {
+                set dialog_numlines 0
+                set temp 0
+                whilen temp 4
+                {
+                    setarray dialog_linecount[temp] 0
+                    add temp 1
+                }
+                set dialog_display 7
+                set dialog_counter 210
+                set dialog_portrait 1
+                redefinequote 203 We've got signals from
+                redefinequote 204 hundreds of explosives
+                redefinequote 205 scattered around the
+                redefinequote 206 entire building.
+                add conv_state 1
+            }
+            break
+        case 4
+            ife dialog_display 203
+            {
+                set dialog_numlines 0
+                set temp 0
+                whilen temp 4
+                {
+                    setarray dialog_linecount[temp] 0
+                    add temp 1
+                }
+                set dialog_display 7
+                set dialog_counter 210
+                set dialog_portrait 1
+                redefinequote 203 You've gotta get out
+                redefinequote 204 of there right now!
+                redefinequote 205 Get to the roof
+                redefinequote 206 for immediate evac!
+                add conv_state 1
+            }
+            break
+        case 5
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 90
+                set dialog_portrait 0
+                redefinequote 203 Shit.
+                redefinequote 204 . . .On my way.
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 6
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+defstate conv_57
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 105
+            set dialog_portrait 2
+            redefinequote 203 Oh look, more party
+            redefinequote 204 guests!
+            redefinequote 205
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 90
+                set dialog_portrait 1
+                redefinequote 203 Colonel, hurry!
+                redefinequote 204
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 2
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 90
+                set dialog_portrait 2
+                redefinequote 203 HAHAHAHA!
+                redefinequote 204
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 3
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 60
+                set dialog_portrait 0
+                redefinequote 203 No!
+                redefinequote 204
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 4
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 120
+                set dialog_portrait 2
+                redefinequote 203 Spoiler alert!
+                redefinequote 204 You ALL die here!
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 5
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 120
+                set dialog_portrait 0
+                redefinequote 203 Only if you come
+                redefinequote 204 with us!
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 6
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_64
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 180
+            set dialog_portrait 0
+            redefinequote 203 Squad, I'm on some kind
+            redefinequote 204 of transport.
+            redefinequote 205 Do you copy?
+            redefinequote 206
+            add conv_state 1
+            break
+        case 60
+            ife dialog_display 0
+            {
+                soundonce S_RADIO_ON
+                set dialog_display 1
+                set dialog_counter 120
+                set dialog_portrait 2
+                redefinequote 203 Muahahaha
+                redefinequote 204
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 61
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    ifl conv_state 60 ifg conv_state 0 ife dialog_display 0
+        add conv_state 1
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_65
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 90
+            set dialog_portrait 0
+            redefinequote 203 . . . Shit.
+            redefinequote 204
+            redefinequote 205
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_66
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 120
+            set dialog_portrait 0
+            redefinequote 203 Last stop Paineville.
+            redefinequote 204
+            redefinequote 205
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_67
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 240
+            set dialog_portrait 0
+            redefinequote 203 Looks like they built a
+            redefinequote 204 whole new transport system
+            redefinequote 205 connected to the abandoned
+            redefinequote 206 Metro hub.
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_68
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 165
+            set dialog_portrait 0
+            redefinequote 203 This broken circuit is
+            redefinequote 204 shorting out the whole rail.
+            redefinequote 205
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 158
+            {
+                set dialog_numlines 0
+                set temp 0
+                whilen temp 4
+                {
+                    setarray dialog_linecount[temp] 0
+                    add temp 1
+                }
+                set dialog_display 7
+                set dialog_counter 150
+                set dialog_portrait 0
+                redefinequote 203 I'd better find a way to
+                redefinequote 204 reroute the power.
+                redefinequote 205
+                redefinequote 206
+                add conv_state 1
+            }
+            break
+        case 2
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_69
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 105
+            set dialog_portrait 0
+            redefinequote 203 Hmm. . .  no power.
+            redefinequote 204
+            redefinequote 205
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_70
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 120
+            set dialog_portrait 0
+            redefinequote 203 That should lighten things up.
+            redefinequote 204
+            redefinequote 205
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+defstate conv_71
+    switch conv_state
+        case 0
+            soundonce S_RADIO_ON
+            set dialog_display 1
+            set dialog_counter 165
+            set dialog_portrait 0
+            redefinequote 203 Damn, the crash must
+            redefinequote 204 have made everything
+            redefinequote 205 fall to pieces.
+            redefinequote 206
+            add conv_state 1
+            break
+        case 1
+            ife dialog_display 0
+            {
+                set conv_state 0
+                set dialog_index 0
+            }
+            break
+    endswitch
+    set temp dialog_counter
+    sub temp 7
+    ifge dialog_display temp
+        soundonce S_RADIO_OFF
+ends
+
+var dialog_n1
+var dialog_n2
+defstate do_dialog
+    switch dialog_index
+        case 1
+            state conv_one
+            break
+
+        case 48
+            state conv_48
+            break
+        case 49
+            state conv_49
+            break
+        case 50
+            state conv_50
+            break
+        case 51
+            state conv_51
+            break
+        case 52
+            state conv_52
+            break
+        case 53
+            state conv_53
+            break
+        case 54
+            state conv_54
+            break
+        case 55
+            state conv_55
+            break
+        case 56
+            state conv_56
+            break
+        case 57
+            state conv_57
+            break
+
+        case 64
+            state conv_64
+            break
+        case 65
+            state conv_65
+            break
+        case 66
+            state conv_66
+            break
+        case 67
+            state conv_67
+            break
+        case 68
+            state conv_68
+            break
+        case 69
+            state conv_69
+            break
+        case 70
+            state conv_70
+            break
+        case 71
+            state conv_71
+            break
+    endswitch 
+    ifn dialog_display 0
+    {
+        set dialog_n1 0
+        set dialog_n2 0
+        ifrnd 127
+            set dialog_n1 1
+        ifrnd 127
+            set dialog_n2 1
+        add dialog_display 1
+        ifl dialog_numlines 1
+        {
+            set dialog_numlines 1
+        }
+        else
+        {
+            ife dialog_lineslow 0
+            {
+                set temp 0
+                whilen temp dialog_numlines
+                {
+                    set temp2 dialog_linecount[temp]
+                    add temp2 1
+                    setarray dialog_linecount[temp] temp2
+                    add temp 1
+                }
+                set dialog_lineslow 0
+            }
+            else
+            {
+                add dialog_lineslow 1
+                ifg dialog_lineslow 1
+                    set dialog_lineslow 0
+            }
+        }
+        ifg dialog_display dialog_counter
+        {
+            set dialog_display 0
+            set dialog_numlines 0
+            redefinequote 203
+            redefinequote 204
+            redefinequote 205
+            redefinequote 206
+            set temp 0
+            whilen temp 4
+            {
+                setarray dialog_linecount[temp] 0
+                add temp 1
+            }
+        }
+    }
+ends
+
+onevent EVENT_USESTEROIDS
+    set RETURN -1
+    /*
+    ife dialog_display 0
+        set dialog_index 1 */
+endevent
+
+defstate erase_dialog
+    set dialog_temp dialog_counter
+    sub dialog_temp 35
+    ifg dialog_display dialog_temp
+    {
+        set temp dialog_display
+        qstrlen temp2 200
+        div temp2 5
+        add temp 10
+        add temp temp2
+        ifg temp dialog_counter
+            set temp dialog_counter
+        sub temp dialog_counter
+        abs temp
+        ifl temp 2
+            set temp 0
+        redefinequote 202
+        qstrncat 202 200 temp
+        set hudx_quote 202
+    }
+ends
+
+define DIALOG_Y_CENTER 1310720 // 20*65536
+
+defstate dialog_dxstyle
+    ifn dialog_display 0
+    {
+        set dialog_temp dialog_counter
+        sub dialog_temp 7
+        ifl dialog_display 7
+        {
+            set temp5 dialog_display
+            // clamp temp5 2 6
+            mul temp5 9362
+            ifg temp5 65536
+                set temp5 65536
+        }
+        else ifg dialog_display dialog_temp
+        {
+            set temp5 dialog_display
+            sub temp5 dialog_counter
+            inv temp5
+            // clamp temp5 2 6
+            mul temp5 9362
+            ifg temp5 65536
+                set temp5 65536
+        }
+        else
+            set temp5 65536
+
+        ifl temp5 9362
+            break
+
+        set temp4 temp5
+        mul temp4 5
+        div temp4 6
+        setuserdef[].draw_yxaspect temp4
+
+        set temp4 7864320
+        sub temp4 DIALOG_Y_CENTER
+        divscale temp4 temp4 temp5 16
+        add temp4 DIALOG_Y_CENTER
+        sub temp4 6553600
+        setuserdef[].draw_y -temp4
+
+        set temp4 65536
+        sub temp4 temp5
+        shiftr temp4 8
+
+        state ResetTile
+        set hudx_x 163
+        set hudx_y 40
+        set hudx_scale 110592
+        set hudx_tilenum 5526
+        set hudx_shade 32
+        set hudx_orientation 256
+        // or hudx_orientation 33
+        mulscale hudx_alpha 85 temp4 8
+        add hudx_alpha 170
+
+        ife dialog_n1 1
+            set hudx_angle 1024
+        else
+            set hudx_angle 0
+        ife dialog_n2 1
+            or hudx_orientation 4
+
+        state DrawTile640x480Dialog
+
+        set hudx_angle 0
+        set hudx_shade 5
+
+
+        /* set temp 0
+        set dialog_temp dialog_counter
+        sub dialog_temp 7
+        ifl dialog_display 7
+            set temp 1
+        else ifg dialog_display dialog_temp
+            set temp 1
+        ife temp 1
+        {
+            set hudx_tilenum 5527
+            set hudx_orientation 289
+            state DrawTile640x480Dialog
+        } */
+
+        set hudx_tilenum 5525
+        set hudx_orientation 256 // 257
+        mulscale hudx_alpha 170 temp4 8
+        add hudx_alpha 85
+        state DrawTile640x480Dialog
+
+        // shadow
+        set hudx_x 41
+        set hudx_scale 89856
+        ife dialog_portrait 0
+            set hudx_tilenum HUD_FACE
+        else
+        {
+            switch dialog_portrait
+                case 0
+                    set hudx_tilenum HUD_FACE
+                    break
+                case 1
+                    set hudx_tilenum 5520 // GDF
+                    break
+                case 2
+                    set hudx_tilenum 5521 // heskel
+                    break
+            endswitch
+        }
+        set hudx_shade 40
+        set hudx_orientation 256 // 289
+        mulscale hudx_alpha 85 temp4 8
+        add hudx_alpha 170
+        state DrawTile640x480Dialog
+
+        set hudx_scale 82944
+        set hudx_shade 0
+        set hudx_orientation 256 // 257
+        mulscale hudx_alpha 170 temp4 8
+        add hudx_alpha 85
+        state DrawTile640x480Dialog
+
+        ife dialog_numlines 0
+            add dialog_numlines 1
+        state ResetText
+        set hudx_x 89
+        set hudx_y 9
+        set hudx_scale 41472
+        // redefinequote 200 This is Colonel Harrison.
+        qstrcpy 200 203
+        redefinequote 201
+       /* set temp dialog_display
+        shiftr temp 1 */
+        set temp dialog_linecount[0]
+        qstrlen temp2 200
+        ifg temp temp2
+            set temp temp2
+        qstrncat 201 200 temp
+        set hudx_quote 201
+        set hudx_tilenum STARTALPHANUM
+        set hudx_pal 1
+        set hudx_orientation 16
+        or hudx_orientation 256
+        set hudx_alpha temp4
+        state erase_dialog
+        state DrawText640x480Dialog
+
+        qstrlen temp 201
+        qstrlen temp2 200
+        qstrlen temp3 204
+        ife temp temp2 ifn temp3 0
+        {
+            ife dialog_numlines 1
+                add dialog_numlines 1
+            add hudx_y 16
+            // redefinequote 200 Squad, what's your status?
+            qstrcpy 200 204
+            redefinequote 201
+            /* set temp dialog_display
+            mul temp2 2
+            sub temp temp2
+            shiftr temp 1 */
+            set temp dialog_linecount[1]
+            qstrlen temp2 200
+            ifl temp 0
+                set temp 0
+            ifg temp temp2
+                set temp temp2
+            qstrncat 201 200 temp
+            state erase_dialog
+            state DrawText640x480Dialog
+        }
+        qstrlen temp 201
+        qstrlen temp2 200
+        qstrlen temp3 205
+        ife temp temp2 ifn temp3 0
+        {
+            ife dialog_numlines 2
+                add dialog_numlines 1
+            add hudx_y 16
+            // redefinequote 200 .....................
+            qstrcpy 200 205
+            redefinequote 201
+            /* set temp dialog_display
+            mul temp2 4
+            sub temp temp2
+            shiftr temp 1 */
+            set temp dialog_linecount[2]
+            qstrlen temp2 200
+            ifl temp 0
+                set temp 0
+            ifg temp temp2
+                set temp temp2
+            qstrncat 201 200 temp
+            state erase_dialog
+            state DrawText640x480Dialog
+        }
+        qstrlen temp 201
+        qstrlen temp2 200
+        qstrlen temp3 206
+        ife temp temp2 ifn temp3 0
+        {
+            ife dialog_numlines 3
+                add dialog_numlines 1
+            add hudx_y 16
+            // redefinequote 200 Repeat, what's your status?
+            qstrcpy 200 206
+            redefinequote 201
+            /* set temp dialog_display
+            mul temp2 36
+            sub temp temp2
+            shiftr temp 1 */
+            set temp dialog_linecount[3]
+            qstrlen temp2 200
+            ifl temp 0
+                set temp 0
+            ifg temp temp2
+                set temp temp2
+            qstrncat 201 200 temp
+            state erase_dialog
+            state DrawText640x480Dialog
+        }
+
+        state aspect_reset
+    }
+ends
+appendevent EVENT_DISPLAYREST
+    state dialog_dxstyle
+endevent

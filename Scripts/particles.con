@@ -1004,9 +1004,9 @@ spritenopal A_EXPLOSION
 defstate lam_explosion
     ifaction AC_EXPLOSIONBASE
     {
-		rand temp2 6
+        rand temp2 6
         add temp2 S_EXPL_MD001
-        soundvar temp2   
+        soundvar temp2    
         action AC_EXPLOSION_ALT
         seta .shade -8
     }
@@ -1121,13 +1121,7 @@ actor A_EXPLOSION 0 AC_EXPLOSIONBASE
     geta[].htflags temp
     or temp 2048
     seta[].htflags temp
-	
-	ifspawnedby P_FLAMER
-		nullop
-	else
-		set db_once 1
-	
-    ife sprite[].htg_t 2 1 ife db_once 1 // ifactioncount
+    ife sprite[].htg_t 2 1 // ifactioncount
     {
         ife explosion_silent 0
         {
@@ -1159,9 +1153,9 @@ actor A_EXPLOSION 0 AC_EXPLOSIONBASE
                 getceilzofslope sprite.sectnum sprite.x sprite.y temp2
                 ifl temp5 temp2
                     set temp5 temp2
-                ifspawnedby P_DSLAM_THROWN
+                ifspawnedby P_PUCK_THROWN
                     add temp 2
-                else ifspawnedby P_DSLAM_PLACED
+                else ifspawnedby P_PUCK_PLACED
                     add temp 2
                 for itervar range temp
                 {
@@ -1253,7 +1247,7 @@ actor A_EXPLOSION 0 AC_EXPLOSIONBASE
                     break
             endswitch
 
-			ifspawnedby P_GRENADE
+            ifspawnedby P_GRENADE
             {
                 rand temp2 6
                 add temp2 S_EXPL_MD001
@@ -1413,7 +1407,7 @@ actor A_EXPLOSION 0 AC_EXPLOSIONBASE
             add temp sprite[].y
             seta[].y temp
 
-            rand temp 64
+            rand temp 1024
             ifrnd 127
                 inv temp
             add temp sprite[].z
@@ -1457,15 +1451,15 @@ actor A_EXPLOSION 0 AC_EXPLOSIONBASE
             soundvar temp
             add counter 1
             rand temp2 4
-			add temp2 S_EXPL_SM001
-			soundvar temp2
+            add temp2 S_EXPL_SM001
+            soundvar temp2
         }
     }
     else ifspawnedby A_FIREEXT
         cstat 32768
     else ifspawnedby P_FLAMINGSKULL
     {
-       // spritepal 0
+        spritepal 0
         geta[].htg_t 2 temp
         ifg temp 1 ifl temp 10
         {
@@ -1640,8 +1634,6 @@ actor A_SPARK1 10 AC_SPARK1BASE
                     set temp2 1
                 else ife sprite[temp3].picnum A_SHOTGUNNER
                     set temp2 1
-				else ife sprite[temp3].picnum AM_EXODUDE
-					set temp2 1
                 ife temp2 1
                 {
                     eqspawn A_BULLETHOLE
@@ -2279,7 +2271,6 @@ actor A_SPARK1 10 AC_SPARK1BASE
                                 case A_DEACON
                                 case A_NUKEMUTANT
                                 case A_NUKEMUTANT_GDF
-								case AM_EXODUDE
                                     set temp4 tilesizy[sprite[temp].picnum]
                                    // basic formula: (sizy*256)/64 = base value then mul yrepeat for game topZ
                                    // simplified to sizy*4*yrepeat
@@ -3526,7 +3517,6 @@ defstate smoke_checksurface
                             case A_DEACON
                             case A_NUKEMUTANT
                             case A_NUKEMUTANT_GDF
-							case AM_EXODUDE
                                 set temp4 tilesizy[sprite[temp].picnum]
                                // basic formula: (sizy*256)/64 = base value then mul yrepeat for game topZ
                                // simplified to sizy*4*yrepeat
@@ -6406,7 +6396,7 @@ appendevent EVENT_WORLD
         state weapon_projectiles
         switch sprite[temp].picnum
         {
-			case 2595:
+            case 2595:
                 seta[temp].xrepeat 0
                 changespritestat temp STAT_ACTOR
                 break
@@ -8010,10 +8000,11 @@ defstate gib_skull
         redefinequote 115 gamestate.bin
         readarrayfromfile gamestate 115
         set temp gamestate[11]
-		add temp 1
-		setarray gamestate[11] temp
-		writearraytofile gamestate 115
-		or cheevo_tracker 65536
+
+        add temp 1
+        setarray gamestate[11] temp
+        writearraytofile gamestate 115
+        or cheevo_tracker 65536
     }
     set temp actor_moveable_xv
     abs temp

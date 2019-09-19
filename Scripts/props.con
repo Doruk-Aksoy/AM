@@ -1441,9 +1441,8 @@ defstate trashy_larry
         ifrnd 12 shiftl temp4 1
         for itervar range temp4
         {
-			// no syringe, it has different use here
-            /*ifrnd 64 espawn I_SYRINGE
-            else*/ espawn I_ARMOR_SHARD
+            ifrnd 64 espawn I_SYRINGE
+            else espawn I_ARMOR_SHARD
             state spawn_can_stuff
             // sub temp4 1
         }
@@ -4442,7 +4441,7 @@ defstate soda_stand_code
     
     set temp 0
     ifhitspace set temp 1
-    else ifphealthl player.max_player_health set temp 1
+    else ifphealthl MAXPLAYERHEALTH set temp 1
     
     ife temp 1
     {

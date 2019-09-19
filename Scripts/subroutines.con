@@ -1,0 +1,504 @@
+
+/* face_actor
+ * DESCRIPTION: finds the angle that points THISACTOR toward a given sprite
+ * INPUTS: face_target - sprite ID to face
+ * OUTPUTS: face_return - angle facing the target
+ */
+
+var face_target
+var face_x
+var face_y
+var face_return
+
+defstate face_actor
+    geta[face_target].x face_x
+    sub face_x sprite[].x
+
+    geta[face_target].y face_y
+    sub face_y sprite[].y
+
+    getangle face_return face_x face_y
+ends
+
+
+/* cansee_actor
+ * DESCRIPTION: determines whether THISACTOR can see a given sprite
+ * INPUTS: cansee_target - sprite ID to check
+           cansee_height - height of THISACTOR's eyes
+ * OUTPUTS: cansee_return - boolean "can see?"
+ */
+
+var cansee_target
+var cansee_height
+var cansee_temp
+var cansee_temp2
+var cansee_temp3
+var cansee_temp4
+var cansee_temp5
+var cansee_temp6
+var cansee_temp7
+var cansee_temp8
+var cansee_temp9
+var cansee_temp10
+var cansee_quick
+var cansee_return
+var cansee_return_o
+var cansee_return_a
+var cansee_return_w
+var cansee_ang
+var cansee_itervar
+var cansee_optimize 0 2
+var last_cansee_return 0 2
+var last_cansee_return_o 0 2
+var last_cansee_return_a 0 2
+var last_cansee_return_w 0 2
+defstate cansee_actor
+    ife cansee_target -1
+        break
+    ife sprite[cansee_target].statnum MAXSTATUS
+        break
+    ifand tiledata[sprite[].picnum].gameflags 32
+        ifn sprite[cansee_target].statnum STAT_WAYPOINT
+            ifn sprite[cansee_target].statnum STAT_LOCATOR
+            {
+                set cansee_optimize sprite.htg_t 0
+                mod cansee_optimize 3
+                ifn cansee_optimize 0
+                {
+                    set cansee_return last_cansee_return
+                    set cansee_return_o last_cansee_return_o
+                    set cansee_return_a last_cansee_return_a
+                    set cansee_return_w last_cansee_return_w
+                    break
+                }
+            }
+        ife sprite[cansee_target].statnum STAT_WAYPOINT
+            set cansee_height 0
+    geta[cansee_target].x cansee_temp
+    sub cansee_temp sprite[].x
+    geta[cansee_target].y cansee_temp2
+    sub cansee_temp2 sprite[].y
+
+    getangle cansee_temp3 cansee_temp cansee_temp2
+    geta[].ang cansee_ang
+    sub cansee_ang cansee_temp3
+
+    ifg cansee_ang 1023
+        sub cansee_ang 2047
+    ifl cansee_ang -1023
+        add cansee_ang 2047
+    abs cansee_ang
+
+    geta[].z cansee_temp
+    sub cansee_temp cansee_height
+    seta[].z cansee_temp
+
+    geta[cansee_target].z cansee_temp2
+    sub cansee_temp2 cansee_height
+    seta[cansee_target].z cansee_temp2
+
+    canseespr THISACTOR cansee_target cansee_return
+
+    add cansee_temp cansee_height
+    seta[].z cansee_temp
+
+    add cansee_temp2 cansee_height
+    seta[cansee_target].z cansee_temp2
+    ifand tiledata[sprite[].picnum].gameflags 32
+    {
+
+        ldist cansee_temp3 THISACTOR cansee_target
+        geta[].z cansee_temp
+        ife sprite[cansee_target].statnum STAT_WAYPOINT
+            set cansee_height 0
+        sub cansee_temp cansee_height
+        seta[].z cansee_temp
+
+        geta[cansee_target].z cansee_temp2
+        sub cansee_temp2 cansee_height
+
+        sub cansee_temp2 cansee_temp
+        shiftl cansee_temp2 14
+        ifn cansee_temp3 0 ifn cansee_temp2 0
+            div cansee_temp2 cansee_temp3
+        set h_zvel cansee_temp2
+
+
+        geta[cansee_target].x face_x
+        sub face_x sprite[].x
+
+        geta[cansee_target].y face_y
+        sub face_y sprite[].y
+
+        getangle cansee_temp3 face_x face_y
+
+        set h_ang cansee_temp3
+        cos h_cos h_ang
+        sin h_sin h_ang
+        set cansee_return_o cansee_return
+        set cansee_return_a 0
+        ife sprite[cansee_target].statnum STAT_WAYPOINT
+        {
+            hitscan sprite[].x sprite[].y sprite[].z sprite[].sectnum h_cos h_sin h_zvel hitsect hitwall hitsprite hitx hity hitz CLIPMASK_CSTAT512
+            add cansee_temp cansee_height
+            seta[].z cansee_temp
+        }
+        else
+        {
+            hitscan sprite[].x sprite[].y sprite[].z sprite[].sectnum h_cos h_sin h_zvel hitsect hitwall hitsprite hitx hity hitz CLIPMASK_STD // CLIPMASK_ALLFLAGS
+            add cansee_temp cansee_height
+            seta[].z cansee_temp
+            ife hitsprite -1
+            {
+                set cansee_return_o 0
+            }
+            else ifn hitsprite cansee_target
+            {
+                set cansee_temp3 1
+                set cansee_temp4 hitsprite
+                ifand sprite[hitsprite].cstat 256
+                    set cansee_temp3 0
+                else
+                {
+                    hitscan sprite[].x sprite[].y sprite[].z sprite[].sectnum h_cos h_sin h_zvel hitsect hitwall hitsprite hitx hity hitz CLIPMASK_HITSCAN
+                    ifn hitsprite -1
+                    {
+                        ifn hitsprite cansee_target
+                            set cansee_temp3 0
+                    }
+                    else
+                    {
+                        set hitsprite cansee_temp4
+                        set cansee_temp3 0
+                    }
+                }
+                ife cansee_temp3 0
+                {
+                    set cansee_return_o 0
+                    ifand tiledata[sprite[hitsprite].picnum].gameflags 32
+                        set cansee_return_a 1
+                }
+            }
+            else
+                set cansee_return_o 1
+        }
+        ifn hitwall -1
+            set cansee_return_w hitwall
+        ife cansee_target player[].i ifn enemy_init 0
+        {
+            add h_ang 32
+            set cansee_temp3 0
+            set cansee_temp2 0
+            ifn hitwall -1
+            {
+                ifn wall[hitwall].nextsector -1
+                {
+                    ifn wall[hitwall].nextwall -1
+                    {
+                        getw[hitwall].nextsector cansee_temp4
+                        ifn cansee_temp4 -1
+                        {
+                            ifl cansee_ang 128
+                            {
+                                switch sector[cansee_temp4].lotag
+                                    case 9
+                                    case 20
+                                    case 21
+                                    case 22
+                                    case 23
+                                    case 25
+                                        ifactor A_GREATER
+                                        {
+                                            set cansee_temp3 64
+                                            set cansee_return 2
+                                        }
+                                        else ifactor A_CULTIST
+                                        {
+                                            set cansee_temp3 64
+                                            set cansee_return 2
+                                        }
+                                        else ifactor A_SHOTGUNNER
+                                        {
+                                            set cansee_temp3 64
+                                            set cansee_return 2
+                                        }
+                                        break
+                                endswitch
+                            }
+                        }
+                    }
+                }
+            }
+            switch sprite[].picnum
+                case A_GREATER
+                case A_MECHBOSS_TOP
+                    set cansee_quick 0 // slow path for certain actors
+                    break
+                case A_MECHSECT
+                case A_DRONE
+                case A_BRUTE_TOP
+                case A_BRUTE_BOTTOM
+                    set cansee_temp3 64
+                    set cansee_return cansee_return_o
+                    break
+                default
+                    set cansee_quick 1
+                    break
+            endswitch
+            ife cansee_return_o 0
+            {
+                set cansee_temp3 64
+                set cansee_return cansee_return_o
+            }
+            else ife cansee_return 0
+                set cansee_temp3 64
+            ifl framerate 20 // last ditch, bad jujubees
+                set cansee_quick 1
+            ifl cansee_temp3 64
+            {
+                ldist cansee_temp3 cansee_target THISACTOR
+                geta .z cansee_temp4
+                set cansee_temp5 tilesizy[sprite[].picnum]
+                shiftl cansee_temp5 2
+                mul cansee_temp5 sprite[].yrepeat
+                sub cansee_temp4 cansee_temp5
+                shiftr cansee_temp5 3
+                add cansee_temp4 cansee_temp5
+                ife cansee_target player.i
+                    sub cansee_temp4 player.posz
+                else
+                    sub cansee_temp4 sprite[cansee_target].z
+
+                cos h_cos h_ang
+                sin h_sin h_ang
+                mul h_cos cansee_temp3
+                mul h_sin cansee_temp3
+
+                shiftr h_cos 14
+                shiftr h_sin 14
+                geta .x cansee_temp5
+                geta .y cansee_temp6
+                geta .z cansee_temp7
+                geta .sectnum cansee_temp8
+                geta .ang cansee_temp9
+                geta .clipdist cansee_temp10
+                geta .zvel cansee_temp
+                geta .htfloorz cansee_temp2
+                set cansee_temp3 cansee_temp10
+                shiftr cansee_temp3 2
+                clamp cansee_temp3 2 65536 
+                seta .clipdist cansee_temp10
+                movesprite THISACTOR h_cos h_sin cansee_temp4 CLIPMASK_HITSCAN cansee_temp4
+                seta .x cansee_temp5
+                seta .y cansee_temp6
+                seta .z cansee_temp7
+                seta .sectnum cansee_temp8
+                seta .ang cansee_temp9
+                seta .clipdist cansee_temp10
+                seta .zvel cansee_temp
+                seta .htfloorz cansee_temp2
+                
+                
+                ifg cansee_temp3 49151
+                {
+                    sub cansee_temp3 49152
+                    ifn cansee_temp3 cansee_target
+                    {
+                        set cansee_return 0
+                        ifand tiledata[sprite[cansee_temp3].picnum].gameflags 32
+                            set cansee_return_a 1
+                    }
+                }
+            }
+        }
+        else
+        {
+            ife hitsprite -1
+                set cansee_return_o 0
+            else ifn hitsprite cansee_target
+                set cansee_return_o 0
+            else
+                set cansee_return_o 1
+            ife sprite[cansee_target].picnum A_WAYPOINT ifn cansee_target way_nearest
+            {
+                set cansee_return cansee_return_o
+                ifn hitwall -1
+                {
+                    ifn wall[hitwall].nextsector -1
+                    {
+                        ifn wall[hitwall].nextwall -1
+                        {
+                            getw[hitwall].nextsector cansee_temp4
+                            ifn cansee_temp4 -1
+                            {
+                                ifl cansee_ang 128
+                                {
+                                    switch sector[cansee_temp4].lotag
+                                        case 9
+                                        case 20
+                                        case 21
+                                        case 22
+                                        case 23
+                                        case 25
+                                            ifactor A_GREATER
+                                            {
+                                                set cansee_temp3 64
+                                                set cansee_return_o 1
+                                            }
+                                            else ifactor A_CULTIST
+                                            {
+                                                set cansee_temp3 64
+                                                set cansee_return_o 1
+                                            }
+                                            else ifactor A_SHOTGUNNER
+                                            {
+                                                set cansee_temp3 64
+                                                set cansee_return_o 1
+                                            }
+                                            break
+                                    endswitch
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+                set cansee_return cansee_return_o
+        }
+        set last_cansee_return cansee_return
+        set last_cansee_return_o cansee_return_o
+        set last_cansee_return_a cansee_return_a
+        set last_cansee_return_w cansee_return_w
+        
+    }
+    else ife sprite[].picnum A_SOUND_EMITTER
+    {
+        ldist cansee_temp3 THISACTOR cansee_target
+        geta[].z cansee_temp
+        sub cansee_temp cansee_height
+        seta[].z cansee_temp
+
+        geta[cansee_target].z cansee_temp2
+        sub cansee_temp2 cansee_height
+
+        sub cansee_temp2 cansee_temp
+        shiftl cansee_temp2 14
+        ifn cansee_temp3 0 ifn cansee_temp2 0
+            div cansee_temp2 cansee_temp3
+        set h_zvel cansee_temp2
+
+
+        geta[cansee_target].x face_x
+        sub face_x sprite[].x
+
+        geta[cansee_target].y face_y
+        sub face_y sprite[].y
+
+        getangle cansee_temp3 face_x face_y
+
+        set h_ang cansee_temp3
+        cos h_cos h_ang
+        sin h_sin h_ang
+        set cansee_return_o cansee_return
+        set cansee_return_a 0
+        hitscan sprite[].x sprite[].y sprite[].z sprite[].sectnum h_cos h_sin h_zvel hitsect hitwall hitsprite hitx hity hitz CLIPMASK_HITSCAN // CLIPMASK_ALLFLAGS
+        ife hitsprite -1
+            set cansee_return_o 0
+        else ifn hitsprite cansee_target
+            set cansee_return_o 0
+        ifn hitwall -1
+            set cansee_return_w hitwall
+
+            set cansee_return cansee_return_o
+        add cansee_temp cansee_height
+        seta[].z cansee_temp
+    }
+  /*   redefinequote 11 %ld %ld %ld %ld
+    qsprintf 11 11 cansee_return cansee_return_o cansee_return_a cansee_return_w
+    quote 11 */
+
+ends
+
+
+/* angle_to_target
+ * DESCRIPTION: determines the difference in angle between THISACTOR a given sprite
+ * INPUTS: att_target - sprite ID to check
+           att_noclamp - don't clamp the result to an absolute value
+ * OUTPUTS: att_return - difference in ang (from -1023 to 1023)
+                         with att_noclamp 0 (default) this acts as simple cone
+ */
+var att_return
+var att_x
+var att_y
+var att_ang
+var att_target
+var att_noclamp
+
+defstate angle_to_target
+    geta[att_target].x att_x
+    sub att_x sprite[].x
+    geta[att_target].y att_y
+    sub att_y sprite[].y
+
+    getangle att_ang att_x att_y
+    geta[].ang att_return
+    sub att_return att_ang
+
+    ifg att_return 1023
+        sub att_return 2047
+    ifl att_return -1023
+        add att_return 2047
+     // clamped to positive values, 1 allows other hacks
+    ife att_noclamp 0
+        abs att_return
+    set att_noclamp 0
+ends
+
+var aft_return // recycle other vars that aren't user facing
+var aft_target
+var aft_noclamp
+
+defstate angle_from_target
+    geta[].x att_x
+    sub att_x sprite[aft_target].x
+    geta[].y att_y
+    sub att_y sprite[aft_target].y
+
+    getangle att_ang att_x att_y
+    geta[aft_target].ang aft_return
+    sub aft_return att_ang
+
+    ifg aft_return 1023
+        sub aft_return 2047
+    ifl aft_return -1023
+        add aft_return 2047
+     // clamped to positive values, 1 allows other hacks
+    ife aft_noclamp 0
+        abs aft_return
+    set aft_noclamp 0
+ends
+
+/* move_actor
+ * DESCRIPTION: determines an x and y velocity for an actor based on its current ang
+ * INPUTS: move_v - desired velocity
+ * OUTPUTS: move_xv - x velocity
+            move_yv - y velocity
+ */
+var move_v
+var move_xv
+var move_yv
+var move_override -1 0
+
+defstate move_actor
+    ife move_override -1
+        set move_override THISACTOR
+    cos move_xv sprite[move_override].ang
+    sin move_yv sprite[move_override].ang
+    mul move_xv move_v
+    mul move_yv move_v
+
+    shiftr move_xv 14
+    shiftr move_yv 14
+    set move_override -1
+ends

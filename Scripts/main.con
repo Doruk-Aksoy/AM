@@ -154,8 +154,8 @@ var final_cheevos
 var old_cheevos
 
 // no more cyclone
-var cyclone_mod_xv 0 1
-var cyclone_mod_yv 0 1
+/* var cyclone_mod_xv 0 2
+var cyclone_mod_yv 0 2 */
 var particle_type 0 2
 var particle_force_pal 0 2
 var particle_force_shade 0 2
@@ -360,7 +360,7 @@ defstate is_item
         case I_DAMAGEBOOSTER
         case I_CLUSTERPUCK
         case I_BOWLINGBOMB_PICKUP
-		case I_SYRINGE
+        case I_SYRINGE
             set temp6 1
             setav[temp].is_pickup 1
             break
@@ -407,7 +407,7 @@ onevent EVENT_PREWORLD
             add num_flag32 1
             setarray radar_targets_pup[radar_targets_num] temp
             add radar_targets_num 1
-            
+
             ifg actorvar[temp].ps_master_id -1
                 seta[temp].httimetosleep 300
             else ife actorvar[temp].enemy_dontsleep 1 // force from R2
@@ -599,7 +599,7 @@ onevent EVENT_PREWORLD
         set this_timer end_world_tics
         mul this_timer 100
         div this_timer 33
-        
+
         set temp 0
         ifg this_timer 25
         {
@@ -641,10 +641,7 @@ include scripts/text.con
 include scripts/levels.con
 include scripts/customize.con
 
-include scripts/am_defs.con
-
 include scripts/subroutines.con
-include scripts/am_helper.con
 
 include scripts/surfaces.con
 include scripts/draw.con
@@ -664,8 +661,6 @@ include scripts/inventory.con
 include scripts/particles.con
 
 include scripts/enemies.con
-
-include scripts/am.con
 /*
 array tilelist MAXTILES GAMEARRAY_BOOLEAN
 appendevent EVENT_WORLD
@@ -965,7 +960,7 @@ defstate player_sounds
                     set temp2 S_SHELLYVO_PUPSMGSND2
                     state process_lines
                 }
-                
+
                 set myfavoriteguns 0
                 break
             }
@@ -1131,7 +1126,7 @@ defstate echo_cheevo
     {
         qputs 11 Unlocked: Shaken, Not Stirred
         echo 11
-		qputs 11 ACH_PROGRESS_0
+        qputs 11 ACH_PROGRESS_0
         capia 11
     }
     ifand old_cheevos 2
@@ -1190,67 +1185,85 @@ defstate echo_cheevo
         qputs 11 ACH_GET_ALL_WEAPONS
         capia 11
     }
-     // elsewhere
-   /* ifand old_cheevos 512
+    /*
+    // elsewhere
+    ifand old_cheevos 512
     {
         qputs 11 Unlocked: Stash House %ld/50
         qsprintf 11 11 gamestate[4]
         echo 11
+        qputs 11 ACH_FIND_50_SECRETS
+        capia 11
     }
     ifand old_cheevos 1024
     {
         qputs 11 Unlocked: Cowabunga! %ld/30
         qsprintf 11 11 gamestate[5]
         echo 11
+        qputs 11 ACH_EAT_30_PIZZA_SLICES
+        capia 11
     }
     ifand old_cheevos 2048
     {
         qputs 11 Unlocked: Addicted %ld/20
         qsprintf 11 11 gamestate[6]
         echo 11
+        qputs 11 ACH_DRINK_20_SODA_CANS
+        capia 11
     }
     ifand old_cheevos 4096
     {
         qputs 11 Unlocked: Demanufacture %ld/100
         qsprintf 11 11 gamestate[7]
         echo 11
+        qputs 11 ACH_DECAPITATE_100_ENEMIES
+        capia 11
     }
     ifand old_cheevos 8192
     {
         qputs 11 Unlocked: Bad Mojo %ld/20
         qsprintf 11 11 gamestate[8]
         echo 11
+        qputs 11 ACH_STEP_ON_20_COCKROACHES
+        capia 11
     }
     ifand old_cheevos 16384
     {
         qputs 11 Unlocked: Arachnophobia %ld/20
         qsprintf 11 11 gamestate[9]
         echo 11
+        qputs 11 ACH_BATON_20_MECHSECTS
+        capia 11
     }
     ifand old_cheevos 32768
     {
         qputs 11 Unlocked: Overkill %ld/30
         qsprintf 11 11 gamestate[10]
         echo 11
+        qputs 11 ACH_EXPLODE_30_FLYERS
+        capia 11
     }
     ifand old_cheevos 65536
     {
-        qputs 11 Unlocked: Cranium do'or %ld/20
+        qputs 11 Unlocked: Cranium d'or %ld/20
         qsprintf 11 11 gamestate[11]
         echo 11
-    } */
+        qputs 11 ACH_KICK_20_HEADS
+        capia 11
+    }
+    */
     ifand old_cheevos 131072
     {
         qputs 11 Unlocked: Like Tears... In Rain
         echo 11
-		qputs 11 ACH_SECRET_TEARS_IN_RAIN
+        qputs 11 ACH_SECRET_TEARS_IN_RAIN
         capia 11
     }
     ifand old_cheevos 262144
     {
         qputs 11 Unlocked: Diddle for the Middle
         echo 11
-		qputs 11 ACH_GET_BULLSEYE
+        qputs 11 ACH_GET_BULLSEYE
         capia 11
     }
     ifand old_cheevos 524288
@@ -1302,13 +1315,17 @@ defstate echo_cheevo
         qputs 11 ACH_MEGA_SECRET_6
         capia 11
     }
+    /*
     // elsewhere
-    /* ifand old_cheevos 67108864
+    ifand old_cheevos 67108864
     {
         qputs 11 Unlocked: Demolition Turkey %ld/3
         qsprintf 11 11 gamestate[12]
         echo 11
-    } */
+        qputs 11 ACH_GET_3_STRIKES
+        capia 11
+    }
+    */
     ifand old_cheevos 134217728
     {
         qputs 11 Unlocked: Dedicated
@@ -1318,7 +1335,7 @@ defstate echo_cheevo
     }
     ifand old_cheevos 268435456
     {
-        qputs 11 Unlocked: T-shirt
+        qputs 11 Unlocked: T-Shirt
         echo 11
         qputs 11 ACH_100_PERCENT
         capia 11

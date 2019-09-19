@@ -3601,6 +3601,9 @@ defstate propogate_surfaces
         case A_NUKEMUTANT_GDF_GIBBED
         case A_HESKEL_BOT
         case A_BRUTE_TOP_DEAD
+		case AM_EXODUDE
+		case AM_EXODUDE_STAYPUT
+		case AM_EXODUDE_DEAD
             setarray pre_surface_type[temp] SURFACE_FLESH
             break
         default

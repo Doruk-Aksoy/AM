@@ -74,7 +74,7 @@ defstate fixshade
             set temp sector.ceilingshade
         else
             set temp sector.floorshade
-            
+
         ifg temp 0
         {
             set temp2 temp
@@ -99,7 +99,7 @@ defstate clear_enemy_vels
     seta .yvel 0
     seta .zvel 0
     
-    state fixshade
+	state fixshade
 ends
 
 gamevar e_mit_temp
@@ -259,7 +259,8 @@ appendevent EVENT_SPAWN
             sizeat 18 18
             ifspritepal 9 // legacy
                 changespritestat THISACTOR STAT_ZOMBIEACTOR
-            spritepal PAL_MECHSECT
+			ife sprite.pal 0
+				spritepal PAL_MECHSECT
             ifand sprite.cstat 8
                 cstat 265
             else
@@ -273,7 +274,8 @@ appendevent EVENT_SPAWN
             break
         case A_MECHSECT_DEAD1:
         case A_MECHSECT_DEAD2:
-            spritepal PAL_MECHSECT
+			ife sprite.pal 0
+				spritepal PAL_MECHSECT
             sizeat 18 18
             cstat 256
             break
@@ -284,8 +286,11 @@ appendevent EVENT_SPAWN
             cstat 257
             ifspritepal 9 // legacy
                 changespritestat THISACTOR STAT_ZOMBIEACTOR
-            spritepal PAL_CULTIST
-
+			ife sprite.pal 0
+				spritepal PAL_CULTIST
+			else ife sprite.pal PAL_AUTOCULTIST
+				seta .extra AM_AUTOCULTIST_HEALTH
+			
             state clear_enemy_vels
             ife sprite.picnum A_CULTIST_STAYPUT
             {
@@ -310,9 +315,9 @@ appendevent EVENT_SPAWN
                 changespritestat THISACTOR STAT_ZOMBIEACTOR
             ifspritepal PAL_SHOTGUNNER_ALT
                 nullop
-            else
+            else ife sprite.pal 0
                 spritepal PAL_SHOTGUNNER
-
+			
             state clear_enemy_vels
             ife sprite.picnum A_SHOTGUNNER_STAYPUT
             {
@@ -337,7 +342,8 @@ appendevent EVENT_SPAWN
         case A_CULTIST_GIBBED:
             sizeat 22 21
             cstat 256
-            spritepal PAL_CULTIST
+			ife sprite.pal 0
+				spritepal PAL_CULTIST
             break
         case A_SHOTGUNNER_DEAD:
         case A_SHOTGUNNER_GIBBED:
@@ -349,7 +355,7 @@ appendevent EVENT_SPAWN
             {
                 ife gunner_type 1
                     spritepal PAL_SHOTGUNNER_ALT
-                else
+                else ife sprite.pal 0
                     spritepal PAL_SHOTGUNNER
             }
             break
@@ -359,7 +365,9 @@ appendevent EVENT_SPAWN
             sizeat 24 21
             ifspritepal 9 // legacy
                 changespritestat THISACTOR STAT_ZOMBIEACTOR
-            spritepal PAL_GREATER
+			ife sprite.pal 0
+				spritepal PAL_GREATER
+			
             cstat 257
             state clear_enemy_vels
             ife sprite.picnum A_GREATER_STAYPUT
@@ -375,7 +383,8 @@ appendevent EVENT_SPAWN
        case A_GREATER_DEAD2:
        case A_GREATER_GIBBED:
             sizeat 24 21
-            spritepal PAL_GREATER
+			ife sprite.pal 0
+				spritepal PAL_GREATER
             cstat 256
             break
        case A_TURRET_BOTTOM:
@@ -389,7 +398,7 @@ appendevent EVENT_SPAWN
                 nullop
             else ifspritepal 1 // edge case decoration
                 nullop
-            else
+            else ife sprite.pal 0
                 spritepal PAL_TURRET
             break
        case A_TURRET:
@@ -408,8 +417,9 @@ appendevent EVENT_SPAWN
                 sleeptime 300
                 changespritestat THISACTOR STAT_ACTOR
             }
-            else
+            else ife sprite.pal 0
                 spritepal PAL_TURRET
+			
             ifspritepal PAL_TURRET
                 ife harder_skill4_turret 1
                     ifge userdef.player_skill 4
@@ -425,7 +435,9 @@ appendevent EVENT_SPAWN
             sizeat 25 22
             ifspritepal 9 // legacy
                 changespritestat THISACTOR STAT_ZOMBIEACTOR
-            spritepal PAL_DEACON
+			ife sprite.pal 0
+				spritepal PAL_DEACON
+			
             ifactor A_DEACON_DEAD
                 cstat 256
             else
@@ -540,33 +552,30 @@ defstate crackhead
     redefinequote 115 gamestate.bin
     readarrayfromfile gamestate 115
     set crackt gamestate[7]
-
     add crackt 1
-    setarray gamestate[7] crackt
-    writearraytofile gamestate 115
-    or cheevo_tracker 4096
+	setarray gamestate[7] crackt
+	writearraytofile gamestate 115
+	or cheevo_tracker 4096
 ends
 
 defstate crackskulls
     redefinequote 115 gamestate.bin
     readarrayfromfile gamestate 115
     set crackt gamestate[9]
-
-    add crackt 1
-    setarray gamestate[9] crackt
-    writearraytofile gamestate 115
-    or cheevo_tracker 16384
+	add crackt 1
+	setarray gamestate[9] crackt
+	writearraytofile gamestate 115
+	or cheevo_tracker 16384
 ends
 
 defstate crackthesecretofflight
     redefinequote 115 gamestate.bin
     readarrayfromfile gamestate 115
     set crackt gamestate[10]
-
-    add crackt 1
-    setarray gamestate[10] crackt
-    writearraytofile gamestate 115
-    or cheevo_tracker 32768
+	add crackt 1
+	setarray gamestate[10] crackt
+	writearraytofile gamestate 115
+	or cheevo_tracker 32768
 ends
 
 var enemy_medkit_delay
@@ -635,7 +644,7 @@ defstate enemy_medkit_spawn
         seta[RETURN].ang enemy_medkit
         ssp RETURN CLIPMASK0
         add enemy_medkit_count 1
-   } 
+   }
 ends
 
 eventloadactor A_TURRET_BOTTOM
@@ -850,7 +859,7 @@ defstate smg_flamechance
         endswitch
         ifg enemy_smg_flame smgf_temp
         {
-            ifrnd 8
+            ifrnd 12
             {
                 ifactor A_GREATER
                 {
@@ -903,7 +912,7 @@ defstate smg_flamechance
         {
             set smgf_counter 3
             geta .htextra smgf_temp
-            add smgf_temp 1
+            add smgf_temp 2
             switch sprite.picnum
                 case A_NUKEMUTANT
                 case A_NUKEMUTANT_GDF
@@ -913,7 +922,7 @@ defstate smg_flamechance
             endswitch
             clamp smgf_temp 1 65536
             seta .htextra smgf_temp
-            ife sprite.htowner -1
+			ife sprite.htowner -1
                 seta .htowner player.i
             set enemy_skipshade 1
             seta .shade -50
@@ -1273,6 +1282,7 @@ defstate find_waypoints
                     switch sprite.picnum
                         case A_DRONE:
                         case A_DEACON:
+						case AM_SEEKERDRONE:
                             ifand se_lotag 512
                             {
                                 ifl way_temp2 256
@@ -1905,8 +1915,8 @@ defstate enemy_die_resolve_e_res_temp2
 ends
 
 defstate enemy_die_resolve
-    
-    switch sprite.picnum
+    // syringe does other things now
+    /*switch sprite.picnum
         case A_CULTIST
         case A_SHOTGUNNER
         case A_GREATER
@@ -1915,7 +1925,7 @@ defstate enemy_die_resolve
         case A_ARCHANGEL
             state enemy_medkit_spawn
             break
-    endswitch
+    endswitch*/
     addkills 1
     set e_res_y 0
     set e_res_z 0
@@ -2084,9 +2094,11 @@ defstate enemy_update_sector
         case A_CULTIST
         case A_MECHBOSS_BOTTOM
         case A_WENTEKO
+		case AM_EXODUDE
             break
         case A_DEACON
         case A_DRONE
+		case AM_SEEKERDRONE
             ifg reverse_dir 0
             {
                 ifl reverse_dir 15
@@ -2245,9 +2257,14 @@ defstate enemy_squish_move
         ifl e_movetemp2 3072 // changed from ifgapzl 12, which also accounted for sprites
         {
             set e_move_ztemp 0
-            ife sprite.picnum A_DEACON
-                iffloordistl 6
-                    set e_move_ztemp 1
+			ife sprite.picnum A_DEACON {
+				iffloordistl 6
+					set e_move_ztemp 1
+			}
+			else ife sprite.picnum AM_SEEKERDRONE {
+				iffloordistl 6
+					set e_move_ztemp 1
+			}
             iffloordistl 4
                 set e_move_ztemp 1
             ife e_move_ztemp 1
@@ -2258,6 +2275,7 @@ defstate enemy_squish_move
                 {
                     switch sprite.picnum
                         case A_DEACON
+						case AM_SEEKERDRONE
                             set e_movetemp 0
                             break
                         default
@@ -2274,6 +2292,7 @@ defstate enemy_squish_move
                         
                         switch sprite.picnum
                             case A_DEACON
+							case AM_SEEKERDRONE
                             case A_BRUTE
                             case A_ARCHANGEL
                             case A_MECHBOSS_BOTTOM
@@ -2362,6 +2381,7 @@ defstate enemy_do_move
         switch sprite.picnum
             case A_DEACON
             case A_DRONE
+			case AM_SEEKERDRONE
                 ifn way_current -1
                 {
                     ife sprite[way_current].picnum LOCATORS
@@ -2445,6 +2465,7 @@ defstate enemy_do_move
             break
         case A_DRONE
         case A_DEACON
+		case AM_SEEKERDRONE
             set e_movetemp 0
             ife e_move_gtfo 8192
                 set e_movetemp 1
@@ -2585,6 +2606,7 @@ defstate enemy_do_move
                                 ifactor A_GREATER set temp 1
                                 else ifactor A_CULTIST set temp 1
                                 else ifactor A_SHOTGUNNER set temp 1
+								else ifactor AM_EXODUDE set temp 1
                                 
                                 ife temp 1
                                 {
@@ -2619,6 +2641,7 @@ defstate enemy_do_move
                         switch sprite.picnum
                             case A_DRONE
                             case A_DEACON
+							case AM_SEEKERDRONE
                                 ife e_move_gtfo 8192
                                     set e_movetemp4 1
                                 break
@@ -2691,6 +2714,7 @@ defstate enemy_do_move
         switch sprite.picnum
             case A_DRONE
             case A_DEACON
+			case AM_SEEKERDRONE
                 break
              default
                 seta .x enemy_tox
@@ -2714,6 +2738,7 @@ defstate enemy_do_move
             case A_CULTIST
             case A_GREATER
             case A_SHOTGUNNER
+			case AM_EXODUDE
                 getflorzofslope sprite.sectnum sprite.x sprite.y e_movetemp2
                 getceilzofslope sprite.sectnum sprite.x sprite.y e_movetemp3
                 sub e_movetemp2 12288
@@ -2767,6 +2792,7 @@ defstate enemy_movedrone
     switch sprite.picnum
         case A_DRONE
         case A_DEACON
+		case AM_SEEKERDRONE
             ife e_move_gtfo 8192
                 set e_movetemp 1
             break
@@ -2794,33 +2820,33 @@ defstate enemy_movedrone
         mul move_yv 5
         shiftr move_xv 2
         shiftr move_yv 2
-
-        mul move_xv 3
-        mul move_yv 3
-        shiftr move_xv 1
-        shiftr move_yv 1
-        switch sprite.picnum
-            case A_DEACON
-            case A_DRONE
-                ifn way_current -1
-                {
-                    ife sprite[way_current].picnum LOCATORS
-                    {
-                        
-                        mul move_xv 28
-                        mul move_yv 28
-                        shiftr move_xv 5
-                        shiftr move_yv 5
-                        ldist e_movetemp THISACTOR way_current
-                        ifl e_movetemp 512
-                        {
-                            shiftr move_xv 1
-                            shiftr move_yv 1
-                        }
-                    }
-                }
-                break
-        endswitch
+		mul move_xv 3
+		mul move_yv 3
+		shiftr move_xv 1
+		shiftr move_yv 1
+		switch sprite.picnum
+			case A_DEACON
+			case A_DRONE
+			case AM_SEEKERDRONE
+				ifn way_current -1
+				{
+					ife sprite[way_current].picnum LOCATORS
+					{
+						
+						mul move_xv 28
+						mul move_yv 28
+						shiftr move_xv 5
+						shiftr move_yv 5
+						ldist e_movetemp THISACTOR way_current
+						ifl e_movetemp 512
+						{
+							shiftr move_xv 1
+							shiftr move_yv 1
+						}
+					}
+				}
+				break
+		endswitch
     }
     
     ifn enemy_shotgun_xv 0
@@ -3011,6 +3037,7 @@ defstate enemy_movedrone
         switch sprite.picnum
             case A_DRONE
             case A_DEACON
+			case AM_SEEKERDRONE
                 break
              default
                 seta .x enemy_tox
@@ -3107,7 +3134,8 @@ defstate enemy_body_code
         switch sprite.picnum
             case A_MECHSECT_DEAD1
             case A_MECHSECT_DEAD2
-                spritepal PAL_MECHSECT
+				ife sprite.pal 0
+					spritepal PAL_MECHSECT
                 break
         endswitch
         break
@@ -3207,6 +3235,7 @@ defstate enemy_body_code
                 killit
                 break
             case A_BRUTE_TOP_DEAD
+			case AM_EXODUDE_DEAD
                 rand gib_temp 3
                 add gib_temp 8
                 for itervar range gib_temp
@@ -3225,10 +3254,16 @@ defstate enemy_body_code
                 state skull_gibs
                 espawn A_GENERIC_GIB_SPLASH
                 set gib_temp sprite.xrepeat
-                shiftr gib_temp 1
+				ifn sprite.picnum AM_EXODUDE_DEAD
+					shiftr gib_temp 1
+				else
+					sub gib_temp 9
                 seta[RETURN].xrepeat gib_temp
                 set gib_temp sprite.yrepeat
-                shiftr gib_temp 1
+				ifn sprite.picnum AM_EXODUDE_DEAD
+					shiftr gib_temp 1
+				else
+					sub gib_temp 9
                 seta[RETURN].yrepeat gib_temp
                 killit
                 break
@@ -3280,10 +3315,10 @@ appendevent EVENT_LOADACTOR
         case A_NUKEMUTANT_GDF_DEAD
         case A_BRUTE_TOP_DEAD
         case A_DEACON_DEAD
-            geta .mdflags temp
+			geta .mdflags temp
             or temp 16
             seta .mdflags temp
-            
+			
             ifg sprite.lotag 0
             {
                 geta .lotag se_lotag
@@ -3478,12 +3513,11 @@ useractor enemy A_MECHSECT MECHSECT_HEALTH AC_MECHSECT_IDLE
             seta .z temp
         }
     }
-    
     ifspritepal 69
         nullop
     else
     {
-        spritepal PAL_MECHSECT
+		//spritepal PAL_MECHSECT
         gets .floorpal temp
         ifg temp 41
             ifl temp 54
@@ -3976,6 +4010,7 @@ useractor enemy A_MECHSECT MECHSECT_HEALTH AC_MECHSECT_IDLE
             ifpdistl 1024
             {
                 addphealth -10
+				seta[player.i].htpicnum sprite.picnum
                 add shakeitbaby 6
             }
         }
@@ -4188,6 +4223,7 @@ useractor enemy A_MECHSECT MECHSECT_HEALTH AC_MECHSECT_IDLE
                 sound S_MELEE_THUD01
                 setp .sound_pitch 0
                 addphealth -10
+				seta[player.i].htpicnum sprite.picnum
                 add shakeitbaby 6
             }
             ifactioncount 3
@@ -4534,6 +4570,97 @@ useractor enemy A_SHOTGUNNER_STAYPUT SHOTGUNNER_HEALTH AC_CULTIST_IDLE
     action AC_CULTIST_IDLE
     cactor A_SHOTGUNNER
 enda
+
+defstate am_cultist_fire
+	ifn shot_delay 45
+	{
+		ifg framerate 30
+		{
+			eshoot A_SHELL1
+			ifpdistl 8192
+			{
+				ife shot_delay 41
+					setav[RETURN].se_zvel 32767
+			}
+			else
+				setav[RETURN].se_zvel 32767
+
+		}
+	}
+
+	setprojectile[P_LOVERBOY].extra 3
+	getu .vm_distance temp
+	add temp 256
+	shiftr temp 7
+	clamp temp 16 32
+	setprojectile[P_LOVERBOY].tnum temp
+	set temp2 0
+	ife shot_delay 49
+		set temp2 1
+	getu .player_skill temp
+	ifge temp 3
+	{
+		ife shot_delay 41
+			set temp2 1
+		else ifg temp 3
+			set temp2 1
+	}
+	ife temp2 1
+	{
+		ifspritepal PAL_AUTOCULTIST 
+		  ifpdistg 2048
+			nullop
+		else {
+			setprojectile[P_LOVERBOY].workslike 1179649
+			ifl userdef.player_skill 4
+			{
+				set temp5 WEAPON1_DMG
+				shiftr temp5 1
+				setprojectile[P_LOVERBOY].extra_rand temp5
+			}
+		}
+	}
+	geta .x temp5
+	geta .y temp7
+	ifpdistl 800
+		nullop
+	else
+	{
+		geta .ang temp3
+		sub temp3 512
+		and temp3 2047
+		cos temp temp3
+		sin temp2 temp3
+		shiftr temp 9
+		shiftr temp2 9
+		add temp temp5
+		add temp2 temp7
+		seta .x temp
+		seta .y temp2
+	}
+	eshoot P_LOVERBOY
+	seta .x temp5
+	seta .y temp7
+	setprojectile[P_LOVERBOY].extra WEAPON1_DMG
+	setprojectile[P_LOVERBOY].extra_rand WEAPON1_DMG
+	setprojectile[P_LOVERBOY].workslike 1
+	setprojectile[P_LOVERBOY].tnum 32
+	
+	getp .sound_pitch temp
+	randvar temp3 64
+	add temp3 512
+	add temp temp3
+	setp .sound_pitch temp
+
+	set temp2 shot_delay
+	mod temp2 3
+	add temp2 S_TRIFIRE_OLD1
+	ifpdistl ENEMY_SOUND_DIST
+		soundvar temp2
+
+	sub temp temp3
+	setp .sound_pitch temp
+ends
 
 defstate lesser_shotgun_shared
     ife st_do_once 0
@@ -5667,6 +5794,17 @@ defstate lesser_shotgun_shared
         sub counter3 2
         clamp counter3 0 15
     }
+	
+	ifspritepal PAL_AUTOCULTIST {
+		set cansee_target player.i
+		set cansee_height 8192
+		state cansee_simple
+		ifn cansee_return 0
+			set enemy_shoot 1
+		else
+			set enemy_shoot 0
+	}
+	
     ifn temp4 1 ife se_hitag 0
     {
         ifrnd 96 ife enemy_strafe 0
@@ -5792,6 +5930,9 @@ defstate lesser_shotgun_shared
             }
         }
     }
+	
+	ifn enemy_shoot 1
+		set am_tmp 0
 
     ifpdistl 800 ife cansee_return 1
     {
@@ -5992,8 +6133,13 @@ defstate lesser_shotgun_shared
                         sound S_SHOTGUN_OPENCLOSE
                     }
                 }
-                else
-                    soundvar temp
+                else {
+					ifn am_tmp 1 {
+						// auto fire cultist plays this once at only beginning of fire
+						soundvar temp
+						set am_tmp 1
+					}
+				}
             }
             setp .sound_pitch 0
         }
@@ -6008,6 +6154,7 @@ defstate lesser_shotgun_shared
         ifactor A_SHOTGUNNER
             add enemy_lastshot 1
     }
+	
     ifn enemy_shoot 0
     {
         getu .player_skill temp
@@ -6026,6 +6173,10 @@ defstate lesser_shotgun_shared
             set temp 1
         else ifaction AC_CULTIST_SHOOT
             set temp 1
+		
+		// much faster than regular cultist on firing routines
+		ifspritepal PAL_AUTOCULTIST ifl shot_delay 35
+			set shot_delay 0
 
         ife temp 1
         {
@@ -6222,89 +6373,44 @@ defstate lesser_shotgun_shared
                             sub temp6 512
                             seta .z temp6
                         }
-
-                        ifn shot_delay 45
-                        {
-                            ifg framerate 30
-                            {
-                                eshoot A_SHELL1
-                                ifpdistl 8192
-                                {
-                                    ife shot_delay 41
-                                        setav[RETURN].se_zvel 32767
-                                }
-                                else
-                                    setav[RETURN].se_zvel 32767
-
-                            }
-                        }
-
-                        setprojectile[P_LOVERBOY].extra 3
-                        getu .vm_distance temp
-                        add temp 256
-                        shiftr temp 7
-                        clamp temp 16 32
-                        setprojectile[P_LOVERBOY].tnum temp
-                        set temp2 0
-                        ife shot_delay 49
-                            set temp2 1
-                        getu .player_skill temp
-                        ifge temp 3
-                        {
-                            ife shot_delay 41
-                                set temp2 1
-                            else ifg temp 3
-                                set temp2 1
-                        }
-                        ife temp2 1
-                        {
-                            setprojectile[P_LOVERBOY].workslike 1179649
-                            ifl userdef.player_skill 4
-                            {
-                                set temp5 WEAPON1_DMG
-                                shiftr temp5 1
-                                setprojectile[P_LOVERBOY].extra_rand temp5
-                            }
-                        }
-                        geta .x temp5
-                        geta .y temp7
-                        ifpdistl 800
-                            nullop
-                        else
-                        {
-                            geta .ang temp3
-                            sub temp3 512
-                            and temp3 2047
-                            cos temp temp3
-                            sin temp2 temp3
-                            shiftr temp 9
-                            shiftr temp2 9
-                            add temp temp5
-                            add temp2 temp7
-                            seta .x temp
-                            seta .y temp2
-                        }
-                        eshoot P_LOVERBOY
-                        seta .x temp5
-                        seta .y temp7
-                        setprojectile[P_LOVERBOY].extra WEAPON1_DMG
-                        setprojectile[P_LOVERBOY].extra_rand WEAPON1_DMG
-                        setprojectile[P_LOVERBOY].workslike 1
-                        setprojectile[P_LOVERBOY].tnum 32
-                        getp .sound_pitch temp
-                        randvar temp3 64
-                        add temp3 512
-                        add temp temp3
-                        setp .sound_pitch temp
-
-                        set temp2 shot_delay
-                        mod temp2 3
-                        add temp2 S_TRIFIRE_OLD1
-                        ifpdistl ENEMY_SOUND_DIST
-                            soundvar temp2
-
-                        sub temp temp3
-                        setp .sound_pitch temp
+						
+						ifspritepal PAL_FIRECULTIST {
+							geta .x temp5
+							geta .y temp7
+							ifpdistl 1576
+								nullop
+							else
+							{
+								geta .ang temp3
+								sub temp3 512
+								and temp3 2047
+								cos temp temp3
+								sin temp2 temp3
+								shiftr temp 9
+								shiftr temp2 9
+								add temp temp5
+								add temp2 temp7
+								seta .x temp
+								seta .y temp2
+							}
+							eshoot P_DANCINGQUEEN
+							seta[RETURN].pal AM_FIRECULTIST_SHOTPAL
+							setthisprojectile[RETURN].extra AM_FIRECULTIST_SHOTDMG
+							setthisprojectile[RETURN].extra_rand AM_FIRECULTIST_SHOTRAND
+							setthisprojectile[RETURN].xrepeat 16
+							setthisprojectile[RETURN].yrepeat 16
+							setthisprojectile[RETURN].sxrepeat 16
+							setthisprojectile[RETURN].syrepeat 16
+							setthisprojectile[RETURN].vel 644
+							seta .x temp5
+							seta .y temp7
+							
+							ifpdistl ENEMY_SOUND_DIST
+								sound AM_S_DANCINGQUEENFIRE
+						}
+						else // every other color should run this
+							state am_cultist_fire
+                        
                         seta .shade -127
                         set enemy_skipshade 1
                         ifaction AC_CULTIST_SHOOT_CRC
@@ -6326,8 +6432,8 @@ defstate lesser_shotgun_shared
 
             ifactioncount 24
             {
-                action AC_CULTIST_IDLE
-                set enemy_shoot 0
+				action AC_CULTIST_IDLE
+				set enemy_shoot 0
             }
             else ifactioncount 12
             {
@@ -9227,7 +9333,7 @@ useractor enemy A_TURRET TURRET_HEALTH AC_TURRET_IDLE
         ssp RETURN 0
         ifdead
         {
-            state enemy_confirm_bowled
+			state enemy_confirm_bowled
             ifrnd 32
                 or p_wantline TALK_KILL
             rand temp3 6
@@ -9396,7 +9502,7 @@ appendevent EVENT_SPAWN
                 state resize_brute
             else ifspritepal 87
                 state resize_brute
-            else
+            else ife sprite.pal 0
                 spritepal PAL_BRUTE
             cactor A_BRUTE_BOTTOM
             espawn A_BRUTE_TOP
@@ -9430,7 +9536,7 @@ appendevent EVENT_SPAWN
                 state resize_brute
             else ifspritepal 87
                 state resize_brute
-            else
+            else ife sprite.pal 0
                 spritepal PAL_BRUTE
             break
         case A_BRUTE_TOP_DEAD
@@ -9440,8 +9546,9 @@ appendevent EVENT_SPAWN
                 state resize_brute
             else ifspritepal 87
                 state resize_brute
-            else
+            else ife sprite.pal 0
                 spritepal PAL_BRUTE
+			sound S_BRUTE_DIE_1
             break
         case A_BRUTE_BOTTOM_DEAD
             sizeat 23 19
@@ -9450,7 +9557,7 @@ appendevent EVENT_SPAWN
                 state resize_brute
             else ifspritepal 87
                 state resize_brute
-            else
+            else ife sprite.pal 0
                 spritepal PAL_BRUTE
             break
     endswitch
@@ -9570,11 +9677,18 @@ defstate brute_btm_dmg_adjust
         }
         ifn sprite.htextra -1 ife sprite.htpicnum EXPLOSION
         {
-            set temp sprite.htextra
-            shiftr temp 1
-            ife temp 0
-                set temp 1
-            seta .htextra temp
+			geta .htowner temp
+			ife sprite[temp].picnum A_NAPALM_BURST
+				seta .htextra -1
+			else ife sprite[temp].picnum A_FIRECYCLONE
+				seta .htextra -1
+			else {
+				set temp sprite.htextra
+				shiftr temp 1
+				ife temp 0
+					set temp 1
+				seta .htextra temp
+			}
         }
         getav[tp_owner].enemy_minigun_dmg temp4
         ifg temp4 enemy_minigun_dmg
@@ -9677,7 +9791,6 @@ enda
 useractor enemy A_BRUTE_BOTTOM BRUTE_HEALTH AC_BRUTEBOTTOM_BASE
     clipdist 64
     state fixshade
-
     ifl st_do_once 2
     {
         ifspritepal 80
@@ -9705,6 +9818,7 @@ useractor enemy A_BRUTE_BOTTOM BRUTE_HEALTH AC_BRUTEBOTTOM_BASE
             set brute_boss_hp boss_currhp
             set boss_type 2
         }
+		seta[tp_owner].pal sprite.pal
         set st_do_once 2
     }
     set temp 0
@@ -9858,7 +9972,7 @@ useractor enemy A_BRUTE_BOTTOM BRUTE_HEALTH AC_BRUTEBOTTOM_BASE
         sound S_AMB_NEONFLICKR02
         setp .sound_pitch 0
         set bruteshocksound 30
-        ifdead
+		ifdead
             state enemy_confirm_bowled
         switch sprite.pal
             case 80
@@ -10365,6 +10479,7 @@ action AC_BRUTETOP_BASE 0 1 8 1 1 1
 action AC_BRUTETOP_STUNNED 104 1 8 1 1 1
 action AC_BRUTETOP_AIM 16 1 8 1 1 1
 action AC_BRUTETOP_SHOOT 16 3 8 1 12 1
+action AC_BRUTETOP_SHOOT_REP 24 1 8 -1 4 1
 action AC_BRUTETOP_SWIPE1_FW 40 4 8 1 12 1
 action AC_BRUTETOP_SWIPE1_BW 64 4 8 -1 12 1
 action AC_BRUTETOP_SWIPE2_FW 72 4 8 1 12 1
@@ -10374,7 +10489,7 @@ action AC_BRUTETOP_SHOCKED 104 2 8 1 1 1
 action AC_BRUTETOP_FLY  -6 7 1 1 4
 action AC_BRUTETOP_DEAD 0 1 1 1 1
 useractor notenemy A_BRUTE_TOP_DEAD CORPSE_HEALTH AC_BRUTETOP_DEAD
-    ifl sprite.htg_t 0 10
+    ifl sprite.htg_t 0 13
         seta .htextra -1
     ifge counter3 3
     {
@@ -10419,7 +10534,6 @@ enda
 useractor enemy A_BRUTE_TOP BRUTE_HEALTH AC_BRUTETOP_BASE
     clipdist 64
     state fixshade
-
     ife st_do_once 0
     {
         ifspritepal 80
@@ -10480,14 +10594,22 @@ useractor enemy A_BRUTE_TOP BRUTE_HEALTH AC_BRUTETOP_BASE
             geta .htowner temp
             ife sprite[temp].picnum A_BRUTE_TOP
                 seta .htextra -1
+			ife sprite[temp].picnum A_FIRECYCLONE
+				seta .htextra -1
         }
         ifn sprite.htextra -1 ife sprite.htpicnum EXPLOSION
         {
-            set temp sprite.htextra
-            shiftr temp 1
-            ife temp 0
-                set temp 1
-            seta .htextra temp
+			// if explosion was caused by napalm burst ignore it, belongs to this guy
+			geta .htowner temp
+            ife sprite[temp].picnum A_NAPALM_BURST
+				seta .htextra -1
+			else {
+				set temp sprite.htextra
+				shiftr temp 1
+				ife temp 0
+					set temp 1
+				seta .htextra temp
+			}
         }
         getav[tp_owner].enemy_minigun_dmg temp4
         ifg temp4 enemy_minigun_dmg
@@ -10766,12 +10888,11 @@ useractor enemy A_BRUTE_TOP BRUTE_HEALTH AC_BRUTETOP_BASE
         sound S_GIBSPLODE02
         sound S_GIBSPLODE03
         espawn A_BRUTE_TOP_DEAD
-        actorsound RETURN S_BRUTE_DIE_1
+		actorsound RETURN S_BRUTE_DIE_1
         setav[RETURN].counter3 3
         seta[RETURN].cstat 32768
         seta[RETURN].pal sprite.pal
         seta[RETURN].xrepeat sprite.xrepeat
-        seta[RETURN].pal sprite.pal
         seta[RETURN].yrepeat sprite.yrepeat
         killit
     }
@@ -10865,53 +10986,132 @@ useractor enemy A_BRUTE_TOP BRUTE_HEALTH AC_BRUTETOP_BASE
                 add temp 1024
                 seta .z temp
             }
-            switch enemy_shoot
-                case 14
-                case 26
-                    ife enemy_shoot 26 ifrnd 64
-                    {
-                        set temp BRUTE_HEALTH
-                        shiftr temp 1
-                        ifl sprite.extra temp
-                        { 
-                            setp .sound_pitch 256
-                            sound S_BRUTE_GRUNT_3
-                            setp .sound_pitch 0
-                        }
-                    }
-                    seta .shade -127
-                    set enemy_skipshade 2
-                    ifn tp_owner -1
-                    {
-                        seta[tp_owner].shade -127
-                        setav[tp_owner].enemy_skipshade 2
-                    }
-                    getprojectile[P_NAPALM_BALL].extra temp3
-                    getprojectile[P_NAPALM_BALL].extra_rand temp4
-                    set temp temp3
-                    shiftr temp 1
-                    setprojectile[P_NAPALM_BALL].extra temp
-                    set temp temp4
-                    shiftr temp 1
-                    setprojectile[P_NAPALM_BALL].extra_rand temp
-                    shoot P_NAPALM_BALL
-                    setp .sound_pitch -256
-                    sound S_GRENADE_LAUNCH
-                    setp .sound_pitch 0
-                    setprojectile[P_NAPALM_BALL].extra temp3
-                    setprojectile[P_NAPALM_BALL].extra_rand temp4
-                    break
-            endswitch
+			// constantly firing guy
+			ifspritepal 87 {
+				ifaction AC_BRUTETOP_SHOOT_REP {
+					ifactioncount 1
+						resetactioncount
+					ifand enemy_shoot 2 {
+						state e_fp
+						geta .ang temp5
+						set temp4 temp5
+						rand temp6 96 // add some random spread
+						sub temp5 temp6
+						seta .ang temp5
+						
+						// modify where it comes out
+						geta .x temp5
+						geta .y temp7
+						ifpdistl 800
+							nullop
+						else
+						{
+							geta .ang temp3
+							add temp3 512
+							and temp3 2047
+							cos temp temp3
+							sin temp2 temp3
+							shiftr temp 9
+							shiftr temp2 9
+							add temp temp5
+							add temp2 temp7
+							seta .x temp
+							seta .y temp2
+						}
+						
+						setprojectile[P_SHOTGUN].workslike 1179649
+						eshoot P_SHOTGUN
+						setprojectile[P_SHOTGUN].workslike 1
+
+						geta[THISACTOR].z am_z
+						sub am_z 5280
+						
+						espawn AM_BRUTE_MUZZLEFLASH
+						setav[RETURN].tp_owner THISACTOR
+						seta[RETURN].z am_z
+						
+						getp[].sound_pitch temp
+						setp[].sound_pitch -1024
+						
+						rand temp4 3
+						add temp4 S_TRIFIRE1
+						soundvar temp4
+						
+						setp[].sound_pitch temp
+					}
+				}
+				else ifactioncount 3 {
+					set enemy_shoot 3
+					action AC_BRUTETOP_SHOOT_REP
+				}
+				
+				ifge enemy_shoot 84 {
+					set enemy_shoot 0
+					action AC_BRUTETOP_BASE
+				}
+			}
+			else {
+				switch enemy_shoot
+					case 14
+					case 26
+						ife enemy_shoot 26 ifrnd 64
+						{
+							set temp BRUTE_HEALTH
+							shiftr temp 1
+							ifl sprite.extra temp
+							{ 
+								setp .sound_pitch 256
+								sound S_BRUTE_GRUNT_3
+								setp .sound_pitch 0
+							}
+						}
+						seta .shade -127
+						set enemy_skipshade 2
+						ifn tp_owner -1
+						{
+							seta[tp_owner].shade -127
+							setav[tp_owner].enemy_skipshade 2
+						}
+						ifspritepal 80 {
+							ife enemy_shoot 14 {
+								seta .htg_t 2 5 // skip 2nd attack
+								set enemy_shoot 27
+							}
+							shoot P_FLAMER
+							setp .sound_pitch -256
+							sound S_GRENADE_LAUNCH
+							setp .sound_pitch 0
+						}
+						else {
+							getprojectile[P_NAPALM_BALL].extra temp3
+							getprojectile[P_NAPALM_BALL].extra_rand temp4
+							set temp temp3
+							shiftr temp 1
+							setprojectile[P_NAPALM_BALL].extra temp
+							set temp temp4
+							shiftr temp 1
+							setprojectile[P_NAPALM_BALL].extra_rand temp
+							shoot P_NAPALM_BALL
+							setp .sound_pitch -256
+							sound S_GRENADE_LAUNCH
+							setp .sound_pitch 0
+							setprojectile[P_NAPALM_BALL].extra temp3
+							setprojectile[P_NAPALM_BALL].extra_rand temp4
+						}
+						break
+				endswitch
+				
+				ifactioncount 6
+				{
+					action AC_BRUTETOP_BASE
+					set enemy_shoot 0
+				}
+			}
             ifpdistl 1536
             {
                 geta .z temp
                 sub temp 1024
                 seta .z temp
-            }
-            ifactioncount 6
-            {
-                action AC_BRUTETOP_BASE
-                set enemy_shoot 0
             }
         }
         else ifl enemy_shoot 0
@@ -10932,9 +11132,23 @@ useractor enemy A_BRUTE_TOP BRUTE_HEALTH AC_BRUTETOP_BASE
                 case -26
                     set att_target player.i
                     state angle_to_target
-                    ifle att_return 128 ife temp3 1
-                        addphealth -10
-                    break
+                    ifle att_return 128 ife temp3 1 {
+						getu .player_skill temp3
+						switch temp3
+							case 4
+								addphealth -8
+							case 3
+								addphealth -6
+							case 2
+								addphealth -4
+							case 1
+							default
+								addphealth -10
+							break
+						endswitch
+						seta[player.i].htpicnum sprite.picnum
+					}
+				break
             endswitch
             ifactioncount 3
             {
@@ -11078,7 +11292,8 @@ appendevent EVENT_SPAWN
             sizeat 23 19
             cstat 257
             clipdist 128
-            spritepal PAL_DRONE
+			ife sprite.pal 0
+				spritepal PAL_DRONE
             break
     endswitch
 endevent
@@ -11402,7 +11617,9 @@ defstate drone_dead
 ends
 
 defstate droneshockpal
-    ifspritepal PAL_DRONE
+    ifspritepal 69 // the shock pal
+		seta .pal ms_flashpal
+	else // normal shock routine
     {
         spritepal 69
         seta .shade -127
@@ -11445,13 +11662,14 @@ defstate droneshockpal
             seta[RETURN].y temp2
         }
     }
-    else
-        spritepal PAL_DRONE
 ends
 
 spriteshadow A_DRONE
 spritenoshade A_DRONE
 useractor enemy A_DRONE DRONE_HEALTH AC_DRONE_IDLE
+	ife actorvar.ms_flashpal 0
+		setav .ms_flashpal sprite.pal
+
     geta .htcgg temp
     add temp 1
     mod temp 3
@@ -11603,7 +11821,7 @@ useractor enemy A_DRONE DRONE_HEALTH AC_DRONE_IDLE
             action AC_DRONE_IDLE
     }
     else
-        spritepal PAL_DRONE
+        seta .pal ms_flashpal
  
     set cansee_target player.i
     set cansee_height 4096
@@ -11780,7 +11998,7 @@ useractor enemy A_DRONE DRONE_HEALTH AC_DRONE_IDLE
         
         ifdead
         {
-            state enemy_confirm_bowled
+			state enemy_confirm_bowled
             state confirm_cracked
             stopactorsound THISACTOR S_DRONE_ACTIVE
             state enemy_clearw1alt
@@ -11859,7 +12077,7 @@ useractor enemy A_DRONE DRONE_HEALTH AC_DRONE_IDLE
                     set temp temp8
                     add temp 3072
                 }
-                setp .sound_pitch 111
+				setp .sound_pitch 111
                 sound S_DRONE_SHOOT
                 setp .sound_pitch 0
                 set temp8 temp2
@@ -11883,6 +12101,9 @@ useractor enemy A_DRONE DRONE_HEALTH AC_DRONE_IDLE
                 seta .z temp6
                 seta .sectnum temp7
                 seta .ang temp9
+				
+				/*ifpdistl ENEMY_SOUND_DIST
+					sound AM_S_DANCINGQUEENFIRE*/
             }
         }
     }
@@ -12220,6 +12441,7 @@ defstate spawn_butts
     setav[RETURN].se_xvel se_xvel
     setav[RETURN].se_yvel se_yvel
     setav[RETURN].se_zvel se_zvel
+	seta[RETURN].pal sprite.pal
     ife sprite.statnum STAT_ACTOR
     {
         changespritestat RETURN STAT_ACTOR
@@ -12230,6 +12452,31 @@ defstate spawn_butts
     setp .max_actors_killed temp2
     set temp RETURN
 ends
+
+defstate resize_diopede
+	ifspritepal PAL_DIOPEDE_YELLOW {
+		geta .xrepeat temp
+		mul temp 5
+		shiftr temp 2
+		seta .xrepeat temp
+		geta .yrepeat temp
+		mul temp 5
+		shiftr temp 2
+		seta .yrepeat temp
+	}
+ends
+
+defstate pal_diopede_health
+	ife sprite.picnum A_DIOPEDE_HEAD {
+		ifspritepal PAL_DIOPEDE_YELLOW
+			seta .extra AM_DIOPEDE_YELLOW_HEALTH
+	}
+	else {
+		ifspritepal PAL_DIOPEDE_YELLOW
+			seta .extra AM_DIOPEDE_YELLOW_BUTT_HEALTH
+	}
+ends
+
 eventloadactor A_DIOPEDE_HEAD
     state enemy_load_init
     ifn se_hitag 0
@@ -12242,7 +12489,9 @@ onevent EVENT_SPAWN
             sizeat 23 19
             clipdist 5
             add st_do_once 4
-            spritepal 0
+            //spritepal 0
+			state resize_diopede
+			state pal_diopede_health
             state clear_enemy_vels
             ifspawnedby A_NEWRESPAWN
             {
@@ -12268,6 +12517,7 @@ onevent EVENT_SPAWN
             setav[RETURN].se_xvel se_xvel
             setav[RETURN].se_yvel se_yvel
             setav[RETURN].se_zvel se_zvel
+			seta[RETURN].pal sprite.pal
             getp .max_actors_killed temp2
             sub temp2 2
             setp .max_actors_killed temp2
@@ -12284,8 +12534,11 @@ onevent EVENT_SPAWN
         case A_DIOPEDE_BUTT
             cstat 256
             sizeat 23 19
-            spritepal 0
-            spritepal PAL_DIOPEDE
+            //spritepal 0
+			ife sprite.pal 0
+				spritepal PAL_DIOPEDE
+			state resize_diopede
+			state pal_diopede_health
             geta .owner temp3
             ife sprite[temp3].statnum STAT_ACTOR
             {
@@ -12347,12 +12600,12 @@ ends
 defstate pede_die_shared
     stopactorsound THISACTOR S_AMB_NEONFLICKR01
     stopactorsound THISACTOR S_AMB_NEONFLICKR02
-    stopsound S_SMASH_GLASS
+	stopsound S_SMASH_GLASS
     sound S_SMASH_GLASS
-    stopsound S_BULLET_METAL2
+	stopsound S_BULLET_METAL2
     sound S_BULLET_METAL2
     setp .sound_pitch -64
-    stopsound S_MUTANT_FLESHRIP
+	stopsound S_MUTANT_FLESHRIP
     sound S_MUTANT_FLESHRIP
     setp .sound_pitch 0
     espawn A_ACIDYSPIT_SPLASH
@@ -12399,11 +12652,42 @@ defstate pede_die_shared
     seta[RETURN].blend 129
 ends
 
+defstate scale_diopede_dist
+	ifspritepal PAL_DIOPEDE_YELLOW {
+		mul move_xv AM_DIOPEDE_YELLOW_DIST
+		mul move_yv AM_DIOPEDE_YELLOW_DIST
+	}
+	else {
+		shiftl move_xv 7
+		shiftl move_yv 7
+	}
+ends
+
 action AC_DIOPEDE_WALK 0 6 5 1 8
 action AC_DIOPEDE_REAR 0 1 5 1 4
 action AC_DIOPEDE_SPIT 0 1 5 1 4
 action AC_DIOPEDE_IDLE 0 1 5 1 8
 useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
+	// don't accidently update for wrong pals
+	ifspritepal 0
+		nullop
+	else ifspritepal 69
+		nullop
+	else ifspritepal 72
+		nullop
+	else ife actorvar.ms_flashpal 0 {
+		setav .ms_flashpal sprite.pal
+		// this part practically runs once
+		state resize_diopede
+		state pal_diopede_health
+		getav .pede_next temp
+		whilen temp -1 {
+			seta[temp].pal sprite.pal
+			// don't update that, so it triggers the resize state
+			//setav[temp].ms_flashpal sprite.pal
+			getav[temp].pede_next temp
+		}
+	}
     state fixshade
     // misc setup for cansee nonsense
     set cansee_target player.i
@@ -12481,7 +12765,7 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
     ife cansee_return_o 1
         state enemy_checkw1alt
     ife enemy_annoyance 0
-        spritepal PAL_DIOPEDE
+        seta .pal ms_flashpal
     else
         set enemy_annoyance 0
     ifn sprite.htowner -1
@@ -12595,8 +12879,7 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
             cos move_xv sprite.ang
             sin move_yv sprite.ang
 
-            mul move_xv 128
-            mul move_yv 128
+            state scale_diopede_dist
             shiftr move_xv 14
             shiftr move_yv 14
             set enemy_xv move_xv
@@ -12628,8 +12911,6 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
     {
         ifand pede_burst_last 2
             spritepal 69
-        else
-            spritepal 0
         set temp3 pede_burst_last
         shiftl temp3 2
         add temp2 temp3
@@ -12660,6 +12941,12 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
     {
         shiftl move_xv 6
         shiftl move_yv 6
+		ifspritepal PAL_DIOPEDE_YELLOW {
+			mul move_xv 5
+			mul move_yv 5
+			shiftr move_xv 2
+			shiftr move_yv 2
+		}
         set temp pede_numparts
         sub temp 8
         clamp temp -8 -1
@@ -12764,8 +13051,16 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
                             seta .zvel -512
                             ssp THISACTOR CLIPMASK0
                             shiftl move_xv 1
+							ifspritepal PAL_DIOPEDE_YELLOW {
+								mul move_xv 5
+								shiftr move_xv 2
+							}
                             inv move_xv
                             shiftl move_yv 1
+							ifspritepal PAL_DIOPEDE_YELLOW {
+								mul move_yv 5
+								shiftr move_yv 2
+							}
                             inv move_yv
                             set enemy_xv move_xv
                             set enemy_yv move_yv
@@ -12800,8 +13095,16 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
                     seta .zvel -512
                     ssp THISACTOR CLIPMASK0
                     shiftl move_xv 1
+					ifspritepal PAL_DIOPEDE_YELLOW {
+						mul move_xv 5
+						shiftr move_xv 2
+					}
                     inv move_xv
                     shiftl move_yv 1
+					ifspritepal PAL_DIOPEDE_YELLOW {
+						mul move_yv 5
+						shiftr move_yv 2
+					}
                     inv move_yv
                     set enemy_xv move_xv
                     set enemy_yv move_yv
@@ -12860,6 +13163,12 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
 
                 shiftl move_xv 4
                 shiftl move_yv 4
+				ifspritepal PAL_DIOPEDE_YELLOW {
+					mul move_xv 5
+					mul move_yv 5
+					shiftr move_xv 2
+					shiftr move_yv 2
+				}
                 shiftr move_xv 14
                 shiftr move_yv 14
                 add move_xv sprite.x
@@ -12885,8 +13194,7 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
             cos move_xv temp3
             sin move_yv temp3
 
-            shiftl move_xv 7
-            shiftl move_yv 7
+            state scale_diopede_dist
             shiftr move_xv 14
             shiftr move_yv 14
             add move_xv sprite.x
@@ -12900,8 +13208,7 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
             cos move_xv temp3
             sin move_yv temp3
 
-            shiftl move_xv 7
-            shiftl move_yv 7
+            state scale_diopede_dist
             shiftr move_xv 14
             shiftr move_yv 14
             add move_xv sprite.x
@@ -12914,6 +13221,31 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
             ifn temp2 -1
                 seta .sectnum temp2
             eshoot P_ACIDYSPIT
+			ifspritepal PAL_DIOPEDE_YELLOW {
+				setthisprojectile[RETURN].extra 1
+				geta .ang am_tmp
+				sub am_tmp 182
+				and am_tmp 2047
+				eshoot P_ACIDYSPIT
+				seta[RETURN].ang am_tmp
+				setthisprojectile[RETURN].extra 1
+				add am_tmp 364
+				and am_tmp 2047
+				eshoot P_ACIDYSPIT
+				seta[RETURN].ang am_tmp
+				setthisprojectile[RETURN].extra 1
+				ifand sprite.htg_t 0 3 {
+					geta .ang am_tmp
+					rand am_tmp2 364
+					ifrnd 127
+						inv am_tmp2
+					add am_tmp am_tmp2
+					and am_tmp 2047
+					eshoot P_ACIDYSPIT
+					seta[RETURN].ang am_tmp
+					setthisprojectile[RETURN].extra 1
+				}
+			}
             ife shot_delay 0
             {
                 setav[RETURN].se_extra 1
@@ -12930,10 +13262,24 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
     }
     else
         setvar shot_delay 0
-    clipdist 80
+	ifspritepal PAL_DIOPEDE_YELLOW
+		clipdist 90
+	else
+		clipdist 80
 enda
 
 useractor enemy A_DIOPEDE_BUTT 10 AC_DIOPEDE_IDLE
+	// don't accidently update for wrong pals
+	ifspritepal 0
+		nullop
+	else ifspritepal 69
+		nullop
+	else ifspritepal 72
+		nullop
+	else ife actorvar.ms_flashpal 0 {
+		setav .ms_flashpal sprite.pal
+		state resize_diopede
+	}
     state fixshade
     ife pede_linestate 1
     {
@@ -12971,7 +13317,7 @@ useractor enemy A_DIOPEDE_BUTT 10 AC_DIOPEDE_IDLE
         set pede_burst_last 0
     }
     else
-        spritepal 0
+        seta .pal ms_flashpal
     ifaction AC_DIOPEDE_WALK
     {
         switch sprite.htg_t 3
@@ -13072,8 +13418,7 @@ useractor enemy A_DIOPEDE_BUTT 10 AC_DIOPEDE_IDLE
                     and temp3 2047
                     cos move_xv temp3
                     sin move_yv temp3
-                    shiftl move_xv 7
-                    shiftl move_yv 7
+                    state scale_diopede_dist
                     shiftr move_xv 14
                     shiftr move_yv 14
                     seta[temp].cstat 256
@@ -13128,6 +13473,8 @@ useractor enemy A_DIOPEDE_BUTT 10 AC_DIOPEDE_IDLE
         state enemy_clearw1alt
         killit
     }
+	else
+		seta .pal actorvar.ms_flashpal
     stopactorsound THISACTOR S_BBOMB_THROW
     geta .htflags temp
     or temp 2048
@@ -13170,17 +13517,17 @@ useractor enemy A_DIOPEDE_BUTT 10 AC_DIOPEDE_IDLE
         set temp pede_tighten
         shiftr temp 9
         clamp temp 1 512
-        set temp2 128
+		ifspritepal PAL_DIOPEDE_YELLOW
+			set temp2 AM_DIOPEDE_YELLOW_DIST
+		else
+			set temp2 128
         div temp2 temp
         set pede_tighten 0
         mul move_xv temp2
         mul move_yv temp2
     }
     else
-    {
-        shiftl move_xv 7
-        shiftl move_yv 7
-    }
+        state scale_diopede_dist
     shiftr move_xv 14
     shiftr move_yv 14
     add move_xv sprite[pede_prev].x
@@ -13221,7 +13568,8 @@ spritenoshade A_DEACON_DEAD
 useractor notenemy A_DEACON_DEAD CORPSE_HEALTH
     ife st_do_once 0
     {
-        spritepal PAL_DEACON
+		ifspritepal 0
+			spritepal PAL_DEACON
         set st_do_once 1
     }
     state enemy_body_code
@@ -13229,7 +13577,8 @@ enda
 useractor enemy A_DEACON DEACON_HEALTH AC_DEACON_BASE
     ife st_do_once 0
     {
-        spritepal PAL_DEACON
+		ifspritepal 0
+			spritepal PAL_DEACON
         set st_do_once 1
     }
     geta .htcgg temp
@@ -13238,7 +13587,6 @@ useractor enemy A_DEACON DEACON_HEALTH AC_DEACON_BASE
     seta .htcgg temp
     clipdist 64 // like the archangel give this enough space to clear some doors and such
     state fixshade
-
     ifdead nullop
     else
     {
@@ -13749,7 +14097,7 @@ useractor enemy A_DEACON DEACON_HEALTH AC_DEACON_BASE
         shiftr deacon_v 1
         ifdead
         {
-            state enemy_confirm_bowled
+			state enemy_confirm_bowled
             state confirm_cracked
             ifwasweapon EXPLOSION
                 ife temp8 1
@@ -14245,7 +14593,7 @@ appendevent EVENT_SPAWN
             state clear_enemy_vels
             ifspritepal 7
                 set counter2 1
-            spritepal 0
+            //spritepal 0
             state enemy_spawn_checkhitag
             break
         case A_ARCHANGEL_DEAD
@@ -14296,6 +14644,10 @@ useractor notenemy A_ARCHANGEL_DEAD 0 AC_BASE
     changespritestat THISACTOR STAT_STATIC_GIB
 enda
 useractor enemy A_ARCHANGEL ARCHANGEL_HEALTH AC_ARCHANGEL_BASE
+	ifn sprite.pal 0
+		ifn sprite.pal 77
+			ife actorvar.ms_flashpal 0
+				setav .ms_flashpal sprite.pal
     ifspritepal 7
         set counter2 1
     ifaction AC_ARCHANGEL_TPORT
@@ -14303,7 +14655,7 @@ useractor enemy A_ARCHANGEL ARCHANGEL_HEALTH AC_ARCHANGEL_BASE
     else iffloordistl 1
         geta .z arch_savez
     clipdist 64
-    state fixshade
+	state fixshade
     ife enemy_skipshade 1
     {
         set enemy_skipshade 2
@@ -14328,7 +14680,7 @@ useractor enemy A_ARCHANGEL ARCHANGEL_HEALTH AC_ARCHANGEL_BASE
         rand counter3 10
     clamp temp -127 10
     seta .shade temp
-    spritepal 0
+    seta .pal ms_flashpal
     state enemy_lotag_checkclear
     state enemy_check_pause
     ife eps_return 1
@@ -14671,7 +15023,7 @@ useractor enemy A_ARCHANGEL ARCHANGEL_HEALTH AC_ARCHANGEL_BASE
         }
         ifdead
         {
-            state enemy_confirm_bowled
+			state enemy_confirm_bowled
             state enemy_clearw1alt
             move AM_ENEMY_SEARCH_STOP
             ifaction AC_ARCHANGEL_DIE
@@ -14935,7 +15287,7 @@ useractor enemy A_ARCHANGEL ARCHANGEL_HEALTH AC_ARCHANGEL_BASE
                 xor temp4 514
                 seta .cstat temp4
                 seta .blend 0
-                spritepal 0
+                seta .pal ms_flashpal
             }
         }
         else ifand sprite.cstat 514
@@ -15018,7 +15370,7 @@ useractor enemy A_ARCHANGEL ARCHANGEL_HEALTH AC_ARCHANGEL_BASE
                 xor temp4 514
                 seta .cstat temp4
                 seta .blend 0
-                spritepal 0
+                seta .pal ms_flashpal
             }
             ifrnd 32
             {
@@ -15052,7 +15404,7 @@ useractor enemy A_ARCHANGEL ARCHANGEL_HEALTH AC_ARCHANGEL_BASE
                                 xor temp4 514
                                 seta .cstat temp4
                                 seta .blend 0
-                                spritepal 0
+                                seta .pal ms_flashpal
                             }
                         }
             }
@@ -15214,6 +15566,7 @@ useractor enemy A_ARCHANGEL ARCHANGEL_HEALTH AC_ARCHANGEL_BASE
             eshoot P_FLAMINGSKULL
             setav[RETURN].minimissile_t player.i
             geta[RETURN].z temp5
+			seta[RETURN].pal sprite.pal
             add temp5 3072
             seta[RETURN].z temp5
             seta .x temp
@@ -15244,14 +15597,16 @@ appendevent EVENT_SPAWN
                 set enemy_thisisahack 1
             sizeat 26 23
             cstat 257
-            spritepal PAL_WENTEKO
+			ife sprite.pal 0
+				spritepal PAL_WENTEKO
             state clear_enemy_vels
             state enemy_spawn_checkhitag
             break
         case A_WENTEKO_DEAD1:
         case A_WENTEKO_DEAD2:
             sizeat 26 23
-            spritepal PAL_WENTEKO
+			ife sprite.pal 0
+				spritepal PAL_WENTEKO
             cstat 256
             break
     endswitch
@@ -15289,12 +15644,13 @@ eventloadactor A_WENTEKO
 enda
 
 useractor enemy A_WENTEKO WENTEKO_HEALTH AC_WENTEKO_STAND
+	ife actorvar.ms_flashpal 0
+		setav .ms_flashpal sprite.pal
     /* qputs 11 %ld %ld %ld
     qsprintf 11 11 sprite.extra last_htextra enemy_minigun_dmg
     quote 11 */
 
     state fixshade
-
     // misc setup for cansee nonsense
     set cansee_target player.i
     set cansee_height 8192
@@ -15473,7 +15829,7 @@ useractor enemy A_WENTEKO WENTEKO_HEALTH AC_WENTEKO_STAND
         clamp temp2 1 65536
         ifdead
         {
-            state enemy_confirm_bowled
+			state enemy_confirm_bowled
             state enemy_clearw1alt
             cstat 0
             state dying_blood
@@ -15530,7 +15886,7 @@ useractor enemy A_WENTEKO WENTEKO_HEALTH AC_WENTEKO_STAND
             set temp 1
         ife temp 0
         {
-            spritepal PAL_WENTEKO
+            seta .pal ms_flashpal
             stopactorsound THISACTOR S_WENTEKO_BREATHE_1
             stopactorsound THISACTOR S_WENTEKO_BREATHE_2
             sound S_WENTEKO_DIE_1
@@ -15560,7 +15916,7 @@ useractor enemy A_WENTEKO WENTEKO_HEALTH AC_WENTEKO_STAND
                 move AM_ENEMY_SEARCH_STOP
             ifge sprite.htg_t 2 temp2
             {
-                spritepal PAL_WENTEKO
+                seta .pal ms_flashpal
                 action AC_WENTEKO_STAND
             }
             else
@@ -15585,12 +15941,12 @@ useractor enemy A_WENTEKO WENTEKO_HEALTH AC_WENTEKO_STAND
                     set enemy_skipshade 1
                 }
                 else
-                    spritepal PAL_WENTEKO
+                    seta .pal ms_flashpal
             }
             set temp 1
             break
         default
-            spritepal PAL_WENTEKO
+            seta .pal ms_flashpal
             break
     endswitch
     ife temp 1
@@ -15958,6 +16314,7 @@ useractor enemy A_WENTEKO WENTEKO_HEALTH AC_WENTEKO_STAND
                         setp .sound_pitch 0
                         set temp3 0
                         addphealth -20
+						seta[player.i].htpicnum sprite.picnum
                         ifrnd 32
                         {
                             addphealth -5
@@ -16108,6 +16465,7 @@ useractor enemy A_WENTEKO WENTEKO_HEALTH AC_WENTEKO_STAND
                 setp .sound_pitch 0
                 set temp3 0
                 addphealth -15
+				seta[player.i].htpicnum sprite.picnum
                 ifrnd 32
                 {
                     addphealth -3
@@ -16186,6 +16544,7 @@ useractor enemy A_WENTEKO WENTEKO_HEALTH AC_WENTEKO_STAND
                 {
                     set temp3 0
                     addphealth -15
+					seta[player.i].htpicnum sprite.picnum
                     rand temp4 1
                     ifrnd 32
                     {
@@ -16522,14 +16881,16 @@ appendevent EVENT_SPAWN
         case A_NUKEMUTANT_RISE
         case A_NUKEMUTANT_DEAD
         case A_NUKEMUTANT_DEADHEAD
-            seta .pal 152
+			ife sprite.pal 0
+				seta .pal 152
             break
 
         case A_NUKEMUTANT_GDF
         case A_NUKEMUTANT_GDF_RISE
         case A_NUKEMUTANT_GDF_DEAD
         case A_NUKEMUTANT_GDF_GIBBED
-            seta .pal 35
+			ife sprite.pal 0
+				seta .pal 35
             break
     endswitch    
 endevent
@@ -16585,7 +16946,6 @@ useractor enemy A_NUKEMUTANT_RISE 50 AC_MUTANT_RISE
     fall
     clipdist 32
     state fixshade
-
     ife enemy_thisisahack 1
     {
         ifn sector.lotag 1
@@ -16828,7 +17188,7 @@ useractor enemy A_NUKEMUTANT 60 AC_MUTANT_IDLE
 
         ifdead
         {
-            state enemy_confirm_bowled
+			state enemy_confirm_bowled
             stopsound S_ZOMBIE_RECOG1
             stopsound S_ZOMBIE_RECOG2
             stopsound S_ZOMBIE_RECOG1_Q
@@ -17141,6 +17501,7 @@ useractor enemy A_NUKEMUTANT 60 AC_MUTANT_IDLE
                                 addphealth -12
                             else
                                 addphealth -10
+							seta[player.i].htpicnum sprite.picnum
                             rand temp4 1
                             add temp4 S_MELEE_THUD01
                             soundvar temp4
@@ -17546,7 +17907,7 @@ useractor enemy A_NUKEMUTANT_GDF 100 AC_MUTANT_GDF_IDLE
             action AC_MUTANT_GDF_HIT
         ifdead
         {
-            state enemy_confirm_bowled
+			state enemy_confirm_bowled
             stopsound S_ZOMBIE_GDF_RECOG1
             stopsound S_ZOMBIE_GDF_RECOG2        
             stopsound S_ZOMBIE_GDF_RECOG1_Q
@@ -17761,7 +18122,6 @@ useractor enemy A_NUKEMUTANT_GDF 100 AC_MUTANT_GDF_IDLE
         ifl sprite.htg_t 2 2
         {
             set face_target enemy_target
-            set face_target enemy_target
             state face_actor
             seta .ang face_return
         }
@@ -17943,12 +18303,12 @@ appendevent EVENT_SPAWN
             {
                 geta .owner respawntemp
                 geta[respawntemp].pal respawntemp
-                switch respawntemp
-                    case PAL_MECHBOSS_MINI
-                    case PAL_MECHBOSS_MINI_R
+                //switch respawntemp
+                //    case PAL_MECHBOSS_MINI
+                //    case PAL_MECHBOSS_MINI_R
                         seta .pal respawntemp
-                        break
-                endswitch
+                //        break
+                //endswitch
             }
             ifactor A_MECHBOSS_TOP
                 ifn sprite.htowner -1
@@ -17967,7 +18327,8 @@ appendevent EVENT_SPAWN
                     break
                 default
                     sizeat 28 23
-                    spritepal PAL_MECHBOSS
+					ife sprite.pal 0
+						spritepal PAL_MECHBOSS
                     geta .hitag se_hitag
                     seta .hitag 0
                     break
@@ -17998,7 +18359,7 @@ eventloadactor A_MECHBOSS_BOTTOM
             seta .yvel 0
             geta .xvel se_xvel
             seta .xvel 0
-            geta .zvel se_zvel
+			geta .zvel se_zvel
             seta .zvel 0
             break
     endswitch
@@ -18261,7 +18622,7 @@ useractor enemy A_MECHBOSS_TOP MECHBOSS_HEALTH AC_BOSSTOP_BASE
         ifg boss_hpflash 0
             sub boss_hpflash 1
     }
-    ifn boss_btm_id -1
+	ifn boss_btm_id -1
     {
         seta .x sprite[boss_btm_id].x
         seta .y sprite[boss_btm_id].y
@@ -19480,6 +19841,7 @@ useractor enemy A_MECHBOSS_BOTTOM MECHBOSS_HEALTH AC_BOSSBOTTOM_BASE
                     case 4
                     case 6
                         addphealth -2
+						seta[player.i].htpicnum sprite.picnum
                         setp .sound_pitch 512
                         sound S_DOOR_CLANK_HUGE
                         setp .sound_pitch 0
@@ -19757,7 +20119,7 @@ useractor enemy A_MECHBOSS_BOTTOM MECHBOSS_HEALTH AC_BOSSBOTTOM_BASE
             }
             else
             {
-                ifg se_zvel 0
+				ifg se_zvel 0
                 {
                     set temp se_lotag
                     set se_lotag se_zvel

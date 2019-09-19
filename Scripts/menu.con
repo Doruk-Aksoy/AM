@@ -427,7 +427,7 @@ appendevent EVENT_DISPLAYMENUREST
         set hudx_orientation 528
         set hudx_quote 6
         set hudx_txtflags 1
-        redefinequote 6 ^11FULL VERSION 1.02,^10 (c) 2019 VOIDPOINT, LLC
+        redefinequote 6 ^11FULL VERSION 1.00^10, (c) 2019 VOIDPOINT, LLC
         state DrawText640x480Screen
     }
 
@@ -1017,7 +1017,8 @@ appendevent EVENT_DISPLAYMENUREST
                 set temp totalclock
                 sub temp face_static_c
                 abs temp
-                ifg temp 2
+                mod temp 4
+                ife temp 0
                 {
                     set face_static_c totalclock
                     add face_static 1

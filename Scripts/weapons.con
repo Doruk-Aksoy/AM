@@ -160,7 +160,7 @@ var WEAPON1_SPAWN -1 1
 var WEAPON1_SHOTSPERBURST 3 1
 var WEAPON1_WORKSLIKE 1 1
 var WEAPON1_INITIALSOUND 0 1
-var WEAPON1_FIRESOUND S_TRIFIRE1 1
+var WEAPON1_FIRESOUND AM_S_TRIFIRE_1 1
 var WEAPON1_SOUND2TIME 54 1
 var WEAPON1_SOUND2SOUND S_TRILOAD2 1
 var WEAPON1_RELOADSOUND1 S_TRILOAD1 1
@@ -179,7 +179,7 @@ var WEAPON2_SPAWN -1 1
 var WEAPON2_SHOTSPERBURST 15 1
 var WEAPON2_WORKSLIKE 2 1
 var WEAPON2_INITIALSOUND 0 1
-var WEAPON2_FIRESOUND S_SHOTGUN_FIRE1 1
+var WEAPON2_FIRESOUND AM_S_SHOTGUNFIRE_1 1
 var WEAPON2_SOUND2TIME 12 1
 var WEAPON2_SOUND2SOUND 0 1
 var WEAPON2_RELOADSOUND1 0 1
@@ -298,7 +298,7 @@ var WEAPON8_FIREDELAY 3 1
 var WEAPON8_TOTALTIME 24 1
 var WEAPON8_HOLDDELAY 0 1
 var WEAPON8_FLAGS 16640 1
-var WEAPON8_SHOOTS P_PUCK_THROWN 1
+var WEAPON8_SHOOTS P_DSLAM_THROWN 1
 var WEAPON8_SPAWNTIME 0 1
 var WEAPON8_SPAWN 0 1
 var WEAPON8_SHOTSPERBURST 1 1
@@ -491,15 +491,15 @@ defineprojectile P_SHOCKER PROJ_TOFFSET 0
 defineprojectile P_SHOCKER PROJ_TXREPEAT 0
 
 // remove for demo
-/*
 defineprojectile P_FLAMER PROJ_WORKSLIKE 49218
 defineprojectile P_FLAMER PROJ_SPAWNS A_FIRECYCLONE
-defineprojectile P_FLAMER PROJ_SXREPEAT 32
-defineprojectile P_FLAMER PROJ_SYREPEAT 32
+defineprojectile P_FLAMER PROJ_CLIPDIST 96
+defineprojectile P_FLAMER PROJ_SXREPEAT 16
+defineprojectile P_FLAMER PROJ_SYREPEAT 16
 defineprojectile P_FLAMER PROJ_XREPEAT 2
 defineprojectile P_FLAMER PROJ_YREPEAT 2
 defineprojectile P_FLAMER PROJ_EXTRA 25
-defineprojectile P_FLAMER PROJ_RANGE 7
+defineprojectile P_FLAMER PROJ_RANGE 22
 defineprojectile P_FLAMER PROJ_EXTRA_RAND 0
 defineprojectile P_FLAMER PROJ_HITRADIUS 0
 defineprojectile P_FLAMER PROJ_OFFSET 336
@@ -511,7 +511,6 @@ defineprojectile P_FLAMER PROJ_TRAIL A_EXPLOSION
 defineprojectile P_FLAMER PROJ_TNUM 0
 defineprojectile P_FLAMER PROJ_TOFFSET 0
 defineprojectile P_FLAMER PROJ_TXREPEAT 127 // This is a hack to tell the actor which particle it is
-*/
 
 spritenoshade P_BOMBETTE
 defineprojectile P_BOMBETTE PROJ_WORKSLIKE 2103502 // 6350 + NOSETSHADE // 22734
@@ -663,7 +662,6 @@ defineprojectile P_DANCINGQUEEN PROJ_ISOUND S_IMPACT_PLASMABOW
 defineprojectile P_DANCINGQUEEN PROJ_TXREPEAT 127 // This is a hack to tell the actor which particle it is
 defineprojectile P_DANCINGQUEEN PROJ_CLIPDIST 1
 spritenoshade P_DANCINGQUEEN
-spritenopal P_DANCINGQUEEN
 
 
 defineprojectile P_ACIDYSPIT PROJ_WORKSLIKE 4229262
@@ -708,25 +706,25 @@ defineprojectile P_MINIMISSILE PROJ_TYREPEAT 2
 defineprojectile P_MINIMISSILE PROJ_VEL 480
 defineprojectile P_MINIMISSILE PROJ_CLIPDIST 1
 
-defineprojectile P_PUCK_THROWN PROJ_WORKSLIKE 2190
-defineprojectile P_PUCK_THROWN PROJ_SPAWNS A_EXPLOSION
-defineprojectile P_PUCK_THROWN PROJ_SXREPEAT 48
-defineprojectile P_PUCK_THROWN PROJ_SYREPEAT 48
-defineprojectile P_PUCK_THROWN PROJ_XREPEAT 7
-defineprojectile P_PUCK_THROWN PROJ_YREPEAT 6
-defineprojectile P_PUCK_THROWN PROJ_EXTRA 0
-defineprojectile P_PUCK_THROWN PROJ_EXTRA_RAND 0
-defineprojectile P_PUCK_THROWN PROJ_HITRADIUS 0
-defineprojectile P_PUCK_THROWN PROJ_OFFSET 14354
-defineprojectile P_PUCK_THROWN PROJ_PAL 21
-defineprojectile P_PUCK_THROWN PROJ_SHADE 0
-defineprojectile P_PUCK_THROWN PROJ_CSTAT 32768 // 384
-defineprojectile P_PUCK_THROWN PROJ_TRAIL -1
-defineprojectile P_PUCK_THROWN PROJ_BOUNCES 1
-defineprojectile P_PUCK_THROWN PROJ_BSOUND -1
-defineprojectile P_PUCK_THROWN PROJ_VEL 512
-defineprojectile P_PUCK_THROWN PROJ_DROP -128
-defineprojectile P_PUCK_THROWN PROJ_CLIPDIST 1
+defineprojectile P_DSLAM_THROWN PROJ_WORKSLIKE 2190
+defineprojectile P_DSLAM_THROWN PROJ_SPAWNS A_EXPLOSION
+defineprojectile P_DSLAM_THROWN PROJ_SXREPEAT 48
+defineprojectile P_DSLAM_THROWN PROJ_SYREPEAT 48
+defineprojectile P_DSLAM_THROWN PROJ_XREPEAT 7
+defineprojectile P_DSLAM_THROWN PROJ_YREPEAT 6
+defineprojectile P_DSLAM_THROWN PROJ_EXTRA GRENADE_DMG
+defineprojectile P_DSLAM_THROWN PROJ_EXTRA_RAND 0
+defineprojectile P_DSLAM_THROWN PROJ_HITRADIUS GRENADE_RADIUS
+defineprojectile P_DSLAM_THROWN PROJ_OFFSET 14354
+defineprojectile P_DSLAM_THROWN PROJ_PAL 21
+defineprojectile P_DSLAM_THROWN PROJ_SHADE 0
+defineprojectile P_DSLAM_THROWN PROJ_CSTAT 32768 // 384
+defineprojectile P_DSLAM_THROWN PROJ_TRAIL -1
+defineprojectile P_DSLAM_THROWN PROJ_BOUNCES 1
+defineprojectile P_DSLAM_THROWN PROJ_BSOUND -1
+defineprojectile P_DSLAM_THROWN PROJ_VEL 512
+defineprojectile P_DSLAM_THROWN PROJ_DROP -128
+defineprojectile P_DSLAM_THROWN PROJ_CLIPDIST 1
 
 defineprojectile P_DART PROJ_WORKSLIKE 34958
 defineprojectile P_DART PROJ_SPAWNS -1
@@ -753,9 +751,9 @@ action AC_FLAMINGSKULL_LIGHT 0 9 5 1 1
 
 actor P_FLAMINGSKULL FLAMINGSKULL_DMG AC_FLAMINGSKULL_LIGHT enda
 
-action AC_PUCK_SPIN 0 4 1 1 1
-action AC_PUCK_SPIN_LIT 301 4 1 1 1
-actor P_PUCK_THROWN GRENADE_DMG AC_PUCK_SPIN_LIT enda
+action AC_DSLAM_SPIN 0 4 1 1 1
+action AC_DSLAM_SPIN_LIT 301 4 1 1 1
+actor P_DSLAM_THROWN GRENADE_DMG AC_DSLAM_SPIN_LIT enda
 
 defstate grab_puck
         ife player[].gotweapon WEAPON_LAM 0
@@ -775,40 +773,14 @@ defstate grab_puck
         setp .sound_pitch temp
         killit
 ends
-
-defstate puck_radius_shared
-    set temp6 GRENADE_RADIUS
-    
-    set temp7 GRENADE_DMG
-    shiftr temp7 2
-
-    set temp8 GRENADE_DMG
-    shiftr temp8 1
-
-    set temp9 GRENADE_DMG
-    
-    ifand se_yvel 2
-    {
-        shiftl temp6 1
-        shiftr temp7 2
-        shiftr temp8 2
-        shiftr temp9 2
-    }
-    else shiftr temp6 1
-    
-    sub temp9 temp7
-
-    hitradiusvar temp6 temp7 temp8 temp9 GRENADE_DMG
-ends
-action AC_PUCK_IDLE 0 1 9 1 1
-action AC_PUCK_IDLE_LIT 288 1 9 1 1
-
-spritenoshade P_PUCK_PLACED
-useractor notenemy P_PUCK_PLACED GRENADE_DMG AC_PUCK_IDLE
-    ifaction AC_PUCK_IDLE
+action AC_DSLAM_IDLE 0 1 9 1 1
+action AC_DSLAM_IDLE_LIT 288 1 9 1 1
+spritenoshade P_DSLAM_PLACED
+useractor notenemy P_DSLAM_PLACED GRENADE_DMG AC_DSLAM_IDLE
+    ifaction AC_DSLAM_IDLE
         nullop
     else
-        action AC_PUCK_IDLE
+        action AC_DSLAM_IDLE
     sizeat 5 4
     cstat 384
     clipdist 16
@@ -852,10 +824,10 @@ useractor notenemy P_PUCK_PLACED GRENADE_DMG AC_PUCK_IDLE
     }
     else
     {
-        ifaction AC_PUCK_IDLE_LIT
+        ifaction AC_DSLAM_IDLE_LIT
             nullop
         else
-            action AC_PUCK_IDLE_LIT
+            action AC_DSLAM_IDLE_LIT
         ifspritepal 15
             spritepal 172
         else ifn sprite.pal 172
@@ -863,7 +835,7 @@ useractor notenemy P_PUCK_PLACED GRENADE_DMG AC_PUCK_IDLE
         add counter3 1
         mod counter3 30
         ife counter3 1
-            sound S_PUCK_BEEP
+            sound S_DSLAM_BEEP
         ifl temp 4
             set temp 4
         ife counter3 1
@@ -902,15 +874,19 @@ useractor notenemy P_PUCK_PLACED GRENADE_DMG AC_PUCK_IDLE
         seta[RETURN].yrepeat 48
         seta[RETURN].cstat 32768
 
-        state puck_radius_shared
+        set temp7 GRENADE_DMG
+        shiftr temp7 2
 
-        //ifand se_yvel 2
+        set temp8 GRENADE_DMG
+        shiftr temp8 1
+
+        set temp9 GRENADE_DMG
+        sub temp9 temp7
+
+        hitradiusvar GRENADE_RADIUS temp7 temp8 temp9 GRENADE_DMG
+        ifand se_yvel 2
         {
-            set temp7 16
-            ifand se_yvel 2
-                shiftl temp7 1
-        
-            for itervar range temp7
+            for itervar range 32
             {
                 rand temp3 2047
                 seta .ang temp3
@@ -918,8 +894,6 @@ useractor notenemy P_PUCK_PLACED GRENADE_DMG AC_PUCK_IDLE
                 ifrnd 127
                     inv temp3
                 ezshoot temp3 P_BOMBETTE
-                ifand se_yvel 2
-                    setav[RETURN] .se_xvel 2
             }
         }
         killit
@@ -1018,7 +992,6 @@ useractor notenemy A_ACID_POOL 0
             action AC_ACID_POOL2
         else
             action AC_ACID_POOL1
-        stopsound S_P_SIZZLE
         sound S_P_SIZZLE
     }
     ifle sprite[].htg_t 2 8
@@ -1330,7 +1303,7 @@ useractor notenemy A_NAPALM_FLAME 0 AC_NAPALM_FLAMEON
         seta .shade temp
     }
     else ifrnd 32 set shell_shot 1
-    ifge counter 20
+    ifge counter 25
     {
         ifspawnedby A_NAPALM_BURST
         {
@@ -1438,19 +1411,25 @@ action AC_NAPALM_BURSTING 0 6 1 1 4
 useractor notenemy A_NAPALM_BURST 0 AC_NAPALM_BURSTING
     ife counter 0
     {
+		ifspawnedby P_NAPALM_BALL
+			hitradius NAPALM_BALL_RADIUS 15 21 27 33
         flash
         set counter 1
-        rand temp 3
+        rand temp 6
         add temp 5
         for itervar range temp
         {
             espawn A_NAPALM_FLAME
-            ifspawnedby P_FLAMINGSKULL
-                seta[RETURN].pal 6
+            ifspawnedby P_FLAMINGSKULL {
+				ifspritepal 0
+					seta[RETURN].pal 6
+				else
+					seta[RETURN].pal sprite.pal
+			}
             rand temp2 2047
             seta[RETURN].ang temp2
-            rand temp2 128
-            add temp2 128
+            rand temp2 160
+            add temp2 160
             seta[RETURN].xvel temp2
             rand temp2 512
             add temp2 1024
@@ -1459,8 +1438,10 @@ useractor notenemy A_NAPALM_BURST 0 AC_NAPALM_BURSTING
             ssp RETURN 0
             // sub temp 1
         }
-        ifspawnedby P_FLAMINGSKULL
-            spritepal 6
+        ifspawnedby P_FLAMINGSKULL {
+			ifspritepal 0
+				spritepal 6
+		}
     }
     ifactioncount 6
         killit
@@ -1783,7 +1764,7 @@ defstate weapon_projectiles
                 else ifn counter3 2
                     geta .z se_zvel
                 break
-            case P_PUCK_THROWN
+            case P_DSLAM_THROWN
                 setu[].vm_sprite temp
                 setu .vm_player myconnectindex
                 ife counter 1
@@ -1834,7 +1815,7 @@ defstate weapon_projectiles
                         seta .y lam_hity
                         seta .z lam_hitz
                         seta .sectnum lam_hitsect
-                        cactor P_PUCK_PLACED
+                        cactor P_DSLAM_PLACED
                         setp .sound_pitch 480
                         sound S_SHOTGUN_OPENCLOSE
                         setp .sound_pitch 0
@@ -1901,14 +1882,9 @@ defstate weapon_projectiles
                         setp .sound_pitch temp4
                         sound S_BIG_IMPACT
                         setp .sound_pitch 0
-                        
-                        state puck_radius_shared
-                        // ifand se_yvel 2
+                        ifand se_yvel 2
                         {
-                            set temp7 16
-                            ifand se_yvel 2
-                                shiftl temp7 1
-                            for itervar range temp7
+                            for itervar range 32
                             {
                                 rand temp3 2047
                                 seta .ang temp3
@@ -1917,20 +1893,6 @@ defstate weapon_projectiles
                                     inv temp3
                                 ezshoot temp3 P_BOMBETTE
                                 seta[RETURN].htowner sprite.htowner
-                                ifand se_yvel 2
-                                    nullop
-                                else
-                                {
-                                    setav[RETURN].se_xvel 2
-                                    seta[RETURN].yvel 1
-                                    geta[RETURN].extra temp4
-                                    shiftr temp4 2
-                                    seta[RETURN].extra temp4
-                                    setthisprojectile[RETURN].extra temp4
-                                    getthisprojectile[RETURN].extra_rand temp4
-                                    shiftr temp4 2
-                                    setthisprojectile[RETURN].extra_rand temp4
-                                }
                             }
                         }
                     }
@@ -1969,32 +1931,21 @@ defstate weapon_projectiles
                     seta[temp].blend 255
                     seta[temp].cstat 2
                     seta[temp].shade -70
-                    ifspawnedby APLAYER
+                    /*ifspawnedby APLAYER
                         ifn other_smg_toggle 0
                         {
                             geta .extra temp3
                             shiftl temp3 2
                             div temp3 5
                             seta .extra temp3
-                        }
+                        }*/
                 }
                 break
             case P_MINIMISSILE
                 setu[].vm_sprite temp
                 cstator 256
                 add counter 1
-                ifactorsound THISACTOR S_MINIMISSILE_TRAVEL
-                    nullop
-                else
-                {
-                    ldist temp2 temp player[myconnectindex].i 
-                    ifl temp2 16384
-                    {
-                        setp[myconnectindex].sound_pitch 555
-                        actorsound THISACTOR S_MINIMISSILE_TRAVEL
-                        setp[myconnectindex].sound_pitch 0
-                    }
-                }
+                
                 ifn minimissile_t -1
                 {
                     ifn sprite[minimissile_t].statnum MAXSTATUS
@@ -2052,6 +2003,8 @@ defstate weapon_projectiles
                                 {
                                     geta[player[myconnectindex].i].htextra temp3
                                     add temp3 1
+									ifrnd 127
+										add temp3 1
                                     clamp temp3 1 131072
                                     seta[player[myconnectindex].i].htextra temp3
                                     seta[player[myconnectindex].i].htpicnum sprite[].picnum
@@ -2235,11 +2188,7 @@ defstate weapon_projectiles
             case P_BOMBETTE
                 setu[].vm_sprite temp
                 ldist temp2 temp player[myconnectindex].i
-                
-                ifand se_xvel 2
-                    set temp7 0
-                else set temp7 4
-                
+
                 ifg temp2 128 // we don't want the projectile to spawn in the player's face
                 {
                     
@@ -2271,14 +2220,10 @@ defstate weapon_projectiles
                     add temp2 sprite[].ang
                     and temp2 2047
                     seta[].ang temp2
-                    ifspawnedby P_PUCK_THROWN
+                    ifspawnedby P_DSLAM_THROWN
                     {
                         geta .xvel temp3
-                        shiftr temp3 2
-                        ifrnd 160
-                            shiftr temp3 temp7
-                        ifand se_xvel 2
-                            shiftr temp3 3
+                        shiftr temp3 3
                         seta .xvel temp3
                         spritepal 65
                         geta .shade temp3
@@ -2301,17 +2246,13 @@ defstate weapon_projectiles
                 {
                     geta[temp].zvel temp5
                     set temp4 temp5
-                    shiftr temp4 3
-                    ifrnd 160
-                        shiftr temp4 temp7
+                    shiftr temp4 4
                     add temp5 temp4
                     seta[temp].zvel temp5
                     geta[temp].xvel temp5
                     set temp4 temp5
-                    shiftr temp4 1
-                    ifrnd 160
-                        shiftr temp4 temp7
-                    ifspawnedby P_PUCK_THROWN
+                    shiftr temp4 2
+                    ifspawnedby P_DSLAM_THROWN
                         shiftr temp4 1
                     add temp5 temp4
                     seta[temp].xvel temp5
@@ -2471,10 +2412,6 @@ defstate weapon_projectiles
                                         rand temp3 2
                                         add temp3 S_BULLET_GLASS1
                                         soundvar temp3
-                                        break
-                                    case P_PUCK_PLACED
-                                        seta[temp].xvel 0
-                                        seta[temp].yvel 0
                                         break
                                 endswitch
                             }
@@ -2651,11 +2588,6 @@ defstate weapon_projectiles
                     set napalm_ozv 0
                 break
             case P_DANCINGQUEEN
-                ifactorsound THISACTOR S_LASERLOOP_SHORT
-                    nullop
-                else
-                    actorsound THISACTOR S_LASERLOOP_SHORT
-
                 setu[].vm_sprite temp
                 ldist temp2 temp player[myconnectindex].i
 
@@ -3438,7 +3370,7 @@ useractor notenemy P_BOWLINGBOMB 1
             ife pup_bomb_safety 1
                 set bbomb_gold 1
             getplayervar[].bbomb_hold_count temp
-            ifge temp 9 ife bbomb_alt_mode 0
+            ifge temp 24 ife bbomb_alt_mode 0
                 set bbomb_fulllock 0
             add bbomb_move_v temp
             ifg bbomb_alt_mode 1
@@ -5017,24 +4949,8 @@ useractor notenemy P_BOWLINGBOMB 1
                 {
                     ifn bbomb_target -1
                         spritepal 73
-                    else ife bbomb_fulllock 0
-                        ifg bbomb_move_v 6
-                        {
-                            ifg sector.floorshade 15
-                                spritepal 63
-                            else
-                            {
-                                ifoutside
-                                {
-                                    ifg sector.ceilingshade 15
-                                        spritepal 63
-                                    else
-                                        spritepal 64
-                                }
-                                else
-                                    spritepal 64
-                            }
-                        }
+                    else ife bbomb_fulllock 1
+                        spritepal 64
                 }
             }
             else spritepal 0
@@ -5093,7 +5009,7 @@ useractor notenemy P_BOWLINGBOMB 1
 enda
 
 // commented out this entire cyclone block for the demo
-/*
+
 spritenoshade A_FIRECYCLONE
 spritenopal A_FIRECYCLONE
 action AC_FIRECYCLONE_SPIN 0 26 1 1 1
@@ -5107,7 +5023,7 @@ appendevent EVENT_SPAWN
         spritepal 62 // temporary?
     }
 endevent
-*/
+
 spritenoshade A_FIRE_SPARK
 spritenopal A_FIRE_SPARK
 action AC_FLAMECYCLONEBURST 0 13 1 1 1
@@ -5262,7 +5178,7 @@ useractor notenemy 6705 0 AC_FLAMECYCLONESMOKE
     add counter 1
 enda
 
-/*
+
 useractor notenemy 7103
     ifl sprite[].xrepeat 32 killit
 enda
@@ -5287,105 +5203,107 @@ useractor notenemy A_FIRECYCLONE 0 AC_FIRECYCLONE_SPIN
     add temp sprite[].z
     seta[flame_child].z temp
     seta[flame_child].sectnum sprite[].sectnum
-    ifrnd 64
-    {
-        espawn A_FIRE_SPARK
-        seta[RETURN].xrepeat 1
-        seta[RETURN].yrepeat 1
-        seta[RETURN].cstat 130
-        seta[RETURN].blend 129
-        seta[RETURN].shade 15
+	
+	ifand counter 1 {
+		ifrnd 64
+		{
+			espawn A_FIRE_SPARK
+			seta[RETURN].xrepeat 1
+			seta[RETURN].yrepeat 1
+			seta[RETURN].cstat 130
+			seta[RETURN].blend 129
+			seta[RETURN].shade 15
 
-        rand temp 2047
-        seta[RETURN].ang temp
-        set move_override RETURN
-        rand move_v 512
+			rand temp 2047
+			seta[RETURN].ang temp
+			set move_override RETURN
+			rand move_v 512
 
-        geta[].xrepeat temp
-        shiftl temp 3
-        add move_v temp
-        state move_actor
-        add move_xv sprite[].x
-        add move_yv sprite[].y
-        seta[RETURN].x move_xv
-        seta[RETURN].y move_yv
+			geta[].xrepeat temp
+			shiftl temp 3
+			add move_v temp
+			state move_actor
+			add move_xv sprite[].x
+			add move_yv sprite[].y
+			seta[RETURN].x move_xv
+			seta[RETURN].y move_yv
 
-        geta[].yrepeat temp
-        shiftl temp 9
-        rand temp2 temp
-        geta[].z temp
-        sub temp temp2
-        seta[RETURN].z temp
-
-
-        geta[RETURN].ang temp4
-        geta[].x face_x
-        sub face_x sprite[RETURN].x
-
-        geta[].y face_y
-        sub face_y sprite[RETURN].y
-
-        getangle face_return face_x face_y
-
-        sub face_return 256
-        and face_return 2047
-        seta[RETURN].ang face_return
-        rand temp 15
-        add temp 50
-        seta[RETURN].xvel temp
-
-    }
-
-    ifrnd 32
-    {
-        espawn 6705
-        seta[RETURN].xrepeat 32
-        seta[RETURN].yrepeat 32
-        seta[RETURN].cstat 130
-        seta[RETURN].blend 129
-        seta[RETURN].shade 30
-
-        rand temp 2047
-        seta[RETURN].ang temp
-        set move_override RETURN
-        rand move_v 512
-
-        geta[].xrepeat temp
-        shiftl temp 3
-        add move_v temp
-        state move_actor
-        add move_xv sprite[].x
-        add move_yv sprite[].y
-        seta[RETURN].x move_xv
-        seta[RETURN].y move_yv
-
-        geta[].yrepeat temp
-        shiftl temp 9
-        rand temp2 temp
-        geta[].z temp
-        sub temp temp2
-        sub temp 2048
-        seta[RETURN].z temp
+			geta[].yrepeat temp
+			shiftl temp 9
+			rand temp2 temp
+			geta[].z temp
+			sub temp temp2
+			seta[RETURN].z temp
 
 
-        geta[RETURN].ang temp4
-        geta[].x face_x
-        sub face_x sprite[RETURN].x
+			geta[RETURN].ang temp4
+			geta[].x face_x
+			sub face_x sprite[RETURN].x
 
-        geta[].y face_y
-        sub face_y sprite[RETURN].y
+			geta[].y face_y
+			sub face_y sprite[RETURN].y
 
-        getangle face_return face_x face_y
+			getangle face_return face_x face_y
 
-        sub face_return 128
-        and face_return 2047
-        seta[RETURN].ang face_return
-        rand temp 15
-        add temp 50
-        seta[RETURN].xvel temp
+			sub face_return 256
+			and face_return 2047
+			seta[RETURN].ang face_return
+			rand temp 15
+			add temp 50
+			seta[RETURN].xvel temp
 
-    }
+		}
 
+		ifrnd 32
+		{
+			espawn 6705
+			seta[RETURN].xrepeat 32
+			seta[RETURN].yrepeat 32
+			seta[RETURN].cstat 130
+			seta[RETURN].blend 129
+			seta[RETURN].shade 30
+
+			rand temp 2047
+			seta[RETURN].ang temp
+			set move_override RETURN
+			rand move_v 512
+
+			geta[].xrepeat temp
+			shiftl temp 3
+			add move_v temp
+			state move_actor
+			add move_xv sprite[].x
+			add move_yv sprite[].y
+			seta[RETURN].x move_xv
+			seta[RETURN].y move_yv
+
+			geta[].yrepeat temp
+			shiftl temp 9
+			rand temp2 temp
+			geta[].z temp
+			sub temp temp2
+			sub temp 2048
+			seta[RETURN].z temp
+
+
+			geta[RETURN].ang temp4
+			geta[].x face_x
+			sub face_x sprite[RETURN].x
+
+			geta[].y face_y
+			sub face_y sprite[RETURN].y
+
+			getangle face_return face_x face_y
+
+			sub face_return 128
+			and face_return 2047
+			seta[RETURN].ang face_return
+			rand temp 15
+			add temp 50
+			seta[RETURN].xvel temp
+		}
+	}
+	
     iffloordistl 1
     {
         getflorzofslope sprite[].sectnum sprite[].x sprite[].y temp
@@ -5432,142 +5350,8 @@ useractor notenemy A_FIRECYCLONE 0 AC_FIRECYCLONE_SPIN
                 set temp -127
             seta[].shade temp
         }
-        ife counter 0
-        {
-            for temp sprofstat STAT_ZOMBIEACTOR
-            {
-                ldist temp2 THISACTOR temp
 
-                ifl temp2 6144
-                {
-                    geta[].z temp5
-                    sub temp5 4096
-                    seta[].z temp5
-                    canseespr THISACTOR temp temp4
-                    add temp5 4096
-                    seta[].z temp5
-                    ife temp4 1
-                    {
-                        changespritestat temp STAT_ACTOR
-                    }
-                }
-            }
-        }
-        for temp sprofstat STAT_ACTOR
-        {
-            getav[temp].actor_moveable temp2
-            ife temp2 1
-            {
-                ldist temp2 temp THISACTOR
-                ifl temp2 8192
-                {
-                    sub temp2 8192
-                    inv temp2
-                    shiftr temp2 9
-                    geta[temp].ang temp4
-                    geta[].x face_x
-                    sub face_x sprite[temp].x
-
-                    geta[].y face_y
-                    sub face_y sprite[temp].y
-
-                    getangle face_return face_x face_y
-
-                    seta[temp].ang face_return
-
-
-                    set move_override temp
-                    clamp temp2 0 50
-                    set move_v temp2
-                    state move_actor
-
-                    getav[temp].actor_moveable_xv temp2
-                    add temp2 move_xv
-                    setav[temp].actor_moveable_xv temp2
-
-                    getav[temp].actor_moveable_yv temp2
-                    add temp2 move_yv
-                    setav[temp].actor_moveable_yv temp2
-
-                    add face_return -512
-                    and face_return 2047
-
-                    seta[temp].ang face_return
-
-                    set move_override temp
-                    state move_actor
-
-                    getav[temp].actor_moveable_xv temp2
-                    add temp2 move_xv
-                    setav[temp].actor_moveable_xv temp2
-
-                    getav[temp].actor_moveable_yv temp2
-                    add temp2 move_yv
-                    setav[temp].actor_moveable_yv temp2
-
-                    seta[temp].ang temp4
-                }
-            }
-            else ifand tiledata[sprite[temp].picnum].gameflags 32
-            {
-                ldist temp2 temp THISACTOR
-                ifl temp2 8192
-                {
-                    sub temp2 8192
-                    inv temp2
-                    shiftr temp2 7
-
-                    geta[temp].ang temp4
-                    geta[].x face_x
-                    sub face_x sprite[temp].x
-
-                    geta[].y face_y
-                    sub face_y sprite[temp].y
-
-                    getangle face_return face_x face_y
-
-                    seta[temp].ang face_return
-
-
-                    set move_override temp
-                    set move_v temp2
-                    state move_actor
-
-                    getav[temp].cyclone_mod_xv temp2
-                    add temp2 move_xv
-                    clamp temp2 -50 50
-                    setav[temp].cyclone_mod_xv temp2
-
-                    getav[temp].cyclone_mod_yv temp2
-                    add temp2 move_yv
-                    clamp temp2 -50 50
-                    setav[temp].cyclone_mod_yv temp2
-
-                    add face_return -512
-                    and face_return 2047
-
-                    seta[temp].ang face_return
-
-                    set move_override temp
-                    shiftr move_v 1
-                    state move_actor
-
-                    getav[temp].cyclone_mod_xv temp2
-                    add temp2 move_xv
-                    clamp temp2 -50 50
-                    setav[temp].cyclone_mod_xv temp2
-
-                    getav[temp].cyclone_mod_yv temp2
-                    add temp2 move_yv
-                    clamp temp2 -50 50
-                    setav[temp].cyclone_mod_yv temp2
-
-                    seta[temp].ang temp4
-                }
-            }
-        }
-
-        ifpdistl 8192
+        ifpdistl AM_FIRECYCLONE_PULLDIST
         {
             getplayer[].i temp
             geta[].ang temp4
@@ -5575,44 +5359,84 @@ useractor notenemy A_FIRECYCLONE 0 AC_FIRECYCLONE_SPIN
             set face_target player[].i
             state face_actor
             seta[].ang face_return
+			sub face_return 1024
+			and face_return 2047
 
             ldist temp2 temp THISACTOR
-            sub temp2 8192
+            sub temp2 AM_FIRECYCLONE_PULLDIST
             inv temp2
-            shiftr temp2 6
-
+            shiftr temp2 3
+			ifrnd 127
+				shiftr temp2 1
+			
             set move_v temp2
-            state move_actor
+            cos move_xv face_return
+            sin move_yv face_return
+            mul move_xv move_v
+            mul move_yv move_v
+			shiftr move_xv 4
+			shiftr move_yv 4
+			ifn playervar.cyclone_mod_xv 0
+			{
+				add move_xv playervar.cyclone_mod_xv
+				setpv .cyclone_mod_xv 0
+			}
+			ifn playervar.cyclone_mod_yv 0
+			{
+				add move_yv playervar.cyclone_mod_yv
+				setpv .cyclone_mod_yv 0
+			}
+			add move_xv player.posxv
+            add move_yv player.posyv
+            setp .posxv move_xv
+            setp .posyv move_yv
 
-
-            getav[temp].cyclone_mod_xv temp2
+            getpv .cyclone_mod_xv temp2
             sub temp2 move_xv
             clamp temp2 -50 50
-            setav[temp].cyclone_mod_xv temp2
+            setpv .cyclone_mod_xv temp2
 
-            getav[temp].cyclone_mod_yv temp2
+            getpv .cyclone_mod_yv temp2
             sub temp2 move_yv
             clamp temp2 -50 50
-            setav[temp].cyclone_mod_yv temp2
+            setpv .cyclone_mod_yv temp2
 
             add face_return -512
             and face_return 2047
 
             seta[].ang face_return
 
-
             shiftr move_v 1
-            state move_actor
+            cos move_xv face_return
+            sin move_yv face_return
+            mul move_xv move_v
+            mul move_yv move_v
+			shiftr move_xv 4
+			shiftr move_yv 4
+			ifn playervar.cyclone_mod_xv 0
+			{
+				add move_xv playervar.cyclone_mod_xv
+				setpv .cyclone_mod_xv 0
+			}
+			ifn playervar.cyclone_mod_yv 0
+			{
+				add move_yv playervar.cyclone_mod_yv
+				setpv .cyclone_mod_yv 0
+			}
+			add move_xv player.posxv
+            add move_yv player.posyv
+			setp .posxv move_xv
+            setp .posyv move_yv
 
-            getav[temp].cyclone_mod_xv temp2
+            getpv .cyclone_mod_xv temp2
             sub temp2 move_xv
             clamp temp2 -50 50
-            setav[temp].cyclone_mod_xv temp2
+            setpv .cyclone_mod_xv temp2
 
-            getav[temp].cyclone_mod_yv temp2
+            getpv .cyclone_mod_yv temp2
             sub temp2 move_yv
             clamp temp2 -50 50
-            setav[temp].cyclone_mod_yv temp2
+            setpv .cyclone_mod_yv temp2
 
             seta[].ang temp4
         }
@@ -5633,16 +5457,16 @@ useractor notenemy A_FIRECYCLONE 0 AC_FIRECYCLONE_SPIN
             seta[].shade temp
         }
     }
-    hitradius 1280 1 2 3 4
+	ifand counter 1
+		hitradius 1444 2 3 4 5
     add counter 1
     ifg counter 120
         killit
-enda */
+enda
 // J.S NOTE: I just went ahead and used this as the base for everything and offset
 define LOVERBOY_X 220
 define LOVERBOY_Y 265
 
-var get_aaa_temp
 appendevent EVENT_GETAUTOAIMANGLE
     ifn player_target -1
         set AUTOAIMANGLE 0
@@ -5671,21 +5495,10 @@ appendevent EVENT_GETAUTOAIMANGLE
         }
         else ife player[].curr_weapon WEAPON_CROSSBOW
         {
-            geti .avel get_aaa_temp
-            abs get_aaa_temp
             ife player[].aim_mode 1
                 set AUTOAIMANGLE 36
             else
                 set AUTOAIMANGLE 72
-            ifl get_aaa_temp 32
-                ifl sprite.xvel 32
-                {
-                    ife player[].aim_mode 1
-                        set AUTOAIMANGLE 24
-                    else
-                        set AUTOAIMANGLE 48
-                }
-            
         }
         else
         {
@@ -5698,20 +5511,21 @@ appendevent EVENT_GETAUTOAIMANGLE
 
     ife player[].curr_weapon WEAPON_LOVERBOY
     {
-        rand WEAPON1_FIRESOUND 6
-        add WEAPON1_FIRESOUND S_TRIFIRE1
+        rand WEAPON1_FIRESOUND AM_S_TRI_RAND
+        add WEAPON1_FIRESOUND AM_S_TRIFIRE_1
         ifn fuckup_aim 0
             set AUTOAIMANGLE 0
     }
     else ife player[].curr_weapon WEAPON_SHOTGUN
     {
-            rand WEAPON2_FIRESOUND 1
-            add WEAPON2_FIRESOUND S_SHOTGUN_FIRE1
+            rand WEAPON2_FIRESOUND AM_S_SHOTGUN_RAND
+            add WEAPON2_FIRESOUND AM_S_SHOTGUNFIRE_1
 
         ife weapon2_realclip SHOTGUN_CLIP
             set WEAPON2_SOUND2SOUND 0
         else
             set WEAPON2_SOUND2SOUND S_SHOTGUN_RELOAD1
+
     }
     else ife player[].curr_weapon WEAPON_GRENADE
     {
@@ -5801,11 +5615,6 @@ defstate noweapon
     {
         sound S_SWITCH_CARDLOCKED
         set RETURN -1
-    }
-    else ife RETURN player.curr_weapon
-    {
-        ifn player[].reloading 0
-            set RETURN -1
     }
 ends
 
@@ -6195,7 +6004,7 @@ var pistol_interrupt 0 1
 var smg_extra 0 1
 var smg_extra_rand 0 1
 onevent EVENT_DOFIRE
-    ife player[].curr_weapon WEAPON_LOVERBOY
+    ife player[].curr_weapon 1
     {
         ifn fuckup_aim 0
         {
@@ -6222,17 +6031,16 @@ onevent EVENT_DOFIRE
             getprojectile[P_SMG2].extra smg_extra
             getprojectile[P_SMG2].extra_rand smg_extra_rand
             set fuckup_aim2_r 1
-            getp[].q16horiz temp
+            /*getp[].horiz temp
             set temp2 fuckup_aim2
             set temp3 temp2
             shiftr temp3 3
             add temp2 temp3
-            inv temp2
+			inv temp2
             shiftl temp2 16
-            sub temp temp2
-            setp[].q16horiz temp
-            getp[].q16ang temp
-
+            add temp temp2
+            setp[].horiz temp*/
+			
             ifn other_smg_toggle 0
             {
                 set temp3 smg_extra
@@ -6246,13 +6054,38 @@ onevent EVENT_DOFIRE
                 inv temp3
                 setprojectile[P_SMG2].extra_rand temp3
                 set fuckup_aim2_r 2
-                inv temp2
-                add temp 524288
-                // and temp 2047
-                // shiftl temp 16
+                /*inv temp2
+                add temp 524288*/
+                //and temp 2047
+                //shiftl temp 16
             }
-            sub temp temp2
+			// range -fuckup_aim2 to fuckup_aim2, can be half if only 1 smg is used
+			getp[].q16ang temp
+			set temp2 fuckup_aim2
+			shiftl temp2 19
+			rand p_smg_randang1 temp2
+			set temp2 fuckup_aim2
+			shiftl temp2 18
+			sub p_smg_randang1 temp2
+			ifn other_smg_toggle 0
+				shiftl p_smg_randang1 1
+			shiftr p_smg_randang1 2
+			add temp p_smg_randang1
+            //sub temp temp2
             setp[].q16ang temp
+			
+			getp .horiz temp
+			set temp2 fuckup_aim2
+			rand p_smg_randhoriz1 temp2
+			set temp2 fuckup_aim2
+			shiftr temp2 1
+			sub p_smg_randhoriz1 temp2 
+			ifn other_smg_toggle 0
+				shiftl p_smg_randhoriz1 1
+			mul p_smg_randhoriz1 3
+			div p_smg_randhoriz1 7
+			sub temp p_smg_randhoriz1
+			setp .horiz temp
         }
     }
 endevent
@@ -6335,7 +6168,7 @@ state do_reload
                     sub temp2 PISTOL_CLIP
                     abs temp2
                     sub temp temp2
-                    ifge temp 0
+                    ifg temp 0
                     {
                         set WEAPON1_CLIP 1
                         set WEAPON1_TOTALTIME 8
@@ -6353,7 +6186,7 @@ state do_reload
                     sub temp2 SHOTGUN_CLIP
                     abs temp2
                     sub temp temp2
-                    ifge temp 0
+                    ifg temp 0
                     {
                         set WEAPON2_CLIP 1
                         setp[].kickback_pic WEAPON2_TOTALTIME
@@ -6370,7 +6203,7 @@ state do_reload
                     sub temp2 SHOTGUN_CLIP
                     abs temp2
                     sub temp temp2
-                    ifge temp 0
+                    ifg temp 0
                     {
                         set WEAPON6_CLIP 1
                         setp[].kickback_pic WEAPON6_TOTALTIME
@@ -6387,7 +6220,7 @@ state do_reload
                     sub temp2 SMG_CLIP
                     abs temp2
                     sub temp temp2
-                    ifge temp 0
+                    ifg temp 0
                     {
                         set WEAPON3_CLIP 1
                         setp[].kickback_pic WEAPON3_TOTALTIME
@@ -6404,7 +6237,7 @@ state do_reload
                     sub temp2 CROSSBOW_CLIP
                     abs temp2
                     sub temp temp2
-                    ifge temp 0
+                    ifg temp 0
                     {
                         set WEAPON7_CLIP 1
                         setp[].kickback_pic WEAPON7_TOTALTIME
@@ -6418,21 +6251,6 @@ state do_reload
         set press_reload 0
     }
 ends
-
-var old_boltlike 0 2
-var old_boltlike2 0 2
-defstate shoot_first_bolt
-    getprojectile[P_PLASMA_BOLT].workslike old_boltlike
-    set old_boltlike2 old_boltlike
-    ifn player.auto_aim 1
-    {
-        or old_boltlike 4096
-        setprojectile[P_PLASMA_BOLT].workslike old_boltlike
-    }
-    eshoot P_PLASMA_BOLT
-    setprojectile[P_PLASMA_BOLT].workslike old_boltlike2
-ends
-
 appendevent EVENT_USESTEROIDS
     set RETURN -1
     set press_reload 1
@@ -6530,10 +6348,10 @@ defstate player_weapon_mods
     }
 
     setp[].runspeed RUNNINGSPEED
-    ifg sprite.extra MAXPLAYERHEALTH
+    ifg sprite.extra player.max_player_health
     {
         set temp sprite.extra
-        sub temp MAXPLAYERHEALTH
+        sub temp player.max_player_health
         shiftl temp 4
         add temp RUNNINGSPEED
         setp .runspeed temp
@@ -6975,7 +6793,7 @@ defstate player_weapon_mods
                 setprojectile[P_LOVERBOY].extra_rand WEAPON1_DMG
                 getp[].horiz temp
                 set temp2 fuckup_aim
-                shiftr temp2 1
+                shiftr temp2 2
                 add temp temp2
                 setp[].horiz temp
                 getp[].ang temp
@@ -7217,7 +7035,7 @@ defstate player_weapon_mods
         }
     }
 
-    ife player[].curr_weapon WEAPON_SHOTGUN
+    ife player[].curr_weapon 2
     {
         set WEAPON2_CLIP 0
         getp[].ammo_amount player[].curr_weapon temp
@@ -7329,7 +7147,7 @@ defstate player_weapon_mods
                 sound S_SHOTGUN_OPENCLOSE
         }
     }
-    else ife player[].curr_weapon WEAPON_GRENADE
+    else ife player[].curr_weapon 6
     {
         set WEAPON6_CLIP 0
         getp[].ammo_amount player[].curr_weapon temp
@@ -7651,8 +7469,8 @@ defstate player_weapon_mods
             }
             else ife player[].kickback_pic WEAPON5_FIREDELAY ifl bbomb_hold_count 120
             {
-                ifl bbomb_hold_count 12
-                    ifge bbomb_hold_count 9
+                ifl bbomb_hold_count 27
+                    ifge bbomb_hold_count 24
                     {
                         setp[].sound_pitch 512
                         sound S_BBOMB_LAND_ALT
@@ -7883,7 +7701,7 @@ defstate player_weapon_mods
                             inv temp
                         add temp player[].ang
                         and temp 2047
-                        state shoot_first_bolt
+                        eshoot P_PLASMA_BOLT
                         setav[RETURN].was_plasma_alt 1
                         seta[RETURN].ang temp
                         rand temp2 512
@@ -7940,10 +7758,10 @@ defstate player_weapon_mods
                         set WEAPON7_CLIP 0
                     switch WEAPON7_SHOTSPERBURST
                         case 1
-                            state shoot_first_bolt
+                            shoot P_PLASMA_BOLT
                             break
                         case 2
-                            state shoot_first_bolt
+                            eshoot P_PLASMA_BOLT
                             geta[RETURN].ang temp
                             geta[RETURN].zvel temp2
                             seta[RETURN].xrepeat 0
@@ -7970,7 +7788,7 @@ defstate player_weapon_mods
                             setthisprojectile[RETURN].workslike temp3
                             break
                         case 3
-                            state shoot_first_bolt
+                            eshoot P_PLASMA_BOLT
                             geta[RETURN].ang temp
                             geta[RETURN].zvel temp2
 
@@ -7993,7 +7811,7 @@ defstate player_weapon_mods
                             setthisprojectile[RETURN].workslike temp3
                             break
                         case 4
-                            state shoot_first_bolt
+                            eshoot P_PLASMA_BOLT
                             geta[RETURN].ang temp
                             geta[RETURN].zvel temp2
                             seta[RETURN].xrepeat 0
@@ -8039,7 +7857,7 @@ defstate player_weapon_mods
                             setthisprojectile[RETURN].workslike temp3
                             break
                         case 5
-                            state shoot_first_bolt
+                            eshoot P_PLASMA_BOLT
                             geta[RETURN].ang temp
                             geta[RETURN].zvel temp2
 
@@ -8471,26 +8289,32 @@ defstate player_weapon_mods
             setprojectile[P_SMG2].extra_rand smg_extra_rand
             ifg fuckup_aim2_r 0
             {
-                
-                getp[].q16horiz temp
+                /*getp[].horiz temp
                 set temp2 fuckup_aim2
                 set temp3 temp2
                 shiftr temp3 3
                 add temp2 temp3
-                inv temp2
+				ife p_smg_fuckdir1 1
+					inv temp2
                 shiftl temp2 16
                 add temp temp2
-                setp[].q16horiz temp
+                setp[].horiz temp*/
                 getp[].q16ang temp
-
-                ife fuckup_aim2_r 2
+				set temp3 p_smg_randang1
+                /*ife fuckup_aim2_r 2
                 {
                     inv temp2
                     add temp 133693440
                     // and temp 2047
-                }
-                add temp temp2
+                }*/
+				sub temp temp3 // the opposite must happen here to revert changes from DOFIRE event
+                //add temp temp2
                 setp[].q16ang temp
+				
+				getp .horiz temp
+				add temp p_smg_randhoriz1
+				setp .horiz temp
+				
                 set fuckup_aim2_r 0
             }
 
@@ -8537,6 +8361,7 @@ defstate player_weapon_mods
                     add fuckup_aim2 2
                 else
                     add fuckup_aim2 1
+                sound S_LAVANAIL_FLESH
                 sound S_SMG_SINGLE
                 eshoot A_SHELL1
                     geta[RETURN].xvel temp2
@@ -8612,9 +8437,13 @@ defstate player_weapon_mods
             }
             else ife player[].kickback_pic 3
             {
-                sound S_SMG_SINGLE
                 setp[].kickback_pic 4
                 add fuckup_aim2 1
+            }
+            else ife player[].kickback_pic 4
+            {
+                sound S_LAVANAIL_FLESH
+                sound S_SMG_SINGLE
             }
             else ife player[].kickback_pic 6
             {
@@ -8622,7 +8451,6 @@ defstate player_weapon_mods
                 {
                     setp[].kickback_pic 0
                     set weapon3_realclip 0
-                    sound S_LAVANAIL_FLESH
                 }
                 else
                 {
@@ -8634,23 +8462,19 @@ defstate player_weapon_mods
                         setp[].kickback_pic temp
                         set weapon3_realclip 0
                         set WEAPON3_CLIP 1
-                        sound S_LAVANAIL_FLESH
                     }
                     else
                     {
                         ifand input[].bits INPUT_FIRE
                             setp[].kickback_pic 7
-                        else sound S_LAVANAIL_FLESH
                     }
                 }
             }
-
             setp[].sound_pitch temp3
             ife player[].kickback_pic 10
                 sound S_SMG_CLIPOUT
-            else ife player[].kickback_pic 26
+            ife player[].kickback_pic 26
                 sound S_SMG_CLIPIN
-                
             ifg main_smg_fired 0
                 sub main_smg_fired 1
             getp .kickback_pic temp7
@@ -8698,24 +8522,43 @@ defstate player_weapon_mods
                         set kickback_other 7
                 }
                 getp[].q16ang temp7
-                getp[].q16horiz temp6
+                getp[].horiz temp6
                 
-                getp[].q16horiz temp
+                /*getp[].horiz temp
                 set temp2 fuckup_aim2
                 set temp3 temp2
                 shiftr temp3 3
                 add temp2 temp3
-                inv temp2
+				inv temp2
                 shiftl temp2 16
                 sub temp temp2
-                setp[].q16horiz temp
+                setp[].horiz temp*/
                 getp[].q16ang temp
-                inv temp2
+                /*inv temp2
                 add temp 133955584
                 // and temp 2047
-                add temp temp2
-
+                add temp temp2*/
+				set temp3 fuckup_aim2
+				shiftl temp3 19
+				rand temp2 temp3
+				set temp3 fuckup_aim2
+				shiftl temp3 18
+				sub temp2 temp3
+				// range -fuckup_aim2 to fuckup_aim2
+				// shiftl temp2 1 // x2 inaccurate
+				shiftr temp2 1
+				add temp temp2
                 setp[].q16ang temp
+				
+				getp .horiz temp
+				rand temp2 fuckup_aim2
+				set temp3 fuckup_aim2
+				shiftr temp3 1
+				sub temp2 temp3
+				mul temp2 6 // x2 inaccurate
+				div temp2 7
+				sub temp temp2
+				setp .horiz temp
                 
                 ife kickback_other 1
                 {
@@ -8743,9 +8586,10 @@ defstate player_weapon_mods
                     setprojectile[P_SMG2].offset temp
                     setprojectile[P_SMG2].extra temp2
                     setprojectile[P_SMG2].extra_rand temp3
+                    sound S_LAVANAIL_FLESH
                     sound S_SMG_SINGLE
                     setp[].q16ang temp7
-                    setp[].q16horiz temp6
+                    setp[].horiz temp6
                     eshoot A_SHELL1
                         geta[].ang temp2
                         set temp4 sprite[].ang
@@ -8839,6 +8683,7 @@ defstate player_weapon_mods
                 else ife kickback_other 3
                 {
                     set kickback_other 4
+                    sound S_LAVANAIL_FLESH
                     sound S_SMG_SINGLE
                     getprojectile[P_SMG2].offset temp
                     getprojectile[P_SMG2].extra temp2
@@ -8870,7 +8715,6 @@ defstate player_weapon_mods
                     ife player[].ammo_amount player[].curr_weapon 0
                     {
                         set kickback_other 0
-                        sound S_LAVANAIL_FLESH
                     }
                     else
                     {
@@ -8878,25 +8722,21 @@ defstate player_weapon_mods
                         {
                             set temp WEAPON3_TOTALTIME
                             set kickback_other temp
-                            sound S_LAVANAIL_FLESH
                         }
                         else
                         {
                             ifand input[].bits INPUT_FIRE
                                 set kickback_other 7
-                            else
-                                sound S_LAVANAIL_FLESH
                         }
                     }
                 }
-
                 setp[].sound_pitch temp3
                 ife kickback_other 10
                     sound S_SMG_CLIPOUT
-                else ife kickback_other 26
+                ife kickback_other 26
                     sound S_SMG_CLIPIN
-                    
-                setp[].ang temp7
+                
+                //setp[].ang temp7
                 ifn kickback_other 0
                     add kickback_other 1
                 ifge kickback_other WEAPON3_TOTALTIME
@@ -8926,7 +8766,7 @@ defstate player_weapon_mods
                         set main_smg_fired 0
                 }
                 setp[].q16ang temp7
-                setp[].q16horiz temp6
+                setp[].horiz temp6
         }
         else ifn player.kickback_pic 0
             set main_smg_fired 3
@@ -9027,7 +8867,7 @@ defstate player_weapon_mods
                 else
                     or w9_state 2
                 setp .sound_pitch -128
-                sound S_PUCK_BEEP
+                sound S_DSLAM_BEEP
                 setp .sound_pitch 0
             }
             ife w9_lock_button 21
@@ -10607,7 +10447,7 @@ defstate draw_lam // LAM
     clamp hudx_shade -127 127
     ifg w9_lock_button 0
     {
-        // set hudx_tilenum T_PUCK_THROW_IDLE
+        // set hudx_tilenum T_DSLAM_THROW_IDLE
         // 5784 > 5783 > 5778 > 5779
         // 5776
         sub hudx_x 40
@@ -10709,7 +10549,7 @@ defstate draw_lam // LAM
     ifand w9_state 1
     {
         add hudx_scale 16384
-        set hudx_tilenum T_PUCK_PLACE_IDLE
+        set hudx_tilenum T_DSLAM_PLACE_IDLE
         sub hudx_x 40
         sub hudx_y 10
         add hud_totaltime 1
@@ -10753,7 +10593,7 @@ defstate draw_lam // LAM
         }
         else
         {
-            set hudx_tilenum T_PUCK_THROW_IDLE
+            set hudx_tilenum T_DSLAM_THROW_IDLE
             set temp 192
             set temp2 smooth_weaponcount
             ifg temp2 80
@@ -10771,7 +10611,7 @@ defstate draw_lam // LAM
     }
     else
     {
-        set hudx_tilenum T_PUCK_THROW_IDLE
+        set hudx_tilenum T_DSLAM_THROW_IDLE
         sub hudx_x 40
         sub hudx_y 20
         add hud_totaltime 1
@@ -10826,12 +10666,12 @@ defstate draw_lam // LAM
     {
         ife player.kickback_pic 0
         {
-            set hudx_tilenum T_PUCK_PLACE_IDLE
+            set hudx_tilenum T_DSLAM_PLACE_IDLE
             add hudx_tilenum 4
         }
         else ifge smooth_weaponcount 60
         {
-            set hudx_tilenum T_PUCK_THROW_IDLE
+            set hudx_tilenum T_DSLAM_THROW_IDLE
             add hudx_tilenum 4
         }
         add hudx_y 192
@@ -11655,17 +11495,6 @@ ends
 appendevent EVENT_FIRE
     ife player[].curr_weapon 9
         set RETURN -1
-endevent
-
-appendevent EVENT_DOFIRE
-    ife player[].curr_weapon WEAPON_SHOTGUN
-    {
-        rand temp9 55
-        sub temp9 222
-        setp .sound_pitch temp9
-        screensound S_TRIFIRE_OLD4
-        setp .sound_pitch 0
-    }
 endevent
 
 // WEAPON FRAME TESTER... doesn't belong in demo

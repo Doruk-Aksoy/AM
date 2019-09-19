@@ -2296,7 +2296,6 @@ useractor notenemy A_KILLEMALL
                         setav[temp].enemy_init 1
                         setav[temp].se_hitag 0
                         seta[temp].htextra sprite[temp].extra
-                        seta[temp].htowner player[myconnectindex].i
                     }
                 }
                 ifand se_extra 1
@@ -2826,7 +2825,6 @@ ends
 
 action AC_MONITOR_H 0 1 1 1 1
 useractor notenemy A_MONITOR_HESKEL 1 AC_MONITOR_H
-    sleeptime 300
     cstator 257
     ifaction AC_MONITOR_H
     {
@@ -2867,7 +2865,6 @@ useractor notenemy A_MONITOR_HESKEL 1 AC_MONITOR_H
 enda
 
 useractor notenemy A_MONITOR_HESKEL_LG 1 AC_MONITOR_H
-    sleeptime 300
     cstator 257
     ifaction AC_MONITOR_H
     {
@@ -2908,7 +2905,6 @@ useractor notenemy A_MONITOR_HESKEL_LG 1 AC_MONITOR_H
 enda
 
 useractor notenemy A_MONITOR_HESKEL_R 1 AC_MONITOR_H
-    sleeptime 300
     set temp 0
     seta .htg_t 2 temp
     getav[tp_owner].counter2 db_once
@@ -2936,7 +2932,6 @@ useractor notenemy A_MONITOR_HESKEL_R 1 AC_MONITOR_H
 enda
 
 useractor notenemy A_MONITOR_HESKEL_R_LG 1 AC_MONITOR_H
-    sleeptime 300
     set temp 0
     seta .htg_t 2 temp
     getav[tp_owner].counter2 db_once
@@ -2983,8 +2978,7 @@ useractor notenemy A_MONITOR_17_LG 1 AC_MONITOR_H
 enda
 
 useractor notenemy A_MONITOR_STATIC 1 AC_MONITOR_H
-    sleeptime 300
-    cstator 257
+    cstator 257    
     ifaction AC_MONITOR_H
         nullop
     else
@@ -3084,8 +3078,7 @@ useractor notenemy A_MONITOR_STATIC 1 AC_MONITOR_H
 enda
 
 useractor notenemy A_MONITOR_STATIC_LG 1 AC_MONITOR_H
-    sleeptime 300
-    cstator 257
+    cstator 257    
     ifaction AC_MONITOR_H
         nullop
     else
@@ -5793,17 +5786,11 @@ appendevent EVENT_WORLD
                                         nullop
                                     else
                                     {
-                                        ifand tiledata[sprite[temp2].picnum].gameflags 32
-                                            seta[temp2].cstat 32768
-                                        else
-                                        {
-                                            seta[temp2].x 524288
-                                            seta[temp2].y 524288
-                                            seta[temp2].sectnum -1
-                                            seta[temp2].z temp3
-                                            seta[temp2].htextra 65536
-                                        }
-                                        
+                                        seta[temp2].x 524288
+                                        seta[temp2].y 524288
+                                        seta[temp2].z temp3
+                                        seta[temp2].htextra 65536
+                                        seta[temp2].sectnum -1
                                         ife sprite[temp2].statnum STAT_PROJECTILE
                                         {
                                             getthisprojectile[temp2].workslike temp3
@@ -5817,14 +5804,14 @@ appendevent EVENT_WORLD
                                         {
                                             seta[temp2].httimetosleep 300
                                             changespritestat temp2 STAT_ACTOR
-                                            ife sprite[temp2].picnum A_MECHSECT
+                                            ife sprite[temp].picnum A_MECHSECT
                                             {
-                                                setav[temp2].enemy_init 1
-                                                setav[temp2].ms_faller 0
+                                                setav[temp].enemy_init 1
+                                                setav[temp].ms_faller 0
                                             }
                                             else
-                                                setav[temp2].enemy_init 1
-                                            setav[temp2].e_us_count -1
+                                                setav[temp].enemy_init 1
+                                            setav[temp].e_us_count -1
                                         }
                                         else ife actorvar[temp2].queued 0
                                         {
@@ -8224,11 +8211,6 @@ defstate do_zone_unlocks
             redefinequote 115 gamestate.bin
             readarrayfromfile gamestate 115
             set temp5 gamestate[2]
-            ifg temp5 7 // num zones
-            {
-                set temp5 6
-                set temp4 7
-            }
             ifl temp5 temp4
             {
                 setarray gamestate[2] temp4

@@ -889,8 +889,8 @@ defstate propogate_surfaces
         case 6653
         case 6655
         case I_BOWLINGBOMB // 6800
-        case P_PUCK_THROWN // 6953
-        case P_PUCK_PLACED // 6957
+        case P_DSLAM_THROWN // 6953
+        case P_DSLAM_PLACED // 6957
         case 7245
         case 7254
         case 7425
@@ -3601,6 +3601,9 @@ defstate propogate_surfaces
         case A_NUKEMUTANT_GDF_GIBBED
         case A_HESKEL_BOT
         case A_BRUTE_TOP_DEAD
+		case AM_EXODUDE
+		case AM_EXODUDE_STAYPUT
+		case AM_EXODUDE_DEAD
             setarray pre_surface_type[temp] SURFACE_FLESH
             break
         default

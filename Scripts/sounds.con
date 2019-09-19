@@ -80,7 +80,7 @@ define S_GRENADE_BOUNCE                 41 // 40 hardcoded for water
 // 48 hardcoded for water
 define S_GRENADE_LAUNCH                 44
 define S_CROSSBOW_SQUARE                45
-define S_PUCK_BEEP                     46
+define S_DSLAM_BEEP                     46
 
 define S_BBOMB_FUSE                     62
 define S_LOVEALT_LOCK                   66 // try 63 !
@@ -252,8 +252,6 @@ define S_WENTEKO_HIT_1                  852
 define S_WENTEKO_HIT_2                  853
 define S_WENTEKO_DIE_1                  854
 
-define S_MINIMISSILE_TRAVEL             856
-
 define S_MECH_RECOG                     125
 define S_MECH_LOST                      126
 
@@ -309,7 +307,6 @@ define S_BRUTE_CHAINSAW                 186
 define S_BRUTE_CHAINSAW2                183
 
 define S_DRONE_ACTIVE                   187
-define S_DRONE_SHOOT                    201
 define S_DIOPEDE_HIT                    188
 define S_DIOPEDE_DIE                    189
 
@@ -601,7 +598,6 @@ define S_WOOD_CREAK01                   658
 define S_WOOD_CREAK02                   659
 define S_WOOD_CREAK03                   660
 define S_FIRELOOP_SHORT                 661
-define S_LASERLOOP_SHORT                662
 
 define S_AMB_SPARKLOOP_QT               703
 define S_AMB_RAIN1                      704
@@ -1256,7 +1252,7 @@ definesound S_SMG_CLIPIN                sounds/weapons/smg/smg_clip_in.ogg      
 definesound S_SMG_CLIPOUT               sounds/weapons/smg/smg_clip_out.ogg                             0        0      255     0        0
 
 
-definesound S_PUCK_BEEP                sounds/weapons/lam/lam_beep.ogg                                 0    0      255     0       8192
+definesound S_DSLAM_BEEP                sounds/weapons/lam/lam_beep.ogg                                 0    0      255     0       8192
 
 definesound S_COUNTER                   sounds/temp_counter.ogg                                         0       0       128     0       0
 
@@ -1274,22 +1270,22 @@ definesound S_P_SIZZLE                  sounds/hurt/sizzle.ogg                  
 definesound S_P_SIZZLELOOP              sounds/hurt/sizzleLoop.ogg                                      0       0       255     0       0
 definesound S_P_ZAPPED                  sounds/hurt/shocked_001.ogg                                     0       0       255     0       0
 definesound S_P_ZAPPED_END              sounds/hurt/shocked_002.ogg                                     0       0       255     0       0
-definesound S_EXPL_LG001                sounds/env/explo_lg_001.ogg                                     -128    128     200   144       4096
-definesound S_EXPL_LG002                sounds/env/explo_lg_002.ogg                                     -128    128     200   144       4096
-definesound S_EXPL_LG003                sounds/env/explo_lg_003.ogg                                     -128    128     200   144       4096
-definesound S_EXPL_LG004                sounds/env/explo_lg_004.ogg                                     -128    128     200   144       4096
-definesound S_EXPL_MD001                sounds/env/explo_md_001.ogg                                     -128    128     200   144       8192
-definesound S_EXPL_MD002                sounds/env/explo_md_002.ogg                                     -128    128     200   144       8192
-definesound S_EXPL_MD003                sounds/env/explo_md_003.ogg                                     -128    128     200   144       8192
-definesound S_EXPL_MD004                sounds/env/explo_md_004.ogg                                     -128    128     200   144       8192
-definesound S_EXPL_MD005                sounds/env/explo_md_005.ogg                                     -128    128     200   144       8192
-definesound S_EXPL_MD006                sounds/env/explo_md_006.ogg                                     -128    128     200   144       8192
-definesound S_EXPL_MD007                sounds/env/explo_md_007.ogg                                     -128    128     200   144       8192
-definesound S_EXPL_SM001                sounds/env/explo_sm_001.ogg                                     -128    128     200   144       10240
-definesound S_EXPL_SM002                sounds/env/explo_sm_002.ogg                                     -128    128     200   144       10240
-definesound S_EXPL_SM003                sounds/env/explo_sm_003.ogg                                     -128    128     200   144       10240
-definesound S_EXPL_SM004                sounds/env/explo_sm_004.ogg                                     -128    128     200   144       10240
-definesound S_EXPL_SM005                sounds/env/explo_sm_005.ogg                                     -128    128     200   144       10240
+definesound S_EXPL_LG001                sounds/env/explo_lg_001.ogg                                     -128    128     200   144       0
+definesound S_EXPL_LG002                sounds/env/explo_lg_002.ogg                                     -128    128     200   144       0
+definesound S_EXPL_LG003                sounds/env/explo_lg_003.ogg                                     -128    128     200   144       0
+definesound S_EXPL_LG004                sounds/env/explo_lg_004.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD001                sounds/env/explo_md_001.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD002                sounds/env/explo_md_002.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD003                sounds/env/explo_md_003.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD004                sounds/env/explo_md_004.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD005                sounds/env/explo_md_005.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD006                sounds/env/explo_md_006.ogg                                     -128    128     200   144       0
+definesound S_EXPL_MD007                sounds/env/explo_md_007.ogg                                     -128    128     200   144       0
+definesound S_EXPL_SM001                sounds/env/explo_sm_001.ogg                                     -128    128     200     0       0
+definesound S_EXPL_SM002                sounds/env/explo_sm_002.ogg                                     -128    128     200     0       0
+definesound S_EXPL_SM003                sounds/env/explo_sm_003.ogg                                     -128    128     200     0       0
+definesound S_EXPL_SM004                sounds/env/explo_sm_004.ogg                                     -128    128     200     0       0
+definesound S_EXPL_SM005                sounds/env/explo_sm_005.ogg                                     -128    128     200     0       0
 definesound S_EXPL_NEW01                sounds/env/explo_new_001.ogg                                    -128    128     200     0       0
 definesound S_EXPL_NEW02                sounds/env/explo_new_002.ogg                                    -128    128     200     0       0
 
@@ -1695,15 +1691,13 @@ definesound S_SKINJOB_DIE1                   sounds/enemies/skinjob/skinjob_new_
 definesound S_FLAMESKULL_HIT_1             sounds/enemies/skinjob/flameskull_explosion.ogg            -4       4       100     0       0
 
 definesound S_DRONE_ACTIVE              sounds/enemies/drone/drone_active.ogg                           0       0       100     0       5120
-definesound S_DRONE_SHOOT               sounds/enemies/drone/laser.ogg                                  -2       2       100     0       2048
 
 definesound S_DIOPEDE_HIT                  sounds/enemies/diopede/hit.ogg                           -8       8       100     0       -4096
 definesound S_DIOPEDE_DIE                  sounds/enemies/diopede/die.ogg                          256       264       100     0       4096
 
-definesound S_DEACON_HOVER              sounds/enemies/deacon/deacon_hover.ogg                          0       0       100     0       10240
+definesound S_DEACON_HOVER              sounds/enemies/deacon/deacon_hover.ogg                          0       0       100     0       6144
 definesound S_DEACON_MISSILE            sounds/enemies/deacon/deacon_missile.ogg                        0       0       100     0       4096
 definesound S_DEACON_MISSILE2            sounds/enemies/deacon/deacon_missile.ogg                        0       0       100     0       4096
-definesound S_MINIMISSILE_TRAVEL        sounds/enemies/deacon/deacon_hover.ogg                          0       0       100     0       10240
 
 definesound S_DEACON_RECOG1                  sounds/enemies/deacon/deacon_recog_1.ogg                   0       0       100     0       2048
 definesound S_DEACON_RECOG2                  sounds/enemies/deacon/deacon_recog_2.ogg                   0       0       100     0       2048
@@ -1930,7 +1924,6 @@ definesound S_WOOD_CREAK02              sounds/footsteps/wood_creak02.ogg       
 definesound S_WOOD_CREAK03              sounds/footsteps/wood_creak03.ogg                                0       0       127     0       0
 
 definesound S_FIRELOOP_SHORT            sounds/env/fire_loop_short.ogg                                   0       0       64     0       0
-definesound S_LASERLOOP_SHORT           sounds/enemies/drone/laser_travel.ogg                            0       0       64     0       0
 
 definesound S_PIANO_C0_C1               sounds/env/pianoc1.ogg                                          -2426       -2426       128     0       0
 definesound S_PIANO_C1_C2               sounds/env/pianoc2.ogg                                          -2426       -2426       128     0       0

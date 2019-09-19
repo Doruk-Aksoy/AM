@@ -1412,6 +1412,72 @@ useractor notenemy A_SHOCKCANISTER_BROKE 10 AC_BASE
     state do_moveable
 enda
 
+defstate spawn_can_stuff
+    geta[RETURN].z temp
+    sub temp 4096
+    seta[RETURN].z temp
+    rand temp 128
+    add temp 64
+    seta[RETURN].xvel temp
+    rand temp -640
+    sub temp 1024
+    seta[RETURN].zvel temp
+    geta[].htang temp
+    randvar temp2 320
+    ifrnd 128
+        inv temp2
+    add temp temp2
+    add temp 2048
+    and temp 2047
+    seta[RETURN].ang temp
+    ssp RETURN CLIPMASK0
+ends
+
+defstate trashy_larry
+    ifrnd 160
+    {
+        rand temp4 3
+        add temp4 2
+        ifrnd 12 shiftl temp4 1
+        for itervar range temp4
+        {
+            ifrnd 64 espawn I_SYRINGE
+            else espawn I_ARMOR_SHARD
+            state spawn_can_stuff
+            // sub temp4 1
+        }
+    }
+    else ifrnd 24
+    {
+        espawn I_MEDPACK
+        state spawn_can_stuff
+    }
+    else
+    {
+        rand temp4 3
+        add temp4 2
+        shiftl temp4 1
+        for itervar range temp4
+        {
+            espawn A_ROACH
+            setav[RETURN].se_hitag 1
+            geta[RETURN].z temp
+            rand temp2 3072
+            sub temp2 3072
+            seta[RETURN].z temp
+            rand temp -320
+            sub temp 1024
+            seta[RETURN].zvel temp
+            rand temp 256
+            add temp 128
+            seta[RETURN].xvel temp
+            rand temp 2047
+            seta[RETURN].ang temp
+            ssp RETURN CLIPMASK0
+        }
+    }
+ends
+
 var garbage_count 0 2
 defstate garbage_code
     cstator 257
@@ -1429,7 +1495,14 @@ defstate garbage_code
     ifg temp 0
         add prop_dmg_build temp
     ifge prop_dmg_build 30
-        cactor A_GARBAGE_DEAD
+    {
+        ife st_do_once 0
+        {
+            set st_do_once 1
+            ifrnd 128 state trashy_larry
+            cactor A_GARBAGE_DEAD
+        }
+    }
     else ifge prop_dmg_build 15
         cactor A_GARBAGE_DMG_2
     else ifge prop_dmg_build 1
@@ -2322,27 +2395,6 @@ actor A_TRASHCAN_DMG_2 10 AC_BASE
     state trashcan
 enda
 
-defstate spawn_can_stuff
-    geta[RETURN].z temp
-    sub temp 4096
-    seta[RETURN].z temp
-    rand temp 128
-    add temp 64
-    seta[RETURN].xvel temp
-    rand temp -640
-    sub temp 1024
-    seta[RETURN].zvel temp
-    geta[].htang temp
-    randvar temp2 320
-    ifrnd 128
-        inv temp2
-    add temp temp2
-    add temp 2048
-    and temp 2047
-    seta[RETURN].ang temp
-    ssp RETURN CLIPMASK0
-ends
-
 actor A_TRASHCAN_DEAD 0 AC_BASE
     ifn sprite[].htowner -1 ife st_do_once 0
     {
@@ -2361,60 +2413,7 @@ actor A_TRASHCAN_DEAD 0 AC_BASE
             state spawn_can_stuff
         }
         else
-        {
-            ifrnd 152
-            {
-                rand temp4 3
-                add temp4 2
-                for itervar range temp4
-                {
-                    espawn I_ARMOR_SHARD
-                    state spawn_can_stuff
-                    // sub temp4 1
-                }
-            }
-            else ifrnd 24
-            {
-                espawn I_MEDPACK
-                state spawn_can_stuff
-            }
-            else ifrnd 12
-            {
-                rand temp4 3
-                add temp4 2
-                shiftl temp4 1
-                for itervar range temp4
-                {
-                    espawn I_ARMOR_SHARD
-                    state spawn_can_stuff
-                    // sub temp4 1
-                }
-            }
-            else ifrnd 64
-            {
-                rand temp4 3
-                add temp4 2
-                shiftl temp4 1
-                for itervar range temp4
-                {
-                    espawn A_ROACH
-                    setav[RETURN].se_hitag 1
-                    geta[RETURN].z temp
-                    rand temp2 3072
-                    sub temp2 3072
-                    seta[RETURN].z temp
-                    rand temp -320
-                    sub temp 1024
-                    seta[RETURN].zvel temp
-                    rand temp 256
-                    add temp 128
-                    seta[RETURN].xvel temp
-                    rand temp 2047
-                    seta[RETURN].ang temp
-                    ssp RETURN CLIPMASK0
-                }
-            }
-        }
+            state trashy_larry
     }
     strength 1
     geta[].htextra temp6
@@ -4229,13 +4228,12 @@ defstate killacan
     redefinequote 115 gamestate.bin
     readarrayfromfile gamestate 115
     set temp gamestate[6]
-    ifl temp 20
-    {
-        add temp 1
-        setarray gamestate[6] temp
-        writearraytofile gamestate 115
-        or cheevo_tracker 2048
-    }
+
+    add temp 1
+    setarray gamestate[6] temp
+    writearraytofile gamestate 115
+    or cheevo_tracker 2048
+
     killit
 ends
 defstate soda_side_code
@@ -4330,7 +4328,11 @@ defstate soda_side_code
     
     set actor_switch 1
     
-    ifhitspace
+    set temp 0
+    ifhitspace set temp 1
+    else ifphealthl MAXPLAYERHEALTH set temp 1
+    
+    ife temp 1
     {
         ife se_extra 0
         {
@@ -4437,7 +4439,11 @@ defstate soda_stand_code
     
     set actor_switch 1
     
-    ifhitspace
+    set temp 0
+    ifhitspace set temp 1
+    else ifphealthl MAXPLAYERHEALTH set temp 1
+    
+    ife temp 1
     {
         ife se_extra 0
         {
@@ -4501,6 +4507,7 @@ defstate random_edible
     clipdist 10
     state do_moveable
     set actor_switch 1
+    set temp 0
     ifhitspace
     {
         ifpdistl 1536 ife actor_switch_usable 1 ife switch_wait 0
@@ -5932,14 +5939,25 @@ useractor notenemy T_GRATE 1
                     }
                     ifn counter 0 ifn counter 30
                     {
-                        set temp counter
-                        abs temp
-                        clamp temp 0 7
-                        getp[].weapon_pos temp2
-                        ifn temp temp2
-                            add temp2 2
-                        clamp temp2 0 temp
-                        setp[].weapon_pos temp2
+                        ife player.last_weapon -1
+                            ifg player.weapon_pos -7
+                            {
+                                set temp counter
+                                abs temp
+                                clamp temp 0 7
+                                getp[].weapon_pos temp2
+                                set temp3 temp2
+                                abs temp3
+                                ifge temp temp3
+                                {
+                                    ifl temp2 0
+                                        sub temp2 2
+                                    else
+                                        add temp2 2
+                                }
+                                clamp temp2 -temp temp
+                                setp[].weapon_pos temp2
+                            }
                     }
                 }
             }
@@ -7481,6 +7499,14 @@ defstate bigassfan_code
                                     }
                                     set temp4 THISACTOR
                                     setu .vm_sprite player.i
+                                    ife player[].jumping_counter 0
+                                    {
+                                        ifl player.poszv 0
+                                        {
+                                            setp .falling_counter 0
+                                            setp .hard_landing 0
+                                        }
+                                    }
                                     iffloordistl 2
                                         nullop
                                     else
@@ -8423,13 +8449,11 @@ useractor notenemy A_ROACH 1 AC_ROACH_IDLE
                     redefinequote 115 gamestate.bin
                     readarrayfromfile gamestate 115
                     set temp gamestate[8]
-                    ifl temp 20
-                    {
-                        add temp 1
-                        setarray gamestate[8] temp
-                        writearraytofile gamestate 115
-                        or cheevo_tracker 8192
-                    }
+
+                    add temp 1
+                    setarray gamestate[8] temp
+                    writearraytofile gamestate 115
+                    or cheevo_tracker 8192
                     
                     ife se_hitag 1
                         killit

@@ -154,8 +154,8 @@ var final_cheevos
 var old_cheevos
 
 // no more cyclone
-var cyclone_mod_xv 0 1
-var cyclone_mod_yv 0 1
+/* var cyclone_mod_xv 0 2
+var cyclone_mod_yv 0 2 */
 var particle_type 0 2
 var particle_force_pal 0 2
 var particle_force_shade 0 2
@@ -360,6 +360,7 @@ defstate is_item
         case I_DAMAGEBOOSTER
         case I_CLUSTERPUCK
         case I_BOWLINGBOMB_PICKUP
+        case I_SYRINGE
             set temp6 1
             setav[temp].is_pickup 1
             break
@@ -406,7 +407,7 @@ onevent EVENT_PREWORLD
             add num_flag32 1
             setarray radar_targets_pup[radar_targets_num] temp
             add radar_targets_num 1
-            
+
             ifg actorvar[temp].ps_master_id -1
                 seta[temp].httimetosleep 300
             else ife actorvar[temp].enemy_dontsleep 1 // force from R2
@@ -434,25 +435,27 @@ onevent EVENT_PREWORLD
                 }
             }
             geta[temp].sectnum temp2
-            ife sector[temp2].lotag 64
-            {
-                gets[temp2].hitag georgemichael
-                ifg georgemichael 1
-                {
-                    ife activateshit[georgemichael] 1
+            ifg temp2 -1
+                ifl temp2 NUMSECTORS
+                    ife sector[temp2].lotag 64
                     {
-                        ifactor A_TURRET
-                            nullop
-                        else
-                            setav[temp].enemy_init 1
-                        getav[temp].se_lotag georgemichael
-                        ifand georgemichael 1
-                            xor georgemichael 1
-                        setav[temp].se_lotag georgemichael
-                        setav[temp].se_hitag 0
+                        gets[temp2].hitag georgemichael
+                        ifg georgemichael 1
+                        {
+                            ife activateshit[georgemichael] 1
+                            {
+                                ifactor A_TURRET
+                                    nullop
+                                else
+                                    setav[temp].enemy_init 1
+                                getav[temp].se_lotag georgemichael
+                                ifand georgemichael 1
+                                    xor georgemichael 1
+                                setav[temp].se_lotag georgemichael
+                                setav[temp].se_hitag 0
+                            }
+                        }
                     }
-                }
-            }
         }
         else
         {
@@ -596,7 +599,7 @@ onevent EVENT_PREWORLD
         set this_timer end_world_tics
         mul this_timer 100
         div this_timer 33
-        
+
         set temp 0
         ifg this_timer 25
         {
@@ -638,10 +641,7 @@ include scripts/text.con
 include scripts/levels.con
 include scripts/customize.con
 
-include scripts/am_defs.con
-
 include scripts/subroutines.con
-include scripts/am_helper.con
 
 include scripts/surfaces.con
 include scripts/draw.con
@@ -661,8 +661,6 @@ include scripts/inventory.con
 include scripts/particles.con
 
 include scripts/enemies.con
-
-include scripts/am.con
 /*
 array tilelist MAXTILES GAMEARRAY_BOOLEAN
 appendevent EVENT_WORLD
@@ -962,7 +960,7 @@ defstate player_sounds
                     set temp2 S_SHELLYVO_PUPSMGSND2
                     state process_lines
                 }
-                
+
                 set myfavoriteguns 0
                 break
             }
@@ -1128,245 +1126,391 @@ defstate echo_cheevo
     {
         qputs 11 Unlocked: Shaken, Not Stirred
         echo 11
+        qputs 11 ACH_PROGRESS_0
+        capia 11
     }
     ifand old_cheevos 2
     {
         qputs 11 Unlocked: Altar of Sacrifice
         echo 11
+        qputs 11 ACH_PROGRESS_1
+        capia 11
     }
     ifand old_cheevos 4
     {
         qputs 11 Unlocked: The Future of Law Enforcement
         echo 11
+        qputs 11 ACH_PROGRESS_2
+        capia 11
     }
     ifand old_cheevos 8
     {
         qputs 11 Unlocked: Hunter, Killed
         echo 11
+        qputs 11 ACH_PROGRESS_3
+        capia 11
     }
     ifand old_cheevos 16
     {
         qputs 11 Unlocked: Brutalized
         echo 11
+        qputs 11 ACH_PROGRESS_4
+        capia 11
     }
     ifand old_cheevos 32
     {
         qputs 11 Unlocked: Express Elevator
         echo 11
+        qputs 11 ACH_PROGRESS_5
+        capia 11
     }
     ifand old_cheevos 64
     {
         qputs 11 Unlocked: Babycide
         echo 11
+        qputs 11 ACH_PROGRESS_6
+        capia 11
     }
     ifand old_cheevos 128
     {
         qputs 11 Unlocked: Capital Defense
         echo 11
+        qputs 11 ACH_PROGRESS_7
+        capia 11
     }
     ifand old_cheevos 256
     {
         qputs 11 Unlocked: Firepower Matters
         echo 11
+        qputs 11 ACH_GET_ALL_WEAPONS
+        capia 11
     }
-     // elsewhere
-   /* ifand old_cheevos 512
+    /*
+    // elsewhere
+    ifand old_cheevos 512
     {
         qputs 11 Unlocked: Stash House %ld/50
         qsprintf 11 11 gamestate[4]
         echo 11
+        qputs 11 ACH_FIND_50_SECRETS
+        capia 11
     }
     ifand old_cheevos 1024
     {
         qputs 11 Unlocked: Cowabunga! %ld/30
         qsprintf 11 11 gamestate[5]
         echo 11
+        qputs 11 ACH_EAT_30_PIZZA_SLICES
+        capia 11
     }
     ifand old_cheevos 2048
     {
         qputs 11 Unlocked: Addicted %ld/20
         qsprintf 11 11 gamestate[6]
         echo 11
+        qputs 11 ACH_DRINK_20_SODA_CANS
+        capia 11
     }
     ifand old_cheevos 4096
     {
         qputs 11 Unlocked: Demanufacture %ld/100
         qsprintf 11 11 gamestate[7]
         echo 11
+        qputs 11 ACH_DECAPITATE_100_ENEMIES
+        capia 11
     }
     ifand old_cheevos 8192
     {
         qputs 11 Unlocked: Bad Mojo %ld/20
         qsprintf 11 11 gamestate[8]
         echo 11
+        qputs 11 ACH_STEP_ON_20_COCKROACHES
+        capia 11
     }
     ifand old_cheevos 16384
     {
         qputs 11 Unlocked: Arachnophobia %ld/20
         qsprintf 11 11 gamestate[9]
         echo 11
+        qputs 11 ACH_BATON_20_MECHSECTS
+        capia 11
     }
     ifand old_cheevos 32768
     {
         qputs 11 Unlocked: Overkill %ld/30
         qsprintf 11 11 gamestate[10]
         echo 11
+        qputs 11 ACH_EXPLODE_30_FLYERS
+        capia 11
     }
     ifand old_cheevos 65536
     {
-        qputs 11 Unlocked: Cranium do'or %ld/20
+        qputs 11 Unlocked: Cranium d'or %ld/20
         qsprintf 11 11 gamestate[11]
         echo 11
-    } */
+        qputs 11 ACH_KICK_20_HEADS
+        capia 11
+    }
+    */
     ifand old_cheevos 131072
     {
         qputs 11 Unlocked: Like Tears... In Rain
         echo 11
+        qputs 11 ACH_SECRET_TEARS_IN_RAIN
+        capia 11
     }
     ifand old_cheevos 262144
     {
         qputs 11 Unlocked: Diddle for the Middle
         echo 11
+        qputs 11 ACH_GET_BULLSEYE
+        capia 11
     }
     ifand old_cheevos 524288
     {
         qputs 11 Unlocked: Peanuts and Cracker Jacks
         echo 11
+        qputs 11 ACH_SECRET_LEVEL
+        capia 11
     }
     ifand old_cheevos 1048576
     {
         qputs 11 Unlocked: All Doors Are Locked
         echo 11
+        qputs 11 ACH_MEGA_SECRET_1
+        capia 11
     }
     ifand old_cheevos 2097152
     {
         qputs 11 Unlocked: Wasted!
         echo 11
+        qputs 11 ACH_MEGA_SECRET_2
+        capia 11
     }
     ifand old_cheevos 4194304
     {
         qputs 11 Unlocked: The Owls Are Not What They Seem
         echo 11
+        qputs 11 ACH_MEGA_SECRET_3
+        capia 11
     }
     ifand old_cheevos 8388608
     {
         qputs 11 Unlocked: Complete and Total Meltdown
         echo 11
+        qputs 11 ACH_MEGA_SECRET_4
+        capia 11
     }
     ifand old_cheevos 16777216
     {
         qputs 11 Unlocked: Terminated!
         echo 11
+        qputs 11 ACH_MEGA_SECRET_5
+        capia 11
     }
     ifand old_cheevos 33554432
     {
         qputs 11 Unlocked: Ultimate Failure
         echo 11
+        qputs 11 ACH_MEGA_SECRET_6
+        capia 11
     }
+    /*
     // elsewhere
-    /* ifand old_cheevos 67108864
+    ifand old_cheevos 67108864
     {
         qputs 11 Unlocked: Demolition Turkey %ld/3
         qsprintf 11 11 gamestate[12]
         echo 11
-    } */
+        qputs 11 ACH_GET_3_STRIKES
+        capia 11
+    }
+    */
     ifand old_cheevos 134217728
     {
         qputs 11 Unlocked: Dedicated
         echo 11
+        qputs 11 ACH_COMPLETE_ON_HARDEST
+        capia 11
     }
     ifand old_cheevos 268435456
     {
-        qputs 11 Unlocked: T-shirt
+        qputs 11 Unlocked: T-Shirt
         echo 11
+        qputs 11 ACH_100_PERCENT
+        capia 11
     }
     ifand old_cheevos 536870912
     {
         qputs 11 Unlocked: Ion Fury
         echo 11
+        qputs 11 ACH_ALL_ACHIEVEMENTS
+        capia 11
     }
 ends
 
 defstate count_cheevola
     ifand cheevo_tracker 512
     {
-        qputs 11 Unlocked: Stash House %ld/50
-        qsprintf 11 11 gamestate[4]
-        echo 11
-        // unlock_cheevos_count cheevo_512 gamestate[4]
+        ifle gamestate[4] 50
+        {
+            qputs 11 Unlocked: Stash House %ld/50
+            qsprintf 11 11 gamestate[4]
+            echo 11
+        }
+        qputs 11 NumSecretsFound
+        capis 11 gamestate[4]
         ifl gamestate[4] 50
             xor cheevo_tracker 512
+        else
+        {
+            qputs 11 ACH_FIND_50_SECRETS
+            capia 11
+        }
     }
     ifand cheevo_tracker 1024
     {
-        qputs 11 Unlocked: Cowabunga! %ld/30
-        qsprintf 11 11 gamestate[5]
-        echo 11
-        // unlock_cheevos_count cheevo_1024 gamestate[5]
+        ifle gamestate[5] 30
+        {
+            qputs 11 Unlocked: Cowabunga! %ld/30
+            qsprintf 11 11 gamestate[5]
+            echo 11
+        }
+        qputs 11 NumPizzaSlicesEaten
+        capis 11 gamestate[5]
         ifl gamestate[5] 30
             xor cheevo_tracker 1024
+        else
+        {
+            qputs 11 ACH_EAT_30_PIZZA_SLICES
+            capia 11
+        }
     }
     ifand cheevo_tracker 2048
     {
-        qputs 11 Unlocked: Addicted %ld/20
-        qsprintf 11 11 gamestate[6]
-        echo 11
-        // unlock_cheevos_count cheevo_2048 gamestate[6]
+        ifle gamestate[6] 20
+        {
+            qputs 11 Unlocked: Addicted %ld/20
+            qsprintf 11 11 gamestate[6]
+            echo 11
+        }
+        qputs 11 NumSodaCansDrunk
+        capis 11 gamestate[6]
         ifl gamestate[6] 20
             xor cheevo_tracker 2048
+        else
+        {
+            qputs 11 ACH_DRINK_20_SODA_CANS
+            capia 11
+        }
     }
     ifand cheevo_tracker 4096
     {
-        qputs 11 Unlocked: Demanufacture %ld/100
-        qsprintf 11 11 gamestate[7]
-        echo 11
-        // unlock_cheevos_count cheevo_4096 gamestate[7]
+        ifle gamestate[7] 100
+        {
+            qputs 11 Unlocked: Demanufacture %ld/100
+            qsprintf 11 11 gamestate[7]
+            echo 11
+        }
+        qputs 11 NumDecapitations
+        capis 11 gamestate[7]
         ifl gamestate[7] 100
             xor cheevo_tracker 4096
+        else
+        {
+            qputs 11 ACH_DECAPITATE_100_ENEMIES
+            capia 11
+        }
     }
     ifand cheevo_tracker 8192
     {
-        qputs 11 Unlocked: Bad Mojo %ld/20
-        qsprintf 11 11 gamestate[8]
-        echo 11
-        // unlock_cheevos_count cheevo_8192 gamestate[8]
+        ifle gamestate[8] 20
+        {
+            qputs 11 Unlocked: Bad Mojo %ld/20
+            qsprintf 11 11 gamestate[8]
+            echo 11
+        }
+        qputs 11 NumCockroachesSquished
+        capis 11 gamestate[8]
         ifl gamestate[8] 20
             xor cheevo_tracker 8192
+        else
+        {
+            qputs 11 ACH_STEP_ON_20_COCKROACHES
+            capia 11
+        }
     }
     ifand cheevo_tracker 16384
     {
-        qputs 11 Unlocked: Arachnophobia %ld/20
-        qsprintf 11 11 gamestate[9]
-        echo 11
-        // unlock_cheevos_count cheevo_16384 gamestate[9]
+        ifle gamestate[9] 20
+        {
+            qputs 11 Unlocked: Arachnophobia %ld/20
+            qsprintf 11 11 gamestate[9]
+            echo 11
+        }
+        qputs 11 NumMechsectsMeleed
+        capis 11 gamestate[9]
         ifl gamestate[9] 20
             xor cheevo_tracker 16384
+        else
+        {
+            qputs 11 ACH_BATON_20_MECHSECTS
+            capia 11
+        }
     }
     ifand cheevo_tracker 32768
     {
-        qputs 11 Unlocked: Overkill %ld/30
-        qsprintf 11 11 gamestate[10]
-        echo 11
-        // unlock_cheevos_count cheevo_32768 gamestate[10]
+        ifle gamestate[10] 30
+        {
+            qputs 11 Unlocked: Overkill %ld/30
+            qsprintf 11 11 gamestate[10]
+            echo 11
+        }
+        qputs 11 NumFlyersExploded
+        capis 11 gamestate[10]
         ifl gamestate[10] 30
             xor cheevo_tracker 32768
+        else
+        {
+            qputs 11 ACH_EXPLODE_30_FLYERS
+            capia 11
+        }
     }
     ifand cheevo_tracker 65536
     {
-        qputs 11 Unlocked: Cranium do'or %ld/20
-        qsprintf 11 11 gamestate[11]
-        echo 11
-        // unlock_cheevos_count cheevo_65536 gamestate[11]
+        ifle gamestate[11] 20
+        {
+            qputs 11 Unlocked: Cranium d'or %ld/20
+            qsprintf 11 11 gamestate[11]
+            echo 11
+        }
+        qputs 11 NumHeadsKicked
+        capis 11 gamestate[11]
         ifl gamestate[11] 20
             xor cheevo_tracker 65536
+        else
+        {
+            qputs 11 ACH_KICK_20_HEADS
+            capia 11
+        }
     }
     ifand cheevo_tracker 67108864
     {
-        qputs 11 Unlocked: Demolition Turkey %ld/3
-        qsprintf 11 11 gamestate[12]
-        echo 11
+        ifle gamestate[12] 3
+        {
+            qputs 11 Unlocked: Demolition Turkey %ld/3
+            qsprintf 11 11 gamestate[12]
+            echo 11
+        }
+        qputs 11 NumBowlingBombStrikes
+        capis 11 gamestate[12]
         ifl gamestate[12] 3
             xor cheevo_tracker 67108864
+        else
+        {
+            qputs 11 ACH_GET_3_STRIKES
+            capia 11
+        }
     }
 ends
 defstate spoiled_cheevos
@@ -1374,7 +1518,7 @@ defstate spoiled_cheevos
         ife LEVEL EP_MAIN_ZONE_5_END
             ife activateshit[16014] 1
                 or cheevo_tracker 32
-    
+
     ife VOLUME EP_MAIN
         ife LEVEL EP_MAIN_ZONE_6_END
             ife activateshit[300] 1
@@ -1397,7 +1541,7 @@ defstate crunchy_cheevos
     {
         redefinequote 115 gamestate.bin
         readarrayfromfile gamestate 115
-        
+
         state count_cheevola
         set old_cheevos gamestate[3]
         ife old_cheevos 536870911
@@ -1405,14 +1549,254 @@ defstate crunchy_cheevos
         set final_cheevos old_cheevos
         or final_cheevos cheevo_tracker
         xor old_cheevos final_cheevos
-        // unlock_cheevos old_cheevos
         state echo_cheevo
         setarray gamestate[3] final_cheevos
         writearraytofile gamestate 115
         set cheevo_tracker 0
     }
 ends
+defstate hot_fresh_cheevos
+    redefinequote 115 gamestate.bin
+    readarrayfromfile gamestate 115
 
+    set old_cheevos gamestate[3]
+
+    ifand old_cheevos 1
+    {
+        qputs 11 ACH_PROGRESS_0
+        capia 11
+    }
+    ifand old_cheevos 2
+    {
+        qputs 11 ACH_PROGRESS_1
+        capia 11
+    }
+    ifand old_cheevos 4
+    {
+        qputs 11 ACH_PROGRESS_2
+        capia 11
+    }
+    ifand old_cheevos 8
+    {
+        qputs 11 ACH_PROGRESS_3
+        capia 11
+    }
+    ifand old_cheevos 16
+    {
+        qputs 11 ACH_PROGRESS_4
+        capia 11
+    }
+    ifand old_cheevos 32
+    {
+        qputs 11 ACH_PROGRESS_5
+        capia 11
+    }
+    ifand old_cheevos 64
+    {
+        qputs 11 ACH_PROGRESS_6
+        capia 11
+    }
+    ifand old_cheevos 128
+    {
+        qputs 11 ACH_PROGRESS_7
+        capia 11
+    }
+    ifand old_cheevos 256
+    {
+        qputs 11 ACH_GET_ALL_WEAPONS
+        capia 11
+    }
+    /*
+    // elsewhere
+    ifand old_cheevos 512
+    {
+        qputs 11 ACH_FIND_50_SECRETS
+        capia 11
+    }
+    ifand old_cheevos 1024
+    {
+        qputs 11 ACH_EAT_30_PIZZA_SLICES
+        capia 11
+    }
+    ifand old_cheevos 2048
+    {
+        qputs 11 ACH_DRINK_20_SODA_CANS
+        capia 11
+    }
+    ifand old_cheevos 4096
+    {
+        qputs 11 ACH_DECAPITATE_100_ENEMIES
+        capia 11
+    }
+    ifand old_cheevos 8192
+    {
+        qputs 11 ACH_STEP_ON_20_COCKROACHES
+        capia 11
+    }
+    ifand old_cheevos 16384
+    {
+        qputs 11 ACH_BATON_20_MECHSECTS
+        capia 11
+    }
+    ifand old_cheevos 32768
+    {
+        qputs 11 ACH_EXPLODE_30_FLYERS
+        capia 11
+    }
+    ifand old_cheevos 65536
+    {
+        qputs 11 ACH_KICK_20_HEADS
+        capia 11
+    }
+    */
+    ifand old_cheevos 131072
+    {
+        qputs 11 ACH_SECRET_TEARS_IN_RAIN
+        capia 11
+    }
+    ifand old_cheevos 262144
+    {
+        qputs 11 ACH_GET_BULLSEYE
+        capia 11
+    }
+    ifand old_cheevos 524288
+    {
+        qputs 11 ACH_SECRET_LEVEL
+        capia 11
+    }
+    ifand old_cheevos 1048576
+    {
+        qputs 11 ACH_MEGA_SECRET_1
+        capia 11
+    }
+    ifand old_cheevos 2097152
+    {
+        qputs 11 ACH_MEGA_SECRET_2
+        capia 11
+    }
+    ifand old_cheevos 4194304
+    {
+        qputs 11 ACH_MEGA_SECRET_3
+        capia 11
+    }
+    ifand old_cheevos 8388608
+    {
+        qputs 11 ACH_MEGA_SECRET_4
+        capia 11
+    }
+    ifand old_cheevos 16777216
+    {
+        qputs 11 ACH_MEGA_SECRET_5
+        capia 11
+    }
+    ifand old_cheevos 33554432
+    {
+        qputs 11 ACH_MEGA_SECRET_6
+        capia 11
+    }
+    /*
+    // elsewhere
+    ifand old_cheevos 67108864
+    {
+        qputs 11 ACH_GET_3_STRIKES
+        capia 11
+    }
+    */
+    ifand old_cheevos 134217728
+    {
+        qputs 11 ACH_COMPLETE_ON_HARDEST
+        capia 11
+    }
+    ifand old_cheevos 268435456
+    {
+        qputs 11 ACH_100_PERCENT
+        capia 11
+    }
+    ifand old_cheevos 536870912
+    {
+        qputs 11 ACH_ALL_ACHIEVEMENTS
+        capia 11
+    }
+
+    qputs 11 NumSecretsFound
+    capis 11 gamestate[4]
+    ifge gamestate[4] 50
+    {
+        qputs 11 ACH_FIND_50_SECRETS
+        capia 11
+    }
+
+    qputs 11 NumPizzaSlicesEaten
+    capis 11 gamestate[5]
+    ifge gamestate[5] 30
+    {
+        qputs 11 ACH_EAT_30_PIZZA_SLICES
+        capia 11
+    }
+
+    qputs 11 NumSodaCansDrunk
+    capis 11 gamestate[6]
+    ifge gamestate[6] 20
+    {
+        qputs 11 ACH_DRINK_20_SODA_CANS
+        capia 11
+    }
+
+    qputs 11 NumDecapitations
+    capis 11 gamestate[7]
+    ifge gamestate[7] 100
+    {
+        qputs 11 ACH_DECAPITATE_100_ENEMIES
+        capia 11
+    }
+
+    qputs 11 NumCockroachesSquished
+    capis 11 gamestate[8]
+    ifge gamestate[8] 20
+    {
+        qputs 11 ACH_STEP_ON_20_COCKROACHES
+        capia 11
+    }
+
+    qputs 11 NumMechsectsMeleed
+    capis 11 gamestate[9]
+    ifge gamestate[9] 20
+    {
+        qputs 11 ACH_BATON_20_MECHSECTS
+        capia 11
+    }
+
+    qputs 11 NumFlyersExploded
+    capis 11 gamestate[10]
+    ifge gamestate[10] 30
+    {
+        qputs 11 ACH_EXPLODE_30_FLYERS
+        capia 11
+    }
+
+    qputs 11 NumHeadsKicked
+    capis 11 gamestate[11]
+    ifge gamestate[11] 20
+    {
+        qputs 11 ACH_KICK_20_HEADS
+        capia 11
+    }
+
+    qputs 11 NumBowlingBombStrikes
+    capis 11 gamestate[12]
+    ifge gamestate[12] 3
+    {
+        qputs 11 ACH_GET_3_STRIKES
+        capia 11
+    }
+ends
+onevent EVENT_CAPIR
+    set cheevo_tracker 0
+    resizearray gamestate 2
+    resizearray gamestate 256
+    redefinequote 115 gamestate.bin
+    writearraytofile gamestate 115
+endevent
 var p_strikesound_delay
 define STRIKESOUND_DELAY 1800
 appendevent EVENT_WORLD
@@ -1434,17 +1818,15 @@ appendevent EVENT_WORLD
                 set p_strikesound_delay 300
                 set p_lastline S_SHELLYVO_BOMB_STRIKE
                 actorsound player[].i p_lastline
-                
+
                 redefinequote 115 gamestate.bin
                 readarrayfromfile gamestate 115
                 set temp gamestate[12]
-                ifl temp 3
-                {
-                    add temp 1
-                    setarray gamestate[12] temp
-                    writearraytofile gamestate 115
-                    or cheevo_tracker 67108864
-                }
+
+                add temp 1
+                setarray gamestate[12] temp
+                writearraytofile gamestate 115
+                or cheevo_tracker 67108864
             }
         }
         else
@@ -1454,6 +1836,9 @@ appendevent EVENT_WORLD
     sub end_world_tics begin_world_tics
     state player_sounds
     state crunchy_cheevos
+endevent
+appendevent EVENT_INITCOMPLETE
+    state hot_fresh_cheevos
 endevent
 appendevent EVENT_DISPLAYEND
     getticks end_display_tics
@@ -1573,17 +1958,17 @@ ck 23 50
 
 dc      CHEAT_CORNHOLIO         god
 dc      CHEAT_STUFF             afk
-udc     CHEAT_SCOTTY 
-udc     CHEAT_COORDS 
-udc     CHEAT_VIEW 
-udc     CHEAT_TIME 
-udc     CHEAT_UNLOCK 
+udc     CHEAT_SCOTTY
+udc     CHEAT_COORDS
+udc     CHEAT_VIEW
+udc     CHEAT_TIME
+udc     CHEAT_UNLOCK
 dc      CHEAT_CASHMAN           lonely
 dcd     CHEAT_CASHMAN           Solve Loneliness
-udc     CHEAT_ITEMS 
-udc     CHEAT_RATE 
-udc     CHEAT_SKILL 
-udc     CHEAT_BETA 
+udc     CHEAT_ITEMS
+udc     CHEAT_RATE
+udc     CHEAT_SKILL
+udc     CHEAT_BETA
 // definequote 105
 dc      CHEAT_HYPER             lifted
 dcd     CHEAT_HYPER             Toggle Flying
@@ -1592,13 +1977,13 @@ dcd     CHEAT_MONSTERS          Pause AI
 dc      CHEAT_TODD              likemax
 definequote 99                  Feel the Payne
 dc      CHEAT_SHOWMAP           lost
-udc     CHEAT_KROZ 
+udc     CHEAT_KROZ
 dc      CHEAT_ALLEN             dumb
 definequote 79                  Break the Map
 dc      CHEAT_CLIP              free
-udc     CHEAT_WEAPONS 
-udc     CHEAT_INVENTORY 
-udc     CHEAT_KEYS 
+udc     CHEAT_WEAPONS
+udc     CHEAT_INVENTORY
+udc     CHEAT_KEYS
 dc      CHEAT_DEBUG             realbuilder
 dc      CHEAT_COMEGETSOME       d4n
 

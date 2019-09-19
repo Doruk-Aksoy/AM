@@ -121,10 +121,10 @@ define A_ACIDYSPIT_TRAIL                7358
 define A_ACIDYSPIT_SPLASH               7368
 define P_MINIMISSILE                    12021
 define P_FLAMINGSKULL                   13120
-define P_DSLAM_THROWN                   6953
-define P_DSLAM_PLACED                   6957
-define T_DSLAM_THROW_IDLE               5783
-define T_DSLAM_PLACE_IDLE               5779
+define P_PUCK_THROWN                   6953
+define P_PUCK_PLACED                   6957
+define T_PUCK_THROW_IDLE               5783
+define T_PUCK_PLACE_IDLE               5779
 define P_DART                           5869
 define T_DART_HAND                      5250
 define P_EXPLOSION_SPARK                6817

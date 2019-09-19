@@ -54,7 +54,7 @@ define WEAPON3_MAXAMMO                  240
 define WEAPON4_MAXAMMO                  250
 define WEAPON5_MAXAMMO                  25
 define WEAPON7_MAXAMMO                  75
-define WEAPON8_MAXAMMO                  12
+define WEAPON8_MAXAMMO                  20
 define BOMBETTE_MAXAMMO                 200
 
 //ammo amounts
@@ -68,13 +68,14 @@ define WEAPON7_AMMOAMOUNT               15
 define BOMBETTE_AMMOAMOUNT              0
 
 //inventory amounts
-define MEDKIT_MAXAMOUNT                 10
-define RADAR_MAXAMOUNT                  10
+define MEDKIT_MAXAMOUNT                 4
+define RADAR_MAXAMOUNT                  6
 define RADAR_GETAMOUNT                  3
 define ARMORSHARD_EXTRAAMOUNT           49
 
 define MEDPACK_AMOUNT                   10
 define MEDICOMP_AMOUNT                  25
+define MEDICOMP_MF_AMOUNT               20
 define MEDKIT_HEALTHAMOUNT              35
 define ARMORSHARD_AMOUNT                1
 define BULLETVEST_MAXAMOUNT             50
@@ -113,7 +114,7 @@ define MINIMISSILE_DMG                  32 // ++ random
 define GRENADE_RADIUS                   2048
 define BOWLINGBOMB_RADIUS               1024 // ++ variable
 define BOMBETTE_RADIUS                  1536
-define NAPALM_BALL_RADIUS               1600
+define NAPALM_BALL_RADIUS               1024
 define FLAMINGSKULL_RADIUS              1024
 define MINIMISSILE_RADIUS               1024
 

@@ -68,7 +68,6 @@ definequote 58        light armor
 definequote 59        medium armor
 definequote 60        heavy armor
 definequote 61        armor fragment
-definequote 62        health kit: +20% HP
 definequote 69        Bowling Bomb
 
 definequote 70        you need the blue key!
@@ -169,17 +168,6 @@ definequote 334       ^84[ammo crate] ^4Free Bowling Bombs!
 definequote 335       ^84[ammo crate] ^4Free Grenade Ammo!
 definequote 336       ^84[ammo crate] ^4Free Ion Bow Ammo!
 definequote 337       ^84[ammo crate] ^4Free Clusterpucks!
-
-
-definequote 338       ^84[ammo crate] ^10a baton... much wow
-definequote 339       ^84[ammo crate] ^10Loverboy Ammo Full
-definequote 340       ^84[ammo crate] ^10Disperser Ammo Full
-definequote 341       ^84[ammo crate] ^10Penetrator Ammo Full
-definequote 342       ^84[ammo crate] ^10Chaingun Ammo Full
-definequote 343       ^84[ammo crate] ^10Bowling Bombs Full
-definequote 344       ^84[ammo crate] ^10Grenade Ammo Full
-definequote 345       ^84[ammo crate] ^10Ion Bow Ammo Full
-definequote 346       ^84[ammo crate] ^10Clusterpucks Full
 
 definequote 360       Found the Zone Mega-Secret!
 

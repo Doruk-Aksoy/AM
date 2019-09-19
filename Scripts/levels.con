@@ -86,7 +86,7 @@ definelevelname EP_PREVIEW 4    maps/preview_4.map      00:00   00:00   Nukage N
 definelevelname EP_PREVIEW 5    maps/preview_hhoh.map   00:00   00:00   Heskel's House of Horrors
 
 
-definelevelname EP_HORDE 0      maps/arena1.map         00:00   00:00   The D.C. Chaingun Massacre
+definelevelname EP_HORDE 0      maps/arena1.map         00:00   00:00   The DC Chaingun Massacre
 
 definelevelname 4        0      autosave_playtest.map   00:00   00:00   Mapster32 Playtest
 
@@ -103,10 +103,10 @@ define EP_MAIN_ZONE_S_START LV_X
 define EP_MAIN_ZONE_1_END 4
 define EP_MAIN_ZONE_2_END 9
 define EP_MAIN_ZONE_3_END 13
-define EP_MAIN_ZONE_4_END 19
+define EP_MAIN_ZONE_4_END 18
 define EP_MAIN_ZONE_5_END 21
 define EP_MAIN_ZONE_6_END 24
-define EP_MAIN_ZONE_7_END 27
+define EP_MAIN_ZONE_7_END 26
 define EP_MAIN_ZONE_S_END LV_X
 
 definequote 16320       Night on the Town

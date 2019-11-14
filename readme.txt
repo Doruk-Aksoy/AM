@@ -26,6 +26,10 @@ a) Weapons
 * SMG now deals its regular damage when used akimbo rather than 80% of it.
 * SMG no longer has bullets going awkwardly to the sides once held for long, however it has randomized spread with angles growing the longer you hold fire. Area is rectangular.
 * Weapons have their clip values shown on hud.
+* Grenade launcher is removed from it's own slot and made into a "custom ammo type" menu for the shotgun. You need to bind a key for this under options.
+	- You can select regular, grenade or explosive shells. You will be prompted with the ammo selection menu when you press that key.
+* Shotgun can now fire explosive shells. These spawn randomly in place of regular shells with 25% chance. If you don't want these to randomly appear, comment out the "include scripts/am_mutator_i.con" in "am.con" (Double // at the beginning).
+
 
 b) Enemies
 
@@ -38,7 +42,7 @@ b) Enemies
 	- One that shoots firey energy blasts (similar to the Drone) instead of bullets. This has a 30% chance to appear in place of a regular cultist.
 		+ Additionally, you can place this in maps. Palette 15 on a cultist will make it into this version.
 	- One that fires unless the line of sight is broken. Palette 78 will make a cultist into this type. This has a 10% chance to appear in place of a regular cultist. Also has a little more health.
-	- NOTE: If you don't want these to randomly appear, comment out the "include scripts/am_mutator_e.con" line in "am.con". That's the enemy mutator file.
+	- NOTE: If you don't want these to randomly appear, comment out the "include scripts/am_mutator_e.con" line in "am.con" (Double // at the beginning). That's the enemy mutator file.
 * There is a new Diopede type that spits acid in more areas at once and has more overall health. It has palette 137 and is a bit bigger than the regular diopede.
 * You can now place enemies with different palette colors in your maps. The default colors will be instantiated if palette is left as is, which is 0.
 * Added a new enemy: Seeker Drone (Tile 11744). Acts a bit like the drones but they are weaker, and can sometimes move to dodge while firing. They do area damage when dead.
@@ -48,13 +52,19 @@ b) Enemies
 	3. If hurt, activate a shield that blocks every shot, but has a set health. When the shield is active, certain weapons do less damage.
 	4. Certain attacks are more powerful against it, and certain ones are very weak.
 	- There's another variant of this, pal 128 that has a flamethrower for close range and a grenade launcher for longer ranges, and starts with more health.
+
+
 c) Pickups
 ----------
 
 * Overstacking health no longer degenerates.
 * Radars have 33% chance to be replaced by a backpack that boosts your ammo capacities by 10% on pickup.
 * Portable medkits have 20% chance to be replaced by a syringe that permanently boosts maximum health capacity by 5.
-
+* New pickup: Buddy. Create a robot buddy around you that shoots enemies and follows you around. You need to bind a new key for this.
+	- Has 25% chance to spawn in place of a medkit. If you don't want these to randomly appear, comment out the "include scripts/am_mutator_i.con" in "am.con" (Double // at the beginning).
+* New pickup: Deflector. Deflect back all projectiles while completely nullifying hitscan damage. You need to bind a new key for this.
+	- Has 25% chance to spawn in place of a medkit. If you don't want these to randomly appear, comment out the "include scripts/am_mutator_i.con" in "am.con" (Double // at the beginning).
+	
 
 d) Miscellaneous
 

@@ -745,6 +745,143 @@ defineprojectile P_DART PROJ_VEL 512
 defineprojectile P_DART PROJ_DROP -256
 defineprojectile P_DART PROJ_CLIPDIST 1
 
+spritenoshade AM_EXSHELL
+defineprojectile AM_EXSHELL PROJ_WORKSLIKE 32770
+defineprojectile AM_EXSHELL PROJ_SPAWNS A_SMOKE1
+defineprojectile AM_EXSHELL PROJ_SXREPEAT 24
+defineprojectile AM_EXSHELL PROJ_SYREPEAT 24
+defineprojectile AM_EXSHELL PROJ_XREPEAT 16
+defineprojectile AM_EXSHELL PROJ_YREPEAT 16
+defineprojectile AM_EXSHELL PROJ_ISOUND AM_S_EXSHOTGUNHIT
+defineprojectile AM_EXSHELL PROJ_EXTRA 16
+defineprojectile AM_EXSHELL PROJ_EXTRA_RAND 4
+defineprojectile AM_EXSHELL PROJ_HITRADIUS 0
+defineprojectile AM_EXSHELL PROJ_OFFSET 14354
+defineprojectile AM_EXSHELL PROJ_VEL 512
+defineprojectile AM_EXSHELL PROJ_VEL_MULT 4
+defineprojectile AM_EXSHELL PROJ_CLIPDIST 4
+defineprojectile AM_EXSHELL PROJ_DECAL A_BULLETHOLE
+
+defstate exshell_spawn_firespark
+	espawn 6705
+	seta[RETURN].xrepeat 32
+	seta[RETURN].yrepeat 32
+	seta[RETURN].cstat 130
+	seta[RETURN].blend 129
+	seta[RETURN].shade 30
+
+	rand temp 2047
+	seta[RETURN].ang temp
+	set move_override RETURN
+	rand move_v 512
+
+	geta[].xrepeat temp
+	shiftl temp 3
+	add move_v temp
+	state move_actor
+	add move_xv sprite[].x
+	add move_yv sprite[].y
+	seta[RETURN].x move_xv
+	seta[RETURN].y move_yv
+
+	rand temp2 2048
+	sub temp2 1024
+	geta[].z temp
+	add temp temp2
+	seta[RETURN].z temp
+
+
+	geta[RETURN].ang temp4
+	geta[].x face_x
+	sub face_x sprite[RETURN].x
+
+	geta[].y face_y
+	sub face_y sprite[RETURN].y
+
+	getangle face_return face_x face_y
+
+	sub face_return 128
+	and face_return 2047
+	seta[RETURN].ang face_return
+	rand temp 15
+	add temp 50
+	seta[RETURN].xvel temp
+	
+	ifrnd 64 {
+		rand temp 3
+		add temp 1
+		set temp3 2048
+		ifle temp 2
+			rand temp3 1023
+		else
+			div temp3 temp
+		
+		rand temp4 1576
+		sub temp4 512
+		set temp5 sprite.z
+		sub temp5 temp4
+		getceilzofslope sprite.sectnum sprite.x sprite.y temp2
+		ifl temp5 temp2
+			set temp5 temp2
+		for itervar range temp {
+			rand temp2 -8096
+			sub temp2 1024
+			ezshoot temp2 P_EXPLOSION_SPARK
+			set temp4 temp3
+			mul temp4 itervar
+			add temp4 sprite.ang
+			seta[RETURN].ang temp4
+			seta[RETURN].z temp5
+			seta[RETURN].pal sprite.pal
+		}
+	}
+ends
+
+action AM_EXSHELL_AC 0 12 1 1 3
+spritenoshade AM_EXSHELL_HIT
+actor AM_EXSHELL_HIT 0
+	ifaction 0 {
+		action AM_EXSHELL_AC
+		cstat 2
+		ifrnd 128
+			cstator 4
+		ifrnd 128
+			cstator 8
+	}
+	
+	ife sprite.htg_t 0 1
+		state exshell_spawn_firespark
+	
+	ife sprite.htg_t 0 ms_flashpal {
+		// idk how you get player id from a known actor id
+		getpv[myconnectindex].p_pup_damage_time temp
+		ifg temp 0
+			hitradius 1280 24 36 48 60
+		else
+			hitradius 1280 12 18 24 30
+	}
+	
+	ifactioncount 12
+		killit
+enda
+
+appendevent EVENT_EGS
+	ifactor AM_EXSHELL_HIT {
+		geta .owner temp
+		getav[temp].ms_flashpal temp2
+		setav .ms_flashpal temp2
+	}
+endevent
+
+appendevent EVENT_ANIMATESPRITES
+	switch sprite.picnum
+		case AM_EXSHELL
+		case AM_EXSHELL_HIT
+			settspr .tsprblend 255
+			settspr .tsprshade 4
+		break
+	endswitch
+endevent
 
 action AC_FLAMINGSKULL_LIGHT 0 9 5 1 1
 
@@ -892,7 +1029,7 @@ useractor notenemy P_PUCK_PLACED GRENADE_DMG AC_PUCK_IDLE
         strength GRENADE_DMG
         set temp7 1
     }    
-ife temp7 1
+	ife temp7 1
     {
         espawn A_EXPLOSION
         seta[RETURN].xrepeat 48
@@ -5616,20 +5753,42 @@ appendevent EVENT_GETAUTOAIMANGLE
     }
     else ife player[].curr_weapon WEAPON_SHOTGUN
     {
-            rand WEAPON2_FIRESOUND AM_S_SHOTGUN_RAND
-            add WEAPON2_FIRESOUND AM_S_SHOTGUNFIRE_1
+		rand WEAPON2_FIRESOUND AM_S_SHOTGUN_RAND
+		add WEAPON2_FIRESOUND AM_S_SHOTGUNFIRE_1
 
-        ife weapon2_realclip SHOTGUN_CLIP
-            set WEAPON2_SOUND2SOUND 0
-        else
+		set temp 0
+		// running out of ammo shouldn't play cocking sound
+        ife p_usedammotype AM_AMMOTYPE_NORMALSHELL {
+			ife weapon2_realclip SHOTGUN_CLIP
+				set temp 1
+			else ife player.ammo_amount WEAPON_SHOTGUN 0
+				set temp 1
+		}
+        else ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL {
+			ife p_explosiveshell_clip SHOTGUN_CLIP
+				set temp 1
+			else ife p_explosiveshells 0
+				set temp 1
+		}
+		else ife p_usedammotype AM_AMMOTYPE_GRENADE {
+			ife p_grenade_clip SHOTGUN_CLIP
+				set temp 1
+			else ife p_grenades 0
+				set temp 1
+		}
+		
+		ife temp 1
+			set WEAPON2_SOUND2SOUND 0
+		else
             set WEAPON2_SOUND2SOUND S_SHOTGUN_RELOAD1
-
     }
     else ife player[].curr_weapon WEAPON_GRENADE
     {
         ife weapon6_realclip SHOTGUN_CLIP
             set WEAPON6_SOUND2SOUND 0
-        else
+        else ife player.ammo_amount WEAPON_GRENADE 0
+			 set WEAPON6_SOUND2SOUND 0
+		else
             set WEAPON6_SOUND2SOUND S_SHOTGUN_RELOAD1
 
     }
@@ -5688,26 +5847,28 @@ endevent
 defstate noweapon
     ife player[].ammo_amount temp 0
     {
-        set RETURN -1
         ife temp WEAPON_SHOTGUN
         {
-            ife player[].gotweapon WEAPON_GRENADE 1
-                ifg player[].ammo_amount WEAPON_GRENADE 0
-                {
-                    set RETURN WEAPON_GRENADE
-                    quote 196
-                }
+			ifg p_grenades 0
+			{
+				set delay_weapon_switch 2
+				quote 196
+				break
+			}
+			else ifg p_explosiveshells 0 {
+				set delay_weapon_switch 2
+				quote 196
+				break
+			}
+			else {
+				set RETURN -1
+				sound S_SWITCH_CARDLOCKED
+			}
         }
-        else ife temp WEAPON_GRENADE
-        {
-            ife player[].gotweapon WEAPON_SHOTGUN 1
-                ifg player[].ammo_amount WEAPON_SHOTGUN 0
-                {
-                    set RETURN WEAPON_SHOTGUN
-                    quote 197
-                }
-        }
-        sound S_SWITCH_CARDLOCKED
+		else {
+			set RETURN -1
+			sound S_SWITCH_CARDLOCKED
+		}
     }
     else ife player[].gotweapon temp 0
     {
@@ -5734,16 +5895,7 @@ appendevent EVENT_WEAPKEY2
 endevent
 appendevent EVENT_WEAPKEY3
     set temp WEAPON_SHOTGUN
-    ife player[].curr_weapon WEAPON_GRENADE ife show_debug_menu 0 ife p_laddermounted 0
-    {
-        ifg player.ammo_amount WEAPON_SHOTGUN 0
-        {
-            ife p_have_dart 0
-                set press_alt 20
-            set RETURN -1
-        } 
-    }
-    else ife show_debug_menu 0
+    ife show_debug_menu 0
         set w2alt 0
     state noweapon
 
@@ -5783,6 +5935,8 @@ appendevent EVENT_WEAPKEY6
 endevent
 
 appendevent EVENT_WEAPKEY7
+	set RETURN -1
+	/*
     set temp WEAPON_GRENADE
     ife player[].curr_weapon WEAPON_SHOTGUN ife show_debug_menu 0
     {
@@ -5797,7 +5951,7 @@ appendevent EVENT_WEAPKEY7
         set w2alt 30
     state noweapon
     ife player[].curr_weapon 5
-        setp[].kickback_pic 0
+        setp[].kickback_pic 0*/
 endevent
 
 appendevent EVENT_WEAPKEY8
@@ -5830,6 +5984,10 @@ appendevent EVENT_CHANGEWEAPON
         set RETURN -1
     else ife p_laddermounted 1
         set RETURN -1
+	
+	// disable it
+	ife RETURN WEAPON_GRENADE
+		set RETURN -1
     ife RETURN 11
     {
         set RETURN -1
@@ -5961,7 +6119,7 @@ appendevent EVENT_SELECTWEAPON
         set temp -1
     set p_quickbaton 0
     set press_kick 0
-    ife player.curr_weapon WEAPON_GRENADE
+    /*ife player.curr_weapon WEAPON_GRENADE
     {
         ife RETURN WEAPON_SHOTGUN
         {
@@ -5976,7 +6134,8 @@ appendevent EVENT_SELECTWEAPON
             set press_alt 20
             set temp -1
         }
-    }
+    }*/
+
     ifl temp 0
     {
         set weaponcycle 0
@@ -6028,6 +6187,9 @@ appendevent EVENT_PREVIOUSWEAPON
         set RETURN -1
     else ife p_laddermounted 1
         set RETURN -1
+	// skip weapon slot 7 for now
+	ife player.curr_weapon WEAPON_CROSSBOW
+		set RETURN WEAPON_BOWLINGBOMB
     set weaponlast player[].curr_weapon
     set weaponcycle 1
     ife player[].curr_weapon 5
@@ -6041,6 +6203,9 @@ appendevent EVENT_NEXTWEAPON
         set RETURN -1
     else ife p_laddermounted 1
         set RETURN -1
+	// skip weapon slot 7 for now
+	ife player.curr_weapon WEAPON_BOWLINGBOMB
+		set RETURN WEAPON_CROSSBOW
     set weaponlast player[].curr_weapon
     set weaponcycle 2
     ife player[].curr_weapon 5
@@ -6068,9 +6233,10 @@ ends
 appendevent EVENT_PREVIOUSWEAPON state do_fast_reload endevent
 appendevent EVENT_NEXTWEAPON state do_fast_reload endevent
 appendevent EVENT_QUICKKICK state do_fast_reload endevent
-appendevent EVENT_WEAPKEY1 state do_fast_reload endevent
-appendevent EVENT_WEAPKEY2 state do_fast_reload endevent
-appendevent EVENT_WEAPKEY3 state do_fast_reload endevent
+/*
+moved 3 weapon keys from here because they are used for the special ammo menu
+the fast reload gimmick messes it up
+*/
 appendevent EVENT_WEAPKEY4 state do_fast_reload endevent
 appendevent EVENT_WEAPKEY5 state do_fast_reload endevent
 appendevent EVENT_WEAPKEY6 state do_fast_reload endevent
@@ -6086,7 +6252,6 @@ var minigun_need_spinup 0 1
 
 var last_crossbow_spb 0 1
 var crossbow_idle_count 0 1
-var delay_weapon_switch 0 1
 
 var guntester_counter 0 1
 var guntester_tileadd 0 1
@@ -6206,7 +6371,32 @@ appendevent EVENT_PROCESSINPUT
     }
 endevent
 
-state do_reload
+defstate reload_shotgun
+	ifg weapon2_realclip 0 {
+		set temp3 0
+		set temp2 SHOTGUN_CLIP
+		sub temp2 weapon2_realclip
+		
+		// fixes allowing reload when at 6 / 6, firing once to become 5 / 5.
+		ife temp temp2 ifge temp SHOTGUN_CLIP
+			set temp3 1
+			
+		sub temp temp2
+		ifg temp 0
+			set temp3 1
+			
+		ife temp3 1
+		{
+			set WEAPON2_CLIP 1
+			setp[].kickback_pic WEAPON2_TOTALTIME
+			set weapon2_realclip 0
+		}
+		else
+			set flash_ammo -5
+	}
+ends
+
+defstate do_reload
     ife p_laddermounted 1
         break
     else ifn player[].weapon_pos 0
@@ -6283,23 +6473,30 @@ state do_reload
                 }
                 break
             case WEAPON_SHOTGUN
-                ifg weapon2_realclip 0
-                {
-                    set temp2 weapon2_realclip
-                    sub temp2 SHOTGUN_CLIP
-                    abs temp2
-                    sub temp temp2
-                    ifge temp 0
-                    {
-                        set WEAPON2_CLIP 1
-                        setp[].kickback_pic WEAPON2_TOTALTIME
-                        set weapon2_realclip 0
-                    }
-                    else
-                        set flash_ammo -5
-                }
+				ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL {
+					// make sure the correct ammo is used
+					set temp p_explosiveshells
+					// hacky swap
+					set am_tmp weapon2_realclip						// backup
+					set weapon2_realclip p_explosiveshell_clip		// overwrite
+					state reload_shotgun
+					set p_explosiveshell_clip weapon2_realclip		// update
+					set weapon2_realclip am_tmp						// restore
+				}
+				else ife p_usedammotype AM_AMMOTYPE_GRENADE {
+					// make sure the correct ammo is used
+					set temp p_grenades
+					// hacky swap
+					set am_tmp weapon2_realclip						// backup
+					set weapon2_realclip p_grenade_clip				// overwrite
+					state reload_shotgun
+					set p_grenade_clip weapon2_realclip				// update
+					set weapon2_realclip am_tmp						// restore
+				}
+				else // normal reload routine
+					state reload_shotgun
                 break
-            case WEAPON_GRENADE
+            /*case WEAPON_GRENADE
                 ifg weapon6_realclip 0
                 {
                     set temp2 weapon6_realclip
@@ -6315,7 +6512,7 @@ state do_reload
                     else
                         set flash_ammo -5
                 }
-                break
+                break*/
             case WEAPON_SMG
                 ifg weapon3_realclip 0
                 {
@@ -6374,6 +6571,41 @@ appendevent EVENT_USESTEROIDS
     set press_reload 1
     state do_reload
 endevent
+
+defstate handle_shotgun_special_reload
+	ife p_usedammotype AM_AMMOTYPE_GRENADE {
+		ife p_grenades 0
+			set RETURN -1
+		else ife p_grenade_clip SHOTGUN_CLIP { 
+			set press_reload 1
+			state do_reload
+			set RETURN -1
+		}
+	}
+	else ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL {
+		ife p_explosiveshells 0
+			set RETURN -1
+		else ife p_explosiveshell_clip SHOTGUN_CLIP { 
+			set press_reload 1
+			state do_reload
+			set RETURN -1
+		}
+	}
+ends
+
+// weapon fire check for ammo types / new weapons
+appendevent EVENT_FIRE
+	// do reload forcing in event_fire
+	ife player.curr_weapon WEAPON_SHOTGUN
+		state handle_shotgun_special_reload
+endevent
+
+// player might be holding this button
+appendevent EVENT_PRESSEDFIRE
+	ife player.curr_weapon WEAPON_SHOTGUN
+		state handle_shotgun_special_reload
+endevent
+
 // USE THIS STATE FOR ANY PLAYER-SIDE WEAPON ADJUSTMENTS
 appendevent EVENT_WORLD
     ife interpolate_weapons 1
@@ -6533,6 +6765,26 @@ defstate player_weapon_mods
     }
     else ife player[].kickback_pic 0
     {
+		ife player.ammo_amount WEAPON_SHOTGUN 0 {
+			set temp2 0
+			ifg p_explosiveshells 0
+				set temp2 1
+			ifg p_grenades 0
+				set temp2 1
+			
+			ife temp2 1 ifn p_ammohack 1 {
+				setp .weaponswitch 0
+				// this below line caused the weapon to show the shotgun while lowering instead of the prev weapon
+				// I'm leaving this as a note to myself
+				//setp .last_weapon -1
+				setp .ammo_amount WEAPON_SHOTGUN 2
+				set p_ammohack 1
+				ifg p_grenades 0
+					set p_usedammotype AM_AMMOTYPE_GRENADE
+				else ifg p_explosiveshells 0
+					set p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL
+			}
+		}
         ifn delay_weapon_switch 0
         {
             setp[].weaponswitch delay_weapon_switch
@@ -6544,8 +6796,27 @@ defstate player_weapon_mods
             else ifn player[].curr_weapon 0
             {
                 getplayer[].ammo_amount player[].curr_weapon temp2
-                ifl temp2 1
-                    checkavailweapon THISACTOR
+                ifl temp2 1 {
+					ife player.curr_weapon WEAPON_SHOTGUN {
+						// if we truly have nothing else on this weapon
+						ifl p_explosiveshells 1 ifl p_grenades 1 {
+							ife p_ammohack 1 {
+								setp .ammo_amount WEAPON_SHOTGUN 0
+								set p_ammohack 0
+							}
+							checkavailweapon THISACTOR
+						}
+					}
+                    else
+						checkavailweapon THISACTOR
+				}
+				else ife p_ammohack 1 
+					 ife temp2 2 
+					 ifl p_explosiveshells 1 
+					 ifl p_grenades 1
+				{
+						checkavailweapon THISACTOR
+				}
             }
         }
     }
@@ -7166,25 +7437,47 @@ defstate player_weapon_mods
             seta[RETURN].xrepeat 64
             seta[RETURN].yrepeat 64
             seta[RETURN].cstat 32768
-            add weapon2_realclip 1
+			// don't modify this otherwise
+			ife p_usedammotype AM_AMMOTYPE_NORMALSHELL
+				add weapon2_realclip 1
         }
         else ife player[].kickback_pic 12
         {
-            getp[].ammo_amount player[].curr_weapon temp
-            ife temp 0
-            {
-                setp[].kickback_pic 0
-                set weapon2_realclip 0
-            }
-            else
-            {
-                ife weapon2_realclip SHOTGUN_CLIP
-                {
-                    setp[].kickback_pic 37
-                    set weapon2_realclip 0
-                    set WEAPON2_CLIP 1
-                }
-            }
+			ife p_usedammotype AM_AMMOTYPE_NORMALSHELL {
+				ife player.ammo_amount WEAPON_SHOTGUN 0 {
+					setp[].kickback_pic 0
+					set weapon2_realclip 0
+				}
+				else ife weapon2_realclip SHOTGUN_CLIP {
+					setp[].kickback_pic 37
+					set weapon2_realclip 0
+					set WEAPON2_CLIP 1
+				}
+			}
+			else ife p_usedammotype AM_AMMOTYPE_GRENADE {
+				// I handled reload check for special ammo types elsewhere
+				ife p_grenades 0 {
+					setp[].kickback_pic 0
+					set p_grenade_clip 0
+				}
+				else ife p_grenade_clip SHOTGUN_CLIP {
+					setp[].kickback_pic 37
+					set p_grenade_clip 0
+					set WEAPON2_CLIP 1
+				}
+			}
+			else ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL {
+				// I handled reload check for special ammo types elsewhere
+				ife p_explosiveshells 0 {
+					setp[].kickback_pic 0
+					set p_explosiveshell_clip 0
+				}
+				else ife p_explosiveshell_clip SHOTGUN_CLIP {
+					setp[].kickback_pic 37
+					set p_explosiveshell_clip 0
+					set WEAPON2_CLIP 1
+				}
+			}
         }
         else
         {
@@ -7206,7 +7499,7 @@ defstate player_weapon_mods
             ifg temp 58
             {
                 ifn w2alt 0
-                    ifn w2alt 15
+                    ifn w2alt 30
                         set pistol_num_shells SHOTGUN_NUMSHELLS
                 ifl pistol_num_shells SHOTGUN_NUMSHELLS
                 {
@@ -7229,6 +7522,9 @@ defstate player_weapon_mods
                         sub temp3 pistol_num_shells
                         set pistol_num_shells SHOTGUN_NUMSHELLS
                     }
+					set temp4 0
+					ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL
+						set temp4 62
                     ifg temp3 0 for itervar range temp3
                     {
                         eshoot A_SHELL1
@@ -7265,7 +7561,7 @@ defstate player_weapon_mods
                 sound S_SHOTGUN_OPENCLOSE
         }
     }
-    else ife player[].curr_weapon WEAPON_GRENADE
+    /*else ife player[].curr_weapon WEAPON_GRENADE
     {
         set WEAPON6_CLIP 0
         getp[].ammo_amount player[].curr_weapon temp
@@ -7376,7 +7672,7 @@ defstate player_weapon_mods
             else ife temp 84
                 sound S_SHOTGUN_OPENCLOSE
         }
-    }
+    }*/
 
     ifg weapon_fire 0
         sub weapon_fire 1
@@ -9842,11 +10138,15 @@ defstate draw_pistol_flash  // Muzzle Flash
                             sub temp3 1
                         break
                     case WEAPON_SHOTGUN
-                    case WEAPON_GRENADE
+                    //case WEAPON_GRENADE
                         mod hudx_tilenum 3
                         add hudx_tilenum 5942
                         set hudx_orientation 33
                         add hudx_angle 16
+						ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL
+							set hudx_pal 12
+						else
+							set hudx_pal 0
                         break
                     case WEAPON_MINIGUN
                         mod hudx_tilenum 2
@@ -9883,7 +10183,7 @@ defstate draw_pistol_flash  // Muzzle Flash
 
     switch currentweapon
         case WEAPON_SHOTGUN
-        case WEAPON_GRENADE
+        //case WEAPON_GRENADE
             sub hudx_scale 18432
             sub hudx_x 4
             sub hudx_y 1
@@ -10207,13 +10507,26 @@ defstate draw_shotgun // SHOTGUN_WEAPON:
 
         }
     }
-
-    ife w2alt 30
-        set hudx_pal PAL_LAUNCHER
-    else ifl w2alt 0
-        set hudx_pal PAL_LAUNCHER
-    else
-        set hudx_pal PAL_SHOTGUN
+	
+	set hudx_pal PAL_SHOTGUN
+	ifg player.kickback_pic 37 ifl player.kickback_pic 64 {
+		ife p_prevammotype AM_AMMOTYPE_EXPLOSIVESHELL 
+			set hudx_pal 14
+		else ife p_prevammotype AM_AMMOTYPE_GRENADE
+			set hudx_pal PAL_LAUNCHER
+	}
+    else {
+		ife w2alt 0
+			set temp 1
+		else ife w2alt 30
+			set temp 1
+		ife temp 1 {
+			ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL
+				set hudx_pal 14
+			else ife p_usedammotype AM_AMMOTYPE_GRENADE
+				set hudx_pal PAL_LAUNCHER
+		}
+	}
     guniqhudid currentweapon
     state DrawTile640x480WeaponBob
     switch hudx_tilenum
@@ -12902,5 +13215,3 @@ appendevent EVENT_DISPLAYWEAPON // P_DisplayWeapon
     ifg p_hazard_amount 0
         state draw_hazardmask
 endevent
-
-

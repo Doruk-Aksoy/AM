@@ -176,8 +176,10 @@ appendevent EVENT_SPAWN
             {
                 ifspritepal 9
                     set pickups_nospin 1
-
-                spritepal 0
+	
+				// for everything else, retain pal 0, there's special meaning for pal 145 of this
+				ifn sprite.picnum I_SHOTGUN_AMMO
+					spritepal 0
             }
             break
     endswitch
@@ -911,6 +913,11 @@ useractor notenemy I_SHOTGUN
                 state shotgun_ammorand
                 set temp7 0
             }
+			
+			ife p_ammohack 1 {
+				setp .ammo_amount WEAPON_SHOTGUN 0
+				set p_ammohack 0
+			}
         }
         
         ife player[].curr_weapon 0
@@ -961,41 +968,58 @@ useractor notenemy I_SHOTGUN_AMMO
     ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
     {
         state item_secret
-        ifspawnedby A_SHOTGUNNER
-        {
-            ife player[].ammo_amount WEAPON_SHOTGUN player[].max_ammo_amount WEAPON_SHOTGUN
-                break
-            state shotgun_ammorand
-        }        
-        else ife player[].curr_weapon 0
-        {
-            getp[].weaponswitch temp6
-            setp[].weaponswitch 0
-            ifn player.ammo_amount WEAPON_SHOTGUN player[].max_ammo_amount WEAPON_SHOTGUN
-            {
-                ife player.curr_weapon WEAPON_GRENADE
-                    set flash_wasweaponammo 6
-                else
-                    set flash_wasweaponammo 2
-            }
-            ifl player.ammo_amount WEAPON_SHOTGUN player[].max_ammo_amount WEAPON_SHOTGUN
-                addammo WEAPON_SHOTGUN WEAPON2_AMMOAMOUNT
-            else
-            {
-                setp[].weaponswitch temp6
-                break
-            }
+		ifspritepal AM_PAL_EXPLOSIVESHELL {
+			ife p_explosiveshells p_max_explosiveshells
+				break
+			add p_explosiveshells AM_EXPLOSIVESHELL_AMMOCOUNT
+			clamp p_explosiveshells 0 p_max_explosiveshells
+		}
+		else {
+			// if we're in hack mode turn it off
+			ife p_ammohack 1 {
+				setp .ammo_amount WEAPON_SHOTGUN 0
+				set p_ammohack 0
+			}
+			ifspawnedby A_SHOTGUNNER
+			{
+				ife player[].ammo_amount WEAPON_SHOTGUN player[].max_ammo_amount WEAPON_SHOTGUN
+					break
+				state shotgun_ammorand
+			}        
+			else ife player[].curr_weapon 0
+			{
+				getp[].weaponswitch temp6
+				setp[].weaponswitch 0
+				ifn player.ammo_amount WEAPON_SHOTGUN player[].max_ammo_amount WEAPON_SHOTGUN
+				{
+					ife player.curr_weapon WEAPON_GRENADE
+						set flash_wasweaponammo 6
+					else
+						set flash_wasweaponammo 2
+				}
+				ifl player.ammo_amount WEAPON_SHOTGUN player[].max_ammo_amount WEAPON_SHOTGUN
+					addammo WEAPON_SHOTGUN WEAPON2_AMMOAMOUNT
+				else
+				{
+					setp[].weaponswitch temp6
+					break
+				}
 
-            addammo WEAPON_SHOTGUN WEAPON2_AMMOAMOUNT
-            setp[].weaponswitch temp6
-        }
-        else
-            addammo WEAPON_SHOTGUN WEAPON2_AMMOAMOUNT
+				addammo WEAPON_SHOTGUN WEAPON2_AMMOAMOUNT
+				setp[].weaponswitch temp6
+			}
+			else
+				addammo WEAPON_SHOTGUN WEAPON2_AMMOAMOUNT
+		}
+		
         getp[].sound_pitch temp
         setp[].sound_pitch 256
         globalsound S_SHOTGUN_RELOAD1
         setp[].sound_pitch temp
-        quote 135
+		ifspritepal AM_PAL_EXPLOSIVESHELL
+			quote 1004
+		else
+			quote 135
         palfrom 15 5 32 5
         or p_wantline TALK_PICKUP
         killit
@@ -1015,6 +1039,7 @@ useractor notenemy I_SHOTGUN_AMMO
     }
 enda
 
+// no longer gives weapon 6, the grenade launcher, it's simply a fire mode
 spriteshadow I_GRENADELAUNCHER
 useractor notenemy I_GRENADELAUNCHER
     state item_initflags
@@ -1025,51 +1050,36 @@ useractor notenemy I_GRENADELAUNCHER
     ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
     {
         state item_secret
-        ife player[].gotweapon WEAPON_GRENADE 0
-        {
+        ife player[].gotweapon WEAPON_SHOTGUN 0
+        {   
             set p_face_grin 45
             set myfavoriteguns 1
+			setp .gotweapon WEAPON_SHOTGUN 1
         }
-        ifn player.ammo_amount WEAPON_GRENADE player[].max_ammo_amount WEAPON_GRENADE
-        {
-            ife player.curr_weapon WEAPON_GRENADE
-                set flash_wasweaponammo 6
-            else
-                set flash_wasweaponammo 2
-        }
+        ifn p_grenades p_max_grenades
+			set flash_wasweaponammo 2
         ife player[].curr_weapon 0
         {
             getp[].weaponswitch temp6
-            ife player[].gotweapon WEAPON_GRENADE 1
+            ife player[].gotweapon WEAPON_SHOTGUN 1
             {
                 setp[].weaponswitch 0
-                ife player[].ammo_amount WEAPON_GRENADE player[].max_ammo_amount WEAPON_GRENADE
+                ife p_grenades p_max_grenades
                 {
                     setp[].weaponswitch temp6
                     break
                 }
             }
-            addweapon WEAPON_GRENADE GRENADE_AMMOAMOUNT
+            add p_grenades GRENADE_AMMOAMOUNT
+			clamp p_grenades 0 p_max_grenades
             
             setp[].weaponswitch temp6
         }
         else
         {
-            ife p_firstgrenade 0
-            {
-                ife player.curr_weapon WEAPON_SHOTGUN
-                {
-                    set press_alt 20
-                    setp .gotweapon WEAPON_GRENADE 1
-                    addammo WEAPON_GRENADE GRENADE_AMMOAMOUNT
-                }
-                else
-                    addweapon WEAPON_GRENADE GRENADE_AMMOAMOUNT
-            }
-            else
-                addweapon WEAPON_GRENADE GRENADE_AMMOAMOUNT
+            add p_grenades GRENADE_AMMOAMOUNT
+			clamp p_grenades 0 p_max_grenades
         }
-        set p_firstgrenade 1
         getp[].sound_pitch temp
         setp[].sound_pitch 256
         globalsound S_SHOTGUN_RELOAD1
@@ -1106,11 +1116,8 @@ defstate grenade_ammorand
             set temp5 1
     }
 
-    getp[].ammo_amount WEAPON_GRENADE temp4
-    add temp4 temp5
-	getp .max_ammo_amount WEAPON_GRENADE am_tmp
-    clamp temp4 0 am_tmp
-    setp[].ammo_amount WEAPON_GRENADE temp4
+    add p_grenades temp5
+    clamp p_grenades 0 p_max_grenades
 ends
 
 spriteshadow I_GRENADELAUNCHER_AMMO
@@ -1123,33 +1130,9 @@ useractor notenemy I_GRENADELAUNCHER_AMMO
     ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
     {
         state item_secret
-        ife player[].gotweapon WEAPON_SHOTGUN 1
-        {
-            ife p_firstgrenade 0
-            {
-                ifn player[].curr_weapon WEAPON_SHOTGUN ifn player[].curr_weapon WEAPON_GRENADE
-                {
-                    setp[].gotweapon WEAPON_GRENADE 0
-                    addweapon WEAPON_GRENADE 0
-                    or c_256 32
-                    set w2alt 30
-                }
-                ifl player.ammo_amount WEAPON_GRENADE player[].max_ammo_amount WEAPON_GRENADE
-                {   
-                    ifge w2alt 0 ifn w2alt 30
-                    {
-                        ife player[].curr_weapon WEAPON_SHOTGUN
-                            set press_alt 20
-                    }
-                }
-                set p_firstgrenade 1
-                set myfavoriteguns 1
-                set temp8 1
-            }
-        }
 		ifspawnedby A_SHOTGUNNER
         {
-            ife player[].ammo_amount WEAPON_GRENADE player[].max_ammo_amount WEAPON_GRENADE
+            ife p_grenades p_max_grenades
                 break
             state grenade_ammorand
         }
@@ -1157,26 +1140,26 @@ useractor notenemy I_GRENADELAUNCHER_AMMO
         {
             getp[].weaponswitch temp6
             setp[].weaponswitch 0
-            ifn player.ammo_amount WEAPON_GRENADE player[].max_ammo_amount WEAPON_GRENADE
-            {
-                ife player.curr_weapon WEAPON_GRENADE
-                    set flash_wasweaponammo 6
-                else
-                    set flash_wasweaponammo 2
-            }
-            ifl player.ammo_amount WEAPON_GRENADE player[].max_ammo_amount WEAPON_GRENADE
-                addammo WEAPON_GRENADE GRENADE_AMMOAMOUNT
+            ifn p_grenades p_max_grenades
+				set flash_wasweaponammo 2
+            ifl p_grenades p_max_grenades {
+                add p_grenades GRENADE_AMMOAMOUNT
+				clamp p_grenades 0 GRENADE_MAXAMMO
+			}
             else
             {
                 setp[].weaponswitch temp6
                 break
             }
 
-            addammo WEAPON_GRENADE GRENADE_AMMOAMOUNT
+			add p_grenades GRENADE_AMMOAMOUNT
+			clamp p_grenades 0 GRENADE_MAXAMMO
             setp[].weaponswitch temp6
         }
-        else
-            addammo WEAPON_GRENADE GRENADE_AMMOAMOUNT
+        else {
+			add p_grenades GRENADE_AMMOAMOUNT
+			clamp p_grenades 0 GRENADE_MAXAMMO
+		}
         getp[].sound_pitch temp
         setp[].sound_pitch 256
         globalsound S_SHOTGUN_RELOAD1

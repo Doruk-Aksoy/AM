@@ -105,9 +105,9 @@ var e_us_count 0 2
 var ms_faller 0 2
 var smgf_temp
 var smgf_counter 0 2
-var spring_xv 0 2
-var spring_yv 0 2
-var spring_zv 0 2
+//var spring_xv 0 2
+//var spring_yv 0 2
+//var spring_zv 0 2
 var georgemichael -1 0 // wake me up, before you go go (bad guys)
 var turret_match -1 2
 var ms_flashpal 0 2
@@ -189,6 +189,7 @@ var flash_wasweaponammo 0 1
 var flash_hp 0 1
 var flash_armor 0 1
 var flash_weapons 0 1
+var delay_weapon_switch 0 1
 
 var actor_switch 0 2
 var actor_switch_usable 0 2
@@ -326,7 +327,20 @@ var num_nades
 var bowled_strike
 var debug_hubsection
 
+// added from enemies.con
+var enemy_shoot 0 2
+
+// added from particles.con
+var htg_t2 -1 2
+var htg_xvel 0 2
+var htg_zvel 0 2
+var htg_nostat 0 2
+var htg_owner 0 2
+var htg_extra 0 2
+
 include scripts/names.con
+include scripts/customize.con
+include scripts/am_defs.con
 
 defstate is_item
     set temp6 0
@@ -361,6 +375,9 @@ defstate is_item
         case I_CLUSTERPUCK
         case I_BOWLINGBOMB_PICKUP
 		case I_SYRINGE
+		case I_AMMOBOOST
+		case I_DEFLECTOR
+		case I_BUDDY
             set temp6 1
             setav[temp].is_pickup 1
             break
@@ -401,7 +418,10 @@ onevent EVENT_PREWORLD
     }
     for temp sprofstat STAT_ACTOR
     {
-        ifand tiledata[sprite[temp].picnum].gameflags 32
+		// add stayput ones too
+		set temp2 tiledata[sprite[temp].picnum].gameflags
+		and temp2 32800
+        ifn temp2 0
         {
             setarray gameflag32[num_flag32] temp
             add num_flag32 1
@@ -503,7 +523,10 @@ onevent EVENT_PREWORLD
     }
     for temp sprofstat STAT_ZOMBIEACTOR
     {
-        ifand tiledata[sprite[temp].picnum].gameflags 32
+		// add stayput ones too
+		set temp2 tiledata[sprite[temp].picnum].gameflags
+		and temp2 32800
+        ifn temp2 0
         {
             setarray gameflag32[num_flag32] temp
             add num_flag32 1
@@ -639,9 +662,6 @@ include scripts/sounds.con
 include scripts/music.con
 include scripts/text.con
 include scripts/levels.con
-include scripts/customize.con
-
-include scripts/am_defs.con
 
 include scripts/subroutines.con
 include scripts/am_helper.con
@@ -1883,7 +1903,7 @@ definegamefuncname      gamefunc_Run                    Walk
 undefinegamefunc        gamefunc_AutoRun
 definegamefuncname      gamefunc_Jump                   Jump
 definegamefuncname      gamefunc_Crouch                 Crouch
-undefinegamefunc        gamefunc_Look_Up
+definegamefuncname      gamefunc_Look_Up				Alternate_Ammo
 undefinegamefunc        gamefunc_Look_Down
 undefinegamefunc        gamefunc_Look_Left
 undefinegamefunc        gamefunc_Look_Right
@@ -1906,9 +1926,9 @@ undefinegamefunc        gamefunc_Weapon_10
 undefinegamefunc        gamefunc_Inventory
 undefinegamefunc        gamefunc_Inventory_Left
 undefinegamefunc        gamefunc_Inventory_Right
-undefinegamefunc        gamefunc_Holo_Duke
-undefinegamefunc        gamefunc_Jetpack
-definegamefuncname        gamefunc_NightVision          Radar
+definegamefuncname      gamefunc_Holo_Duke				Robo_Buddy
+definegamefuncname      gamefunc_Jetpack				Deflector
+definegamefuncname      gamefunc_NightVision          	Radar
 definegamefuncname      gamefunc_MedKit                 MedKit
 // definegamefuncname      gamefunc_TurnAround             Debug_Menu
 // temp name for bugs I hate.

@@ -4442,7 +4442,7 @@ defstate soda_stand_code
     
     set temp 0
     ifhitspace set temp 1
-    else ifphealthl player.max_player_health set temp 1
+    else ifl sprite[player.i].extra player.max_player_health set temp 1
     
     ife temp 1
     {

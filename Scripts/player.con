@@ -461,6 +461,15 @@ appendevent EVENT_DISPLAYREST
     }
 endevent
 
+defstate update_ammotype
+	set p_prevammotype p_usedammotype
+	set press_alt 20
+	set p_extra_ammo_menu_on 0
+	add temp 1
+	set p_forcedammoswitch temp
+	set RETURN -1
+ends
+
 appendevent EVENT_WEAPKEY1
     ife show_debug_menu 1
     {
@@ -470,6 +479,17 @@ appendevent EVENT_WEAPKEY1
         else
             set fly 0
     }
+		
+	ife p_extra_ammo_menu_on 1 ifn p_ammohack 1 {
+		ife player.weapon_pos 0 ife weaponcount 0 ife player.curr_weapon WEAPON_SHOTGUN ifn p_usedammotype AM_AMMOTYPE_NORMALSHELL
+		ifg player.ammo_amount WEAPON_SHOTGUN 0 ife p_laddermounted 0 ife p_have_dart 0	{
+			set temp AM_AMMOTYPE_NORMALSHELL
+			state update_ammotype
+		}
+		else
+			set RETURN -1
+	}
+	state do_fast_reload
 endevent
 
 appendevent EVENT_WEAPKEY2
@@ -481,6 +501,17 @@ appendevent EVENT_WEAPKEY2
         else
             set pause_ai 0
     }
+	
+	ife p_extra_ammo_menu_on 1 {
+		ife player.weapon_pos 0 ife weaponcount 0 ife player.curr_weapon WEAPON_SHOTGUN ifn p_usedammotype AM_AMMOTYPE_GRENADE
+		ifg p_grenades 0 ife p_laddermounted 0 ife p_have_dart 0 {
+			set temp AM_AMMOTYPE_GRENADE
+			state update_ammotype
+		}
+		else
+			set RETURN -1
+	}
+	state do_fast_reload
 endevent
 
 appendevent EVENT_WEAPKEY3
@@ -489,6 +520,17 @@ appendevent EVENT_WEAPKEY3
         set RETURN -1
         spawn A_CULTIST
     }
+	
+	ife p_extra_ammo_menu_on 1 {
+		ife player.weapon_pos 0 ife weaponcount 0 ife player.curr_weapon WEAPON_SHOTGUN ifn p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL
+		ifg p_explosiveshells 0 ife p_laddermounted 0 ife p_have_dart 0	{
+			set temp AM_AMMOTYPE_EXPLOSIVESHELL
+			state update_ammotype
+		}
+		else
+			set RETURN -1
+	}
+	state do_fast_reload
 endevent
 
 appendevent EVENT_WEAPKEY4
@@ -497,6 +539,7 @@ appendevent EVENT_WEAPKEY4
         set RETURN -1
         spawn A_MECHSECT
     }
+	set p_extra_ammo_menu_on 0
 endevent
 
 appendevent EVENT_WEAPKEY5
@@ -505,6 +548,7 @@ appendevent EVENT_WEAPKEY5
         set RETURN -1
         spawn A_SHOTGUNNER
     }
+	set p_extra_ammo_menu_on 0
 endevent
 
 appendevent EVENT_WEAPKEY6
@@ -524,6 +568,11 @@ appendevent EVENT_WEAPKEY7
         else
             set see_breadcrumbs 0
     }
+	/*else ifg RETURN -1 ifg player.ammo_amount WEAPON_GRENADE 0 {
+		set p_prevammotype p_usedammotype
+		set p_usedammotype AM_AMMOTYPE_GRENADE
+	}*/
+	set p_extra_ammo_menu_on 0
 endevent
 
 appendevent EVENT_WEAPKEY8
@@ -535,6 +584,7 @@ appendevent EVENT_WEAPKEY8
         else
             set skip_see 0
     }
+	set p_extra_ammo_menu_on 0
 endevent
 
 appendevent EVENT_WEAPKEY10
@@ -546,6 +596,7 @@ appendevent EVENT_WEAPKEY10
         else
             set profiler 0
     }
+	set p_extra_ammo_menu_on 0
 endevent
 
 
@@ -2643,6 +2694,9 @@ defstate reset_131072
 	// am stuff
 	set p_ammocap_bonus 0
 	set p_update_ammocap 0
+	set p_explosiveshell_clip 0
+	set p_explosiveshells 0
+	set p_usedammotype 0
 ends
 
 array tempwall 262144
@@ -4298,6 +4352,324 @@ defstate calc_weapon1_alt_time
     }
 ends
 
+defstate p_deflector
+	ifg p_deflector_timer 0 {
+		ife p_deflector_timer AM_DEFLECTOR_LOOPSTART
+			sound AM_S_DEFLECTOR_LOOP
+		// player was hit
+		ifn temp -1 {
+			set temp5 sprite.htowner
+			ifn temp5 -1 ifn temp5 THISACTOR {
+				palfrom 36 24 24 64
+				// hit sound
+				stopsound AM_S_DEFLECTOR_HIT1
+				stopsound AM_S_DEFLECTOR_HIT2
+				stopsound AM_S_DEFLECTOR_HIT3
+				stopsound AM_S_DEFLECTOR_HIT4
+				stopsound AM_S_DEFLECTOR_HIT5
+				rand temp2 4
+				add temp2 AM_S_DEFLECTOR_HIT1
+				sound temp2
+			
+				set temp3 temp // back the damage up before reductions
+				set temp2 0
+				set am_proj 0 // checks if its a specific projectile => no height inc
+				switch sprite.htpicnum
+					case BULLET
+						// 33% less damage from hitscan
+						div temp 3
+						set temp2 1
+					break
+					case P_FIREBALL
+					case P_PLASMA_BOLT
+					case P_DANCINGQUEEN
+					case P_ACIDYSPIT
+					case AM_P_SEEKERDRONE_MISSILE
+						// projectiles do no damage at all
+						set temp -1
+						set temp2 sprite.htpicnum
+						ife sprite.htpicnum P_DANCINGQUEEN
+							or am_proj 1
+					break
+					default
+						// some projectiles that should have their explosive damage property kept
+						// but the enemy can only use that attack, can be deflected
+						// since they are explosives though, damage is only halved
+						switch sprite[temp5].picnum
+							case A_NAPALM_BURST
+								shiftr temp 1
+								set temp2 P_NAPALM_BALL
+								or am_proj 3
+							break
+							case A_BRUTE_TOP
+								// negative is melee
+								ifg actorvar[temp5].enemy_shoot 0 {
+									shiftr temp 1
+									set temp2 P_NAPALM_BALL
+									or am_proj 1
+								}
+							break
+							case A_ARCHANGEL
+								shiftr temp 1
+								set temp2 P_FLAMINGSKULL
+							break
+							case A_DEACON
+								shiftr temp 1
+								set temp2 P_MINIMISSILE
+							break
+							case A_SHOTGUNNER
+								// grenade
+								shiftr temp 1
+								set temp2 P_GRENADE
+							break
+							default
+								or am_proj 2
+							break
+						endswitch
+					break
+				endswitch
+				seta .htextra temp
+				
+				// we can deflect back damage / projectile
+				ifn temp2 0 {
+					geta[temp5].picnum temp
+					set temp tiledata[temp].gameflags
+					and temp 32800 // 32768 + 32 = enemy
+					// not enemy, check this thing's owner? -- like smoke
+					// check picnum of this further, sometimes its not smoke or something?
+					ife temp 0
+						set temp actorvar[temp5].htg_owner
+					// we didn't fail and we really are targeting an enemy
+					ifn temp 0 ifn temp5 temp
+						set temp 1
+					else ifand am_proj 2 // sometimes it just doesn't want to work, so we make it go off where we got hit from
+						set temp 1
+					ife temp 1 {
+						// if 1 just deflect bullet damage back
+						shiftl temp3 1
+						ife temp2 1 {
+							seta[temp5].htextra temp3
+							seta[temp5].htowner THISACTOR
+						}
+						else {
+							// some projectile for sure, recorded in temp2
+							// fire back the projectile
+							getp .ang h_ang
+							ifand am_proj 2 {
+								// we got hit by something we can't detect, just fire back at where we got hit from
+								set temp sprite.htang
+								sub temp 1024
+								and temp 2047
+								setp .ang temp
+								rand h_zvel 8
+								sub h_zvel 4
+								shiftl h_zvel 3
+							}
+							else {
+								// face enemy
+								geta[temp5].x face_x
+								sub face_x player[].posx
+
+								geta[temp5].y face_y
+								sub face_y player[].posy
+
+								getangle face_return face_x face_y
+								setp .ang face_return
+								
+								// calc zvel
+								ldist am_dist THISACTOR temp5
+								getprojectile[temp2].vel am_vel
+								ifn am_vel 0
+									div am_dist am_vel
+								geta[temp5].z h_zvel
+								sub h_zvel player.posz
+								add h_zvel 1024
+								ife p_crouching 1
+									sub h_zvel 2048
+								ifn am_dist 0
+									div h_zvel am_dist
+								shiftl h_zvel 1
+								div h_zvel 5
+								getp .posz am_tmp
+								sub am_tmp sprite[temp5].z
+								abs am_tmp
+								ifg am_tmp 12288
+									clamp h_zvel -4096 8192 // prevent overflow
+								else
+									clamp h_zvel -2048 8192 // prevent overflow
+							}
+							
+							ifand am_proj 1
+								nullop
+							else {
+								getp .posz temp
+								sub temp 1024
+								setp .posz temp
+							}
+							
+							getp .posx am_x
+							getp .posy am_y
+							add am_x 32
+							rotatepoint player.posx player.posy am_x player.posy face_return am_x2 am_y2
+							setp .posx am_x2
+							setp .posy am_y2
+							
+							ezshoot h_zvel temp2
+							getthisprojectile[RETURN].extra temp2
+							add temp3 temp2
+							setthisprojectile[RETURN].extra temp3
+							ife temp2 P_MINIMISSILE
+								setav[RETURN].minimissile_t temp5
+								
+							sub am_x 32
+							setp .posx am_x
+							setp .posy am_y
+							ifand am_proj 1
+								nullop
+							else {
+								add temp 1024
+								setp .posz temp
+							}
+							setp .ang h_ang
+						}
+					}
+				}
+			}
+		}
+		sub p_deflector_timer 1
+		ife p_deflector_timer 0
+			stopsound AM_S_DEFLECTOR_LOOP
+		else ife p_deflector_timer AM_DEFLECTOR_FADE
+			sound AM_S_DEFLECTOR_FADE
+	}
+ends
+
+defstate p_buddy
+	ifg p_buddy_timer 0 {
+		sub p_buddy_timer 1
+		set temp p_buddy_timer
+		mod temp 150
+		ife temp 0 ifn p_buddy_timer 0
+			sound AM_S_BUDDY_USE
+	}
+ends
+
+defstate p_show_ammo_menu_text
+	ifn temp4 0 {
+		state ResetText
+		set temp2 temp
+		add temp2 1
+		
+		switch temp
+			case AM_AMMOTYPE_NORMALSHELL
+				getkeyname temp5 19 2 // w1
+			break
+			case AM_AMMOTYPE_GRENADE
+				getkeyname temp5 20 2 // w1
+			break
+			case AM_AMMOTYPE_EXPLOSIVESHELL
+				getkeyname temp5 21 2 // w1
+			break
+		endswitch
+
+		redefinequote 190 %s. %s ^0(^11%ld^0)
+		qsprintf 190 190 temp5 temp3 temp4
+		mul temp2 16
+		set hudx_quote 190
+		set hudx_tilenum STARTALPHANUM
+		set hudx_orientation 272
+		set hudx_shade 5
+		set hudx_x 8
+		set hudx_scale 32768
+		set hudx_pal 0
+		set hudx_y 120
+		add hudx_y temp2
+		state DrawText640x480Hud
+	}
+ends
+
+defstate p_show_ammo_menu_text_exit
+	state ResetText
+	set temp2 temp
+	add temp2 1
+	getkeyname temp3 11 2 // look_up
+	redefinequote 190 %s^0. ^12Quit
+	qsprintf 190 190 temp3
+	mul temp2 16
+	set hudx_quote 190
+	set hudx_tilenum STARTALPHANUM
+	set hudx_orientation 272
+	set hudx_shade 5
+	set hudx_x 8
+	set hudx_scale 32768
+	set hudx_pal 0
+	set hudx_y 120
+	add hudx_y temp2
+	state DrawText640x480Hud
+ends
+
+defstate p_handle_ammo_menu_press
+	set temp2 0
+	geti .bits temp
+	ifand temp INPUT_LOOK_UP {
+		ifn p_prev_input 1 {
+			set temp2 1
+			set p_prev_input 1
+		}
+	}
+	else
+		set p_prev_input 0
+	
+	ife temp2 1 {
+		ife p_extra_ammo_menu_on 0 {
+			// only let the player use it when not on ladders or end of level
+			ife p_eol 0 ife p_laddermounted 0 ifg sprite.extra 0 {
+				ife player.curr_weapon WEAPON_SHOTGUN
+					set p_extra_ammo_menu_on 1
+				else // not applicable to this weapon
+					sound S_SWITCH_CARDLOCKED
+			}
+		}
+		else
+			set p_extra_ammo_menu_on 0 // if on, turn it off regardless
+	}
+ends
+
+defstate p_ammo_menu
+	ife p_extra_ammo_menu_on 1 {
+		ifn p_ammohack 1 {
+			// don't show the original ammo type as an option if we're in hack mode
+			set temp AM_AMMOTYPE_NORMALSHELL
+			set temp3 1005
+			set temp4 player.ammo_amount WEAPON_SHOTGUN
+			state p_show_ammo_menu_text
+		}
+		
+		set temp AM_AMMOTYPE_GRENADE
+		set temp3 1006
+		set temp4 p_grenades
+		state p_show_ammo_menu_text
+		
+		set temp AM_AMMOTYPE_EXPLOSIVESHELL
+		set temp3 1007
+		set temp4 p_explosiveshells
+		state p_show_ammo_menu_text
+		
+		add temp 2
+		set temp3 1008
+		state p_show_ammo_menu_text_exit
+	}
+ends
+
+defstate prevammotype_reset
+	ifg weaponcount 48
+		set p_changeprevammo 1
+	else ife p_changeprevammo 1 {
+		set p_prevammotype p_usedammotype
+		set p_changeprevammo 0
+	}
+ends
+
 var camsound
 appendevent EVENT_WORLD
     getp[myconnectindex].newowner temp
@@ -4448,6 +4820,8 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
     state crouch_momentum
 
     state cap_screensize
+	
+	state prevammotype_reset
 
     ifn p_secret_quote 0
     {
@@ -4714,6 +5088,11 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
     }
     // replace damage system
     geta[].htextra temp
+	// dont let our buddy hurt us
+	ifn sprite.htowner -1 ife sprite[sprite.htowner].picnum AM_BUDDY {
+		set temp -1
+		seta .htextra -1
+	}
     ife p_dontdie 1
         set temp -1
     ifg p_pup_bomb_time 0
@@ -4746,47 +5125,51 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
     }
     ifn temp -1
     {
-        ife userdef[].player_skill 1
-        {
-            ifg temp 4
-            {
-                shiftr temp 1
-                ifl temp 2
-                    set temp 2
-            }
-        }
-        else ifge userdef[].player_skill 3
-        {
-            mul temp 3
-            shiftr temp 1
-        }
-        sub temp2 temp
-        ifl temp2 0
-        {
-            inv temp2
-            ife sprite[].htpicnum P_PLASMA_BOLT
-            {
-                ifg temp5 0
-                    add temp temp2
-            }
-            else
-                add temp temp2
-            set temp2 0
-            ife sprite[].htpicnum EXPLOSION
-                shiftr temp 2 // sudden explosion deaths suck
-        }
-        else
-        {
-            ife sprite[].htpicnum EXPLOSION
-                shiftr temp 2 // sudden explosion deaths suck
-            else
-                shiftr temp 1
-        }
+		ife userdef[].player_skill 1
+		{
+			ifg temp 4
+			{
+				shiftr temp 1
+				ifl temp 2
+					set temp 2
+			}
+		}
+		else ifge userdef[].player_skill 3
+		{
+			mul temp 3
+			shiftr temp 1
+		}
+		sub temp2 temp
+		ifl temp2 0
+		{
+			inv temp2
+			ife sprite[].htpicnum P_PLASMA_BOLT
+			{
+				ifg temp5 0
+					add temp temp2
+			}
+			else
+				add temp temp2
+			set temp2 0
+			ife sprite[].htpicnum EXPLOSION
+				shiftr temp 2 // sudden explosion deaths suck
+		}
+		else
+		{
+			ife sprite[].htpicnum EXPLOSION
+				shiftr temp 2 // sudden explosion deaths suck
+			else
+				shiftr temp 1
+		}
         seta[].htextra temp
         setp[].shield_amount temp2
         ife userdef[].god 1
             seta .htextra -1
     }
+	// put right here because temp is the htextra and this uses it
+	state p_deflector
+	state p_buddy
+	state p_handle_ammo_menu_press
 
     // do some stuff when we actually do take damage
     ifg p_hazard_amount 0
@@ -5497,13 +5880,36 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
         {
             switch player.curr_weapon
                 case WEAPON_SHOTGUN
-                case WEAPON_GRENADE
+                    ife player[].kickback_pic 0 ife w2alt_count 0 ife player[].weapon_pos 0
+                    {
+                        ifn p_forcedammoswitch 0
+                        {
+                            set flash_ammo -3
+                            setp[].kickback_pic 38
+                            ife w2alt 0
+								set w2alt 1
+                            else ife w2alt 30
+								set w2alt -1
+							sub p_forcedammoswitch 1
+							set p_usedammotype p_forcedammoswitch
+							set p_forcedammoswitch 0
+                            set w2alt_count 1
+                            ifl flash_weapons 3
+                                set flash_weapons 30
+                            else ifl flash_weapons 27
+                                set flash_weapons 27
+                        }
+                    }
+				break
+                /*case WEAPON_GRENADE
                     ife player[].kickback_pic 0 ife w2alt_count 0 ife player[].weapon_pos 0
                     {
                         set temp 0
-                        ife w2alt 0
-                        {
-                            ifn player.ammo_amount WEAPON_GRENADE 0
+						// from ammo menu
+						ife p_forcedammoswitch 1
+							set temp 1
+						else ife w2alt 0 {
+							ifn player.ammo_amount WEAPON_GRENADE 0
                                 set temp 1
                         }
                         else
@@ -5516,9 +5922,12 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
                             set flash_ammo -3
                             setp[].kickback_pic 38
                             ife w2alt 0
-                                set w2alt 1
-                            else ife w2alt 30
-                                set w2alt -1
+								set w2alt 1
+                            else ife w2alt 30 {
+								ifn p_usedammotype AM_AMMOTYPE_GRENADE
+									set w2alt -1
+								set p_forcedammoswitch 0
+							}
                             set w2alt_count 1
                             ifl flash_weapons 3
                                 set flash_weapons 30
@@ -5526,7 +5935,7 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
                                 set flash_weapons 27
                         }
                     }
-                break
+                break*/
             endswitch
         }
     }
@@ -5580,16 +5989,16 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
     ife p_firstgrenade 0
     {
         ife player.gotweapon WEAPON_SHOTGUN 1
-            ife player.gotweapon WEAPON_GRENADE 1
-                ifg player.ammo_amount WEAPON_GRENADE 0
+            //ife player.gotweapon WEAPON_GRENADE 1
+                ifg p_grenades 0
                     set p_firstgrenade 1
     }
-    ife player.gotweapon WEAPON_SHOTGUN 1
+    /*ife player.gotweapon WEAPON_SHOTGUN 1
         setp .gotweapon WEAPON_GRENADE 1
     else ife player.gotweapon WEAPON_GRENADE 1
-        setp .gotweapon WEAPON_SHOTGUN 1
+        setp .gotweapon WEAPON_SHOTGUN 1*/
     
-    ife player.curr_weapon WEAPON_GRENADE
+    /*ife player.curr_weapon WEAPON_GRENADE
     {
         ife player.last_weapon WEAPON_SHOTGUN
         {
@@ -5603,34 +6012,18 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
         }
         ifn player.weapon_pos 0
             set w2alt 30
-    }
-    ife player.curr_weapon WEAPON_SHOTGUN
-    {
-        ife player.last_weapon WEAPON_GRENADE
-        {
-            setp .weapon_pos 0
-            setp .last_weapon -1
-            setp[].kickback_pic 12
-            set weapon2_realclip SHOTGUN_CLIP
-            set WEAPON2_CLIP 1
-            set w2alt -1
-            setp .kickback_pic 12
-        }
-        ifn player.weapon_pos 0
-            set w2alt 0
-    }
-    ifg w2alt 0 ifl w2alt 30
-    {
+    }*/
+    ife player.curr_weapon WEAPON_SHOTGUN ifn player.weapon_pos 0
+		set w2alt 0
+    ifg w2alt 0 ifl w2alt 30 {
         add w2alt 1
         ifg w2alt_count 20
             add w2alt 1
-        ifge w2alt 30
-        {
-            
+        ifge w2alt 30 {
             set hud_ammo player.ammo_amount WEAPON_SHOTGUN
             set p_roll_fast 1
             set w2alt 30
-            setp .curr_weapon WEAPON_GRENADE
+            //setp .curr_weapon WEAPON_GRENADE
             set flash_ammo 6
         }
     }
@@ -5641,7 +6034,8 @@ actor APLAYER MAXPLAYERHEALTH NOPLAYER
             sub w2alt 1
         ifle w2alt -30
         {
-            set hud_ammo player.ammo_amount WEAPON_GRENADE
+			//set hud_ammo player.ammo_amount WEAPON_GRENADE
+            set hud_ammo player.ammo_amount WEAPON_SHOTGUN
             set p_roll_fast 1
             set w2alt 0
             setp .curr_weapon WEAPON_SHOTGUN
@@ -6813,6 +7207,7 @@ appendevent EVENT_ACTIVATECHEAT
         case 1
         case 21
         case 26
+			set p_ammohack 0
             ife RETURN 1
             {
                 set flash_armor 3
@@ -6864,6 +7259,8 @@ appendevent EVENT_ACTIVATECHEAT
             ife other_smg 0
                 set other_smg_toggle 12
             set other_smg 1
+			set p_explosiveshells p_max_explosiveshells
+			set p_grenades p_max_grenades
             set RETURN -1
             break
         case 8
@@ -6888,7 +7285,6 @@ appendevent EVENT_ACTIVATECHEAT
             setp[].got_access 7
             break
         case 7
-            set RETURN -1
             ifrnd 127
                 espawn A_CHAIR_2
             else
@@ -6897,6 +7293,7 @@ appendevent EVENT_ACTIVATECHEAT
             add temp 13
             seta[RETURN].pal temp
             quote 160
+			set RETURN -1
             break
         case 12
             set RETURN -1
@@ -7037,7 +7434,8 @@ appendevent EVENT_ALTFIRE
     ife p_eol 0
         ife p_laddermounted 0
             ife p_have_dart 0
-                set press_alt 3
+				ifn player.curr_weapon WEAPON_SHOTGUN // no altfire for this weapon
+					set press_alt 3
 endevent
 
 // Status bar
@@ -7170,8 +7568,6 @@ defstate select_weapon_tile
 ends
 
 defstate do_ammo_on_wheel
-    redefinequote 190 %ld
-    qsprintf 190 190 player.ammo_amount temp
     set hudx_quote 190
     set hudx_tilenum STARTALPHANUM
     xor hudx_orientation 16
@@ -7183,8 +7579,28 @@ defstate do_ammo_on_wheel
     shiftr temp6 14
     add hudx_y temp6
     sub hudx_x temp6
-    ifn temp 0
+	// no baton ammo obv.
+    ifn temp 0 {
+		// special ammo coloring for shotgun
+		ife temp WEAPON_SHOTGUN {
+			ife p_usedammotype AM_AMMOTYPE_NORMALSHELL {
+				redefinequote 190 %ld
+				qsprintf 190 190 player.ammo_amount temp
+				set hudx_pal 9
+			}
+			else ife p_usedammotype AM_AMMOTYPE_GRENADE {
+				redefinequote 190 %ld
+				qsprintf 190 190 p_grenades
+				set hudx_pal 5
+			}
+			else ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL {
+				redefinequote 190 %ld
+				qsprintf 190 190 p_explosiveshells
+				set hudx_pal 14
+			}
+		}
         state DrawText640x480Hud
+	}
     sub hudx_x temp2
     sub hudx_y temp6
     add hudx_x temp6
@@ -7440,9 +7856,63 @@ defstate draw_hud_medkits
     state DrawText640x480Hud
 ends
 
+defstate draw_hud_deflectors
+    ifl p_deflectors 1
+        break
+
+    state ResetTile
+    set hudx_x AM_DEFLECTOR_HUDX
+    set hudx_y HUD_MEDKIT_Y
+    set hudx_scale 49152
+    set hudx_tilenum I_DEFLECTOR
+    set hudx_orientation 257
+    state DrawTile640x480Hud
+
+    state ResetText
+    set hudx_x AM_DEFLECTOR_TEXTHUDX
+    set hudx_y HUD_MEDKIT_TXT_Y
+    set hudx_scale HUD_MEDKIT_TXT_Z
+    redefinequote 190 x%ld
+    qsprintf 190 190 p_deflectors
+    set hudx_quote 190
+    set hudx_tilenum STARTALPHANUM
+    set hudx_pal 0
+    set hudx_pal 12
+    set hudx_orientation 273
+    state DrawText640x480Hud
+ends
+
+defstate draw_hud_buddies
+    ifl p_buddies 1
+        break
+
+    state ResetTile
+    set hudx_x AM_DEFLECTOR_HUDX
+    set hudx_y HUD_RADICON_Y
+	sub hudx_y 32
+    set hudx_scale 32768
+    set hudx_tilenum I_BUDDY
+    set hudx_orientation 257
+    state DrawTile640x480Hud
+
+    state ResetText
+    set hudx_x AM_DEFLECTOR_TEXTHUDX
+    set hudx_y HUD_MEDKIT_TXT_Y
+	sub hudx_y 24
+    set hudx_scale HUD_MEDKIT_TXT_Z
+    redefinequote 190 x%ld
+    qsprintf 190 190 p_buddies
+    set hudx_quote 190
+    set hudx_tilenum STARTALPHANUM
+    set hudx_pal 0
+    set hudx_pal 12
+    set hudx_orientation 273
+    state DrawText640x480Hud
+ends
+
 defstate draw_hud_keycards
     state ResetTile
-    set hudx_x HUD_KEYS_X
+    set hudx_x HUD_KEYS_X_AM
     set hudx_y HUD_KEYS_Y
     set hudx_scale HUD_KEYS_Z
     set hudx_tilenum I_ACCESSCARD
@@ -7516,7 +7986,10 @@ appendevent EVENT_DISPLAYSBAR
     {
         state draw_hud_weaponwheel
         state draw_hud_medkits
+		state draw_hud_deflectors
+		state draw_hud_buddies
         state draw_hud_keycards
+		state p_ammo_menu
     }
 endevent
 
@@ -7696,6 +8169,62 @@ defstate draw_hud_armor
     }
 ends
 
+/*
+- temp => hudx_tilenum
+- temp2 => max ammo amount to show
+- temp3 => weapon clip
+- temp4 => pal
+- temp5 => value to shift up by
+*/
+defstate show_shotgun_ammo
+	set hudx_x HUD_AMMO_X
+	set hudx_y HUD_AMMO_Y
+	set hudx_tilenum temp
+	set hudx_scale HUD_AMMO_Z
+	shiftl hudx_scale 1
+	div hudx_scale 3
+	set hudx_pal temp4
+	add hudx_x 10
+	sub hudx_y 32
+	sub hudx_y temp5
+	ifn flash_ammo 0
+	{
+		set temp6 flash_ammo
+		shiftl temp6 11
+		sub hudx_scale temp6
+	}
+	set hudx_orientation 512
+	or hudx_orientation 1
+	state DrawTile640x480Hud
+
+	set hudx_x HUD_AMMO_TXT_X
+	set hudx_y HUD_AMMO_TXT_Y
+	sub hudx_y temp5
+	set hudx_scale HUD_AMMO_TXT_Z
+	shiftl hudx_scale 1
+	div hudx_scale 3
+	ifg flash_ammo 0
+	{
+		set temp6 flash_ammo
+		shiftl temp6 11
+		sub hudx_scale temp6
+	}
+	set hudx_pal 1
+	add hudx_x 20
+	sub hudx_y 24
+
+	redefinequote 190 %ld / %ld
+	set am_p_tmp2 SHOTGUN_CLIP
+	subvarvar am_p_tmp2 temp3
+	qsprintf 190 190 am_p_tmp2 temp2
+	set hudx_quote 190
+	set hudx_tilenum BIGALPHANUM
+	set hudx_orientation 528
+	or hudx_orientation 1
+	set hudx_txtflags 1
+	state DrawText640x480Hud
+ends
+
 defstate draw_hud_ammo
     ifvarn player[].curr_weapon WEAPON_SHOCKER
     {
@@ -7714,12 +8243,12 @@ defstate draw_hud_ammo
                 set hudx_tilenum I_LOVERBOY_AMMO2
                 break
             case WEAPON_SHOTGUN
-            case WEAPON_GRENADE
+            //case WEAPON_GRENADE
                 set hudx_tilenum 225
-                ife w2alt 30
-                    set hudx_tilenum 226
-                else ifl w2alt 0
-                    set hudx_tilenum 226
+				ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL
+					set hudx_pal AM_PAL_EXPLOSIVESHELL
+				else ife p_usedammotype AM_AMMOTYPE_GRENADE
+					set hudx_tilenum 226
                 break
             case WEAPON_SMG
                 sub hudx_scale 8192
@@ -7846,8 +8375,20 @@ defstate draw_hud_ammo
 					break
 					case WEAPON_SHOTGUN
 						redefinequote 190 %ld / %ld
-						set am_p_tmp2 SHOTGUN_CLIP
-						sub am_p_tmp2 weapon2_realclip
+						ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL {
+							set am_p_tmp2 SHOTGUN_CLIP
+							sub am_p_tmp2 p_explosiveshell_clip
+							set hud_ammo p_explosiveshells
+						}
+						else ife p_usedammotype AM_AMMOTYPE_GRENADE {
+							set am_p_tmp2 SHOTGUN_CLIP
+							sub am_p_tmp2 p_grenade_clip
+							set hud_ammo p_grenades
+						}
+						else {
+							set am_p_tmp2 SHOTGUN_CLIP
+							sub am_p_tmp2 weapon2_realclip
+						}
 						ifl hud_ammo am_p_tmp2 
 							set am_p_tmp2 hud_ammo
 						qsprintf 190 190 am_p_tmp2 hud_ammo
@@ -7860,14 +8401,14 @@ defstate draw_hud_ammo
 							set am_p_tmp2 hud_ammo
 						qsprintf 190 190 am_p_tmp2 hud_ammo
 					break
-					case WEAPON_GRENADE
+					/*case WEAPON_GRENADE
 						redefinequote 190 %ld / %ld
 						set am_p_tmp2 SHOTGUN_CLIP
 						sub am_p_tmp2 weapon6_realclip
 						ifl hud_ammo am_p_tmp2 
 							set am_p_tmp2 hud_ammo
 						qsprintf 190 190 am_p_tmp2 hud_ammo
-					break
+					break*/
 					case WEAPON_CROSSBOW
 						redefinequote 190 %ld / %ld
 						set am_p_tmp2 CROSSBOW_CLIP
@@ -7896,104 +8437,50 @@ defstate draw_hud_ammo
         state DrawText640x480Hud
         switch player.curr_weapon
             case WEAPON_SHOTGUN
-            case WEAPON_GRENADE
-                ifge w2alt 0 ifl w2alt 30
-                {
-                    ifg player.ammo_amount WEAPON_GRENADE 0
-                    {
-                        set hudx_tilenum 226
-                        set hudx_x HUD_AMMO_X
-                        set hudx_y HUD_AMMO_Y
-                        set hudx_scale HUD_AMMO_Z
-                        shiftl hudx_scale 1
-                        div hudx_scale 3
-                        set hudx_pal 0
-                        add hudx_x 10
-                        sub hudx_y 32
-                        ifn flash_ammo 0
-                        {
-                            set temp6 flash_ammo
-                            shiftl temp6 11
-                            sub hudx_scale temp6
-                        }
-                        set hudx_orientation 512
-                        or hudx_orientation 1
-                        state DrawTile640x480Hud
-
-                        set hudx_x HUD_AMMO_TXT_X
-                        set hudx_y HUD_AMMO_TXT_Y
-                        set hudx_scale HUD_AMMO_TXT_Z
-                        shiftl hudx_scale 1
-                        div hudx_scale 3
-                        ifg flash_ammo 0
-                        {
-                            set temp6 flash_ammo
-                            shiftl temp6 11
-                            sub hudx_scale temp6
-                        }
-                        set hudx_pal 1
-                        add hudx_x 20
-                        sub hudx_y 24
-
-                        redefinequote 190 %ld / %ld
-						set am_p_tmp2 SHOTGUN_CLIP
-						subvarvar am_p_tmp2 weapon6_realclip
-                        qsprintf 190 190 am_p_tmp2 player.ammo_amount WEAPON_GRENADE
-                        set hudx_quote 190
-                        set hudx_tilenum BIGALPHANUM
-                        set hudx_orientation 528
-                        or hudx_orientation 1
-                        set hudx_txtflags 1
-                        state DrawText640x480Hud
-                    }
-                }
-                else ifg player.ammo_amount WEAPON_SHOTGUN 0
-                {
-                    set hudx_tilenum 225
-                    set hudx_x HUD_AMMO_X
-                    set hudx_y HUD_AMMO_Y
-                    set hudx_scale HUD_AMMO_Z
-                    shiftl hudx_scale 1
-                    div hudx_scale 3
-                    set hudx_pal 0
-                    add hudx_x 10
-                    sub hudx_y 32
-                    ifn flash_ammo 0
-                    {
-                        set temp6 flash_ammo
-                        shiftl temp6 11
-                        sub hudx_scale temp6
-                    }
-                    set hudx_orientation 512
-                    or hudx_orientation 1
-                    state DrawTile640x480Hud
-                    
-                    set hudx_x HUD_AMMO_TXT_X
-                    set hudx_y HUD_AMMO_TXT_Y
-                    set hudx_scale HUD_AMMO_TXT_Z
-                    shiftl hudx_scale 1
-                    div hudx_scale 3
-                    ifg flash_ammo 0
-                    {
-                        set temp6 flash_ammo
-                        shiftl temp6 11
-                        sub hudx_scale temp6
-                    }
-                    set hudx_pal 1
-                    add hudx_x 20
-                    sub hudx_y 24
-
-                    redefinequote 190 %ld / %ld
-					set am_p_tmp2 SHOTGUN_CLIP
-					subvarvar am_p_tmp2 weapon2_realclip
-                    qsprintf 190 190 am_p_tmp2 player.ammo_amount WEAPON_SHOTGUN
-                    set hudx_quote 190
-                    set hudx_tilenum BIGALPHANUM
-                    set hudx_orientation 528
-                    or hudx_orientation 1
-                    set hudx_txtflags 1
-                    state DrawText640x480Hud
-                }
+            //case WEAPON_GRENADE
+				// 1 2 4 etc. correspond to 2 ^ am_ammotype_x
+				set temp5 0
+                ife p_usedammotype AM_AMMOTYPE_NORMALSHELL
+					set temp5 6
+				else ife p_usedammotype AM_AMMOTYPE_GRENADE
+					set temp5 5
+				else ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL
+					set temp5 3
+					
+				/*
+					state show_shotgun_ammo:
+						- temp => hudx_tilenum
+						- temp2 => ammo amount to show
+						- temp3 => weapon clip
+						- temp4 => pal
+				*/
+				ifand temp5 1 ifg player.ammo_amount WEAPON_SHOTGUN 0 ifn p_ammohack 1 {
+					set temp 225
+					set temp2 player.ammo_amount WEAPON_SHOTGUN
+					set temp3 weapon2_realclip
+					set temp4 0
+					state show_shotgun_ammo
+					add temp5 32
+				}
+				
+				ifand temp5 2 ifg p_grenades 0
+				{
+					set temp 226
+					set temp2 p_grenades
+					set temp3 p_grenade_clip
+					set temp4 0
+					state show_shotgun_ammo
+					add temp5 32
+				}
+					
+				ifand temp5 4 ifg p_explosiveshells 0 {
+					set temp 225
+					set temp2 p_explosiveshells
+					set temp3 p_explosiveshell_clip
+					set temp4 AM_PAL_EXPLOSIVESHELL
+					state show_shotgun_ammo
+					add temp5 32
+				}
                 break
             case WEAPON_BOWLINGBOMB
                 ife bbomb_alt_mode 0 ifge bbomb_hold_count 9
@@ -8040,6 +8527,10 @@ defstate draw_hud_powerups
         or temp9 4
     ifg p_pup_bomb_time 0
         or temp9 8
+	ifg p_deflector_timer 0
+		or temp9 16
+	ifg p_buddy_timer 0
+		or temp9 32
     ife p_hazard_amount 0
     {
         ifinwater
@@ -8096,6 +8587,10 @@ defstate draw_hud_powerups
             sub hudx_x 30
         ifand temp9 8
             sub hudx_x 30
+		ifand temp9 16
+			sub hudx_x 30
+		ifand temp9 32
+			sub hudx_x 30
         set hudx_y HUD_RADICON_Y
         set hudx_scale HUD_RADICON_Z
         set hudx_orientation 0
@@ -8110,6 +8605,10 @@ defstate draw_hud_powerups
             sub hudx_x 30
         ifand temp9 8
             sub hudx_x 30
+		ifand temp9 16
+			sub hudx_x 30
+		ifand temp9 32
+			sub hudx_x 30
         set hudx_y HUD_RADTEXT_Y
         set hudx_scale HUD_RADTEXT_Z
         set temp hudx_scale
@@ -8148,6 +8647,10 @@ defstate draw_hud_powerups
             sub hudx_x 30
         ifand temp9 8
             sub hudx_x 30
+		ifand temp9 16
+			sub hudx_x 30
+		ifand temp9 32
+			sub hudx_x 30
         set hudx_y HUD_RADICON_Y
         set hudx_scale HUD_RADICON_Z
         sub hudx_scale 4096
@@ -8163,6 +8666,10 @@ defstate draw_hud_powerups
             sub hudx_x 30
         ifand temp9 8
             sub hudx_x 30
+		ifand temp9 16
+			sub hudx_x 30
+		ifand temp9 32
+			sub hudx_x 30
         set hudx_y HUD_RADTEXT_Y
         set hudx_scale HUD_RADTEXT_Z
         set temp hudx_scale
@@ -8201,6 +8708,10 @@ defstate draw_hud_powerups
             add hudx_x 30
         ifand temp9 8
             add hudx_x 30
+		ifand temp9 16
+			sub hudx_x 30
+		ifand temp9 32
+			sub hudx_x 30
         set hudx_y HUD_RADICON_Y
         set hudx_scale HUD_RADICON_Z
         sub hudx_scale 16384
@@ -8216,6 +8727,10 @@ defstate draw_hud_powerups
             add hudx_x 30
         ifand temp9 8
             add hudx_x 30
+		ifand temp9 16
+			sub hudx_x 30
+		ifand temp9 32
+			sub hudx_x 30
         set hudx_y HUD_RADTEXT_Y
         set hudx_scale HUD_RADTEXT_Z
         set temp hudx_scale
@@ -8255,6 +8770,10 @@ defstate draw_hud_powerups
             add hudx_x 30
         ifand temp9 4
             sub hudx_x 30
+		ifand temp9 16
+			sub hudx_x 30
+		ifand temp9 32
+			sub hudx_x 30
         set hudx_y HUD_RADICON_Y
         set hudx_scale HUD_RADICON_Z
         sub hudx_scale 16384
@@ -8270,6 +8789,10 @@ defstate draw_hud_powerups
             add hudx_x 30
         ifand temp9 4
             sub hudx_x 30
+		ifand temp9 16
+			sub hudx_x 30
+		ifand temp9 32
+			sub hudx_x 30
         set hudx_y HUD_RADTEXT_Y
         set hudx_scale HUD_RADTEXT_Z
         set temp hudx_scale
@@ -8292,6 +8815,127 @@ defstate draw_hud_powerups
         set temp p_pup_bomb_time
         state pup_decimal_draw
     }
+	
+	// deflector timer
+    ifg p_deflector_timer 0 {
+        set hudx_shade g_playtics
+        mod hudx_shade 60
+        sub hudx_shade 30
+        abs hudx_shade
+        shiftr hudx_shade 1
+        sub hudx_shade 4
+        set hudx_x HUD_RADICON_X
+        ifand temp9 1
+            add hudx_x 30
+        ifand temp9 2
+            add hudx_x 30
+        ifand temp9 4
+            add hudx_x 30
+		ifand temp9 8
+			add hudx_x 30
+		ifand temp9 32
+			add hudx_x 30
+        set hudx_y HUD_RADICON_Y
+        set hudx_scale 65536
+        set hudx_orientation 0
+        set hudx_tilenum I_DEFLECTOR
+        set hudx_pal 0
+        state DrawTile640x480Hud
+        
+        set hudx_x HUD_RADTEXT_X
+        ifand temp9 1
+            add hudx_x 30
+        ifand temp9 2
+            add hudx_x 30
+        ifand temp9 4
+            add hudx_x 30
+		ifand temp9 8
+			add hudx_x 30
+		ifand temp9 32
+			add hudx_x 30
+        set hudx_y HUD_RADTEXT_Y
+        set hudx_scale HUD_RADTEXT_Z
+        set temp hudx_scale
+        shiftr temp 12
+        add hudx_x temp
+        shiftl temp 1
+        add hudx_y temp
+        ifle p_deflector_timer AM_DEFLECTOR_TIME
+        {
+            ifle p_deflector_timer 100
+                set hudx_pal 9
+            else ifle p_deflector_timer 200
+                set hudx_pal 10
+            else
+                set hudx_pal 11
+        }
+        else
+            set hudx_pal 4
+        redefinequote 190 %ld
+        set temp p_deflector_timer
+        state pup_decimal_draw
+    }
+	
+	// buddy timer
+	ifg p_buddy_timer 0 {
+        set hudx_shade g_playtics
+        mod hudx_shade 60
+        sub hudx_shade 30
+        abs hudx_shade
+        shiftr hudx_shade 1
+        sub hudx_shade 4
+        set hudx_x HUD_RADICON_X
+        ifand temp9 1
+            add hudx_x 30
+        ifand temp9 2
+            add hudx_x 30
+        ifand temp9 4
+            add hudx_x 30
+		ifand temp9 8
+			add hudx_x 30
+		ifand temp9 16
+			sub hudx_x 30
+        set hudx_y HUD_RADICON_Y
+        set hudx_scale 52640
+        set hudx_orientation 0
+        set hudx_tilenum I_BUDDY
+        set hudx_pal 0
+        state DrawTile640x480Hud
+        
+        set hudx_x HUD_RADTEXT_X
+        ifand temp9 1
+            add hudx_x 30
+        ifand temp9 2
+            add hudx_x 30
+        ifand temp9 4
+            add hudx_x 30
+		ifand temp9 8
+			add hudx_x 30
+		ifand temp9 16
+			sub hudx_x 30
+        set hudx_y HUD_RADTEXT_Y
+        set hudx_scale HUD_RADTEXT_Z
+        set temp hudx_scale
+        shiftr temp 12
+        add hudx_x temp
+        shiftl temp 1
+        add hudx_y temp
+        ifle p_buddy_timer AM_BUDDY_TIME
+        {
+            ifle p_buddy_timer 100
+                set hudx_pal 9
+            else ifle p_buddy_timer 200
+                set hudx_pal 10
+            else
+                set hudx_pal 11
+        }
+        else
+            set hudx_pal 4
+        redefinequote 190 %ld
+        set temp p_buddy_timer
+        state pup_decimal_draw
+    }
+	
     ife player[].curr_weapon WEAPON_BOWLINGBOMB
     {
         set temp 0
@@ -9940,8 +10584,10 @@ appendevent EVENT_WORLD
             clamp horde_score 0 999999999
             clamp horde_top 0 999999999
             clamp horde_running_score 0 999999999
-            ifp pdead
+            ifp pdead {
                 set p_horde_restart -2
+				stopsound AM_S_FLAME
+			}
             ife p_horde_restart -1
             {
                 set p_horde_restart 0

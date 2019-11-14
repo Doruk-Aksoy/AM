@@ -739,7 +739,6 @@ var enemy_strafe 0 2
 var enemy_strafe_mod 0 2
 var enemy_stop 0 2
 var enemy_start 0 2
-var enemy_shoot 0 2
 var enemy_dodge 0 2
 var enemy_lastshot 0 2
 var enemy_roamang -1 2
@@ -843,7 +842,14 @@ defstate smg_flamechance
     ife enemy_smg_flame_id -1
     {
         geta .htflags enemy_ohtflags
-        ifg sprite.htextra 0 ife sprite.htpicnum P_SMG2 ife sprite.htowner player.i
+		// I want other flame effects to use this base behavior
+		set am_tmp 0
+		ife sprite.htpicnum P_SMG2
+			set am_tmp 1
+		else ife sprite.htpicnum AM_FLAME
+			set am_tmp 1
+		
+        ifg sprite.htextra 0 ife am_tmp 1 ife sprite.htowner player.i
         {
             geta .htextra smgf_temp
             add enemy_smg_flame smgf_temp
@@ -5266,7 +5272,6 @@ defstate lesser_shotgun_shared
                 ssp RETURN CLIPMASK0
             }
 
-
             set gib_temp 0
             ifwasweapon EXPLOSION
             {
@@ -5276,6 +5281,15 @@ defstate lesser_shotgun_shared
                 ifg temp4 temp3
                     state generic_gibs
             }
+			else ife sprite[sprite.htowner].picnum AM_EXSHELL_HIT // guarantee gibs
+				state generic_gibs
+			else ifwasweapon AM_EXSHELL {
+                set temp3 enemy_spawn_health
+                shiftr temp3 2
+                add temp3 enemy_spawn_health
+                ifg temp4 temp3
+                    state generic_gibs
+			}
             else ifwasweapon BULLET
             {
                 set temp3 enemy_spawn_health
@@ -9237,7 +9251,9 @@ defstate turret_shoot
     setprojectile[P_LOVERBOY].workslike 1
 ends
 
-useractor enemy A_TURRET TURRET_HEALTH AC_TURRET_IDLE
+useractor enemy A_TURRET TURRET_HEALTH
+	ifaction 0
+		action AC_TURRET_IDLE
     state turret_get_canisters
     ife counter 0
     {

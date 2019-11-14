@@ -10,6 +10,8 @@ appendevent EVENT_LOADACTOR
     switch sprite[].picnum
 		case I_AMMOBOOST
 		case I_SYRINGE
+		case I_DEFLECTOR
+		case I_BUDDY
 			geta[].lotag se_lotag
             seta[].lotag 0
             geta[].hitag se_hitag
@@ -64,6 +66,12 @@ endevent
 
 appendevent EVENT_EGS
 	switch sprite[].picnum
+		case A_SMOKE1
+			ifspawnedby AM_EXSHELL {
+				// real owner -- player, is needed
+				set tp_owner sprite[sprite.owner].owner
+			}
+		break
 		case A_SMOKE2
 			ifspawnedby P_DANCINGQUEEN
 				ifn sprite.owner -1 { // just in case
@@ -93,14 +101,141 @@ appendevent EVENT_EGS
 				setav .ms_flashpal ms_faller
 			}
 		break
+		case AM_BUDDY
+			sizeat 10 10
+		break
+		case AM_BUDDY_PROJ
+			for am_iter range 4 {
+				espawn AM_BUDDY_PROJTRAIL
+				seta[RETURN].cstat 32768
+				set temp am_iter
+				add temp 1
+				setav[RETURN].ms_flashpal temp
+				seta[RETURN].owner THISACTOR
+				setav[RETURN].ps_flash sprite.zvel
+			}
+		case AM_BUDDY_PROJHIT
+			cstator 2
+			seta .blend 255
+			seta .shade 8
+		break
+		case AM_EXSHELL_HIT
+		case AM_EXSHELL
+			seta .mdflags 16
+		break
+		case AM_DEFLECTOR_FX
+			cstator 32768
+		break
+		case AM_FLAME
+			seta .mdflags 16
+		break
 	endswitch
 endevent
 
-appendevent EVENT_GAME
-	switch sprite[].picnum
-		case P_FLAMER
-			// spawns a trail every other tic
+appendevent EVENT_WORLD
+	for i allsprites {
+		setu .vm_sprite i
+		
+		ifactor P_FLAMER
 			xor db_once 1
-		break
-	endswitch
+		else ifactor APLAYER {
+			ifinwater
+			ifp prunning {
+				geti .extbits temp
+				ifvarand temp 1 {
+					getp .horiz temp2
+					sub temp2 100 // 100 horiz equals straight ahead, so take away 100 and make 0 'straight ahead' for this
+					mul temp2 -15
+					clamp temp2 -1600 1600
+					setp .poszv temp2
+				}
+			}
+			
+			// hack to prevent fake projectiles from damaging the player
+			geta .htextra temp
+			ifg temp 0 {
+				ife sprite.htpicnum AM_P_EXORAIL ifl temp 5 {
+					// fake proj
+					seta .htextra -1
+				}
+				
+				// spawn the fake hit actor on player
+				ifn sprite.htowner -1 ife sprite[sprite.htowner].picnum AM_EXODUDE {
+					ife actorvar[sprite.htowner].am_estate 2 {
+						geta .htang temp
+						sub temp 1024 // flip
+						and temp 2047
+						
+						getp .posx am_x
+						getp .posz am_z
+						
+						add am_x 192
+						
+						rotatepoint player[].posx player[].posy am_x player[].posy temp am_x am_y
+						
+						sub am_z 1920
+						ife p_crouching 1
+							add am_z 1280
+						
+						espawn AM_P_EXORAILHIT
+						setsprite RETURN am_x am_y am_z
+						seta[RETURN].pal 12
+						seta[RETURN].xrepeat 20
+						seta[RETURN].yrepeat 20
+					}
+				}
+			}
+		}
+	}
+endevent
+
+appendevent EVENT_LOOKUP
+	set RETURN -1
+endevent
+
+appendevent EVENT_DOFIRE
+	ife player.curr_weapon WEAPON_SHOTGUN {
+		ife p_usedammotype AM_AMMOTYPE_GRENADE {
+			set RETURN -1
+			
+			sound S_GRENADE_LAUNCH
+			add p_grenade_clip 1
+			sub p_grenades 1
+			
+			eshoot P_GRENADE
+		}
+		else ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL {
+			set RETURN -1
+			
+			sound AM_S_EXSHOTGUN
+			add p_explosiveshell_clip 1
+			sub p_explosiveshells 1
+			
+			for itervar range AM_EXSHELL_SHOTSPERBURST {
+				getp .ang am_ang
+				set temp am_ang
+				rand temp2 64
+				sub temp2 32
+				add temp temp2
+				setp .ang temp
+				
+				eshoot AM_EXSHELL
+				set temp itervar
+				add temp 1
+				setav[RETURN].ms_flashpal temp
+				geta[RETURN].zvel am_z
+				rand temp2 96
+				sub temp2 48
+				shiftl temp2 3
+				add am_z temp2
+				seta[RETURN].zvel am_z
+				
+				// not too loud please
+				ifrnd 64
+					setthisprojectile[RETURN].isound -1
+				
+				setp .ang am_ang
+			}
+		}
+	}
 endevent

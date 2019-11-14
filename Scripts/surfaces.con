@@ -3191,6 +3191,7 @@ defstate propogate_surfaces
         case 14018
         case 14019
         case 14025
+		case AM_EXODUDE_SHIELD
             setarray pre_surface_type[temp] SURFACE_ELECTRICAL
             break
         case 5698
@@ -3604,6 +3605,7 @@ defstate propogate_surfaces
 		case AM_EXODUDE
 		case AM_EXODUDE_STAYPUT
 		case AM_EXODUDE_DEAD
+		case DAMAGETESTER
             setarray pre_surface_type[temp] SURFACE_FLESH
             break
         default

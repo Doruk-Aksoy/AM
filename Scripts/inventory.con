@@ -1,17 +1,46 @@
-
 appendevent EVENT_HOLODUKEON
     setvar RETURN -1
+	ifg p_buddies 0 ife p_buddy_timer 0 {
+		set p_buddy_timer AM_BUDDY_TIME
+		palfrom 15 5 32 5
+		sub p_buddies 1
+		globalsound AM_S_BUDDY_USE
+		espawn AM_BUDDY
+		seta[RETURN].cstat 32768
+		setav[RETURN].htg_owner THISACTOR
+	}
 endevent
+
 appendevent EVENT_USEJETPACK
     setvar RETURN -1
+	ifg p_deflectors 0 ife p_deflector_timer 0 {
+		set p_deflector_timer AM_DEFLECTOR_TIME
+		palfrom 15 5 32 5
+		sub p_deflectors 1
+		globalsound AM_S_DEFLECTOR_USE
+		espawn AM_DEFLECTOR_FX
+		setav[RETURN].ms_flashpal 0
+		setav[RETURN].htg_owner THISACTOR
+		seta[RETURN].mdflags 16
+		espawn AM_DEFLECTOR_FX
+		setav[RETURN].ms_flashpal 120
+		setav[RETURN].htg_owner THISACTOR
+		seta[RETURN].mdflags 16
+		espawn AM_DEFLECTOR_FX
+		setav[RETURN].ms_flashpal 240
+		setav[RETURN].htg_owner THISACTOR
+		seta[RETURN].mdflags 16
+		espawn AM_DEFLECTOR_FX
+		setav[RETURN].ms_flashpal 360
+		setav[RETURN].htg_owner THISACTOR
+		seta[RETURN].mdflags 16
+	}
 endevent
 
 appendevent EVENT_USESTEROIDS
     setvar RETURN -1
 endevent
-appendevent EVENT_USEJETPACK
-    setvar RETURN -1
-endevent
+
 appendevent EVENT_USEMEDKIT
     setvar RETURN -1
     ifg player[].firstaid_amount 0 ifl sprite[player[].i].extra player[].max_player_health ife p_eol 0

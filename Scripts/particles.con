@@ -1159,9 +1159,9 @@ actor A_EXPLOSION 0 AC_EXPLOSIONBASE
                 getceilzofslope sprite.sectnum sprite.x sprite.y temp2
                 ifl temp5 temp2
                     set temp5 temp2
-                ifspawnedby P_DSLAM_THROWN
+                ifspawnedby P_PUCK_THROWN
                     add temp 2
-                else ifspawnedby P_DSLAM_PLACED
+                else ifspawnedby P_PUCK_PLACED
                     add temp 2
                 for itervar range temp
                 {
@@ -1533,6 +1533,44 @@ appendevent EVENT_EGS
             break
     endswitch
 endevent
+
+defstate spark_minigunrip
+	// temp is the actor we hit
+	set am_x sprite.x
+	set am_y sprite.y
+	set am_tmp sprite.sectnum
+	set am_ztarget sprite.owner
+	seta .sectnum sprite[temp].sectnum
+	set move_v sprite[temp].clipdist
+	set am_vel sprite[temp].xvel
+	abs am_vel
+	shiftl am_vel 1
+	add move_v am_vel
+	clamp move_v 16 65536
+	
+	getp .horiz am_z
+	sub am_z 100
+	mul am_z -2048
+	div am_z 72
+	
+	state move_actor
+	movesprite THISACTOR move_xv move_yv 0 0 am_vel
+	
+	geta .ang am_hitang
+
+	seta .owner player.i
+	
+	setprojectile[P_MINIGUN].workslike 1052673
+	zshoot am_z P_MINIGUN
+	setprojectile[P_MINIGUN].workslike 1
+
+	seta .x am_x
+	seta .y am_y
+	seta .ang am_hitang
+	seta .owner am_ztarget
+	seta .sectnum am_tmp
+ends
+
 actor A_SPARK1 10 AC_SPARK1BASE
     ife sprite.htg_t 2 1
     {
@@ -2254,6 +2292,12 @@ actor A_SPARK1 10 AC_SPARK1BASE
                                 setav[temp].enemy_shotgun_yv move_yv
                             }
                         }
+						else ife player.curr_weapon WEAPON_MINIGUN {
+							// minigun bullets rip through fleshy targets
+							// temp is the actor we hit
+							state spark_minigunrip
+						}
+						
                         ifl temp2 546
                             nullop
                         else
@@ -2776,13 +2820,6 @@ useractor notenemy A_BULLETHOLE_FABRIC
 enda
 
 action AC_SMOKE1BASE 0 7 1 1 5
-
-var htg_t2 -1 2
-var htg_xvel 0 2
-var htg_zvel 0 2
-var htg_nostat 0 2
-var htg_owner 0 2
-var htg_extra 0 2
 
 appendevent EVENT_EGS
     ifactor A_SMOKE1
@@ -3956,6 +3993,24 @@ actor A_SMOKE1 0 AC_SMOKE1BASE
             state smoke_checksurface
         set counter 1
     }
+	ifspawnedby AM_EXSHELL {
+		cstat 32768
+		espawn AM_EXSHELL_HIT
+		seta[RETURN].xrepeat sprite.xrepeat
+		seta[RETURN].yrepeat sprite.yrepeat
+		setav[RETURN].tp_owner tp_owner
+		
+        for temp range 2
+        {
+            espawn A_GENERIC_PARTICLE
+            seta[RETURN].xrepeat 128
+        }
+        ife counter 0
+            state smoke_checksurface
+		set counter 1
+        ifcount 2
+            killit
+	}
     ifspawnedby P_PLASMA_BOLT
     {
         for temp range 2

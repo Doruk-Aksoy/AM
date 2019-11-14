@@ -32,6 +32,7 @@ a) Weapons
 
 
 b) Enemies
+----------
 
 * Brute napalm ball does radius damage now.
 * Brute and Skinjob flames spread a bit more, there are a bit more flames around and the flames linger 33% longer.
@@ -67,6 +68,7 @@ c) Pickups
 	
 
 d) Miscellaneous
+----------------
 
 * Third person Shelly run animation made a little faster.
 * Player screen flashes the right colors when harmed by something after being harmed by slime / acid damage.

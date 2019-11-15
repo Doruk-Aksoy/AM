@@ -5,6 +5,13 @@
 ## INTRODUCTION
 - Welcome to Anger Management, an Ion Fury mod made to improve gameplay in various ways as well as providing some new content for the creative mappers out there. Below you can find a list of features in detail.
 
+## INSTALLATION
+
+- Simply export all the folders into your main Ion Fury folder under steam.
+- This is typically the following folder: C:/Steam/steamapps/common/Ion Fury/
+- Dump all the files provided in the zip to this folder. Make sure to backup any folder that has the same name as the ones in here!
+- To uninstall simply remove these folders.
+
 ## FEATURES
 
 ## Weapons

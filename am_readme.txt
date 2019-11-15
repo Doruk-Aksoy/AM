@@ -29,6 +29,7 @@ a) Weapons
 * Grenade launcher is removed from it's own slot and made into a "custom ammo type" menu for the shotgun. You need to bind a key for this under options.
 	- You can select regular, grenade or explosive shells. You will be prompted with the ammo selection menu when you press that key.
 * Shotgun can now fire explosive shells. These spawn randomly in place of regular shells with 25% chance. If you don't want these to randomly appear, comment out the "include scripts/am_mutator_i.con" in "am.con" (Double // at the beginning).
+* Minigun shots penetrate fleshy enemies. (Regular cultists etc., not Brutes or Skinjobs)
 
 
 b) Enemies

@@ -7,7 +7,8 @@
 
 ## INSTALLATION
 
-- Simply export all the folders into your main Ion Fury folder under steam.
+- Go to "Clone or Download" then select "Download Zip".
+- Simply export all the folders in the zip file into your main Ion Fury folder under steam.
 - This is typically the following folder: C:/Steam/steamapps/common/Ion Fury/
 - Dump all the files provided in the zip to this folder. Make sure to backup any folder that has the same name as the ones in here!
 - To uninstall simply remove these folders.

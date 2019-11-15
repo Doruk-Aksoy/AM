@@ -2,12 +2,12 @@
 
 <img src="https://imgur.com/Y2q9K4B.png"/>
 
-## Introduction
+## INTRODUCTION
 - Welcome to Anger Management, an Ion Fury mod made to improve gameplay in various ways as well as providing some new content for the creative mappers out there. Below you can find a list of features in detail.
 
-## Features
+## FEATURES
 
-- Weapons
+## Weapons
 ----------
 
 * Loverboy fire sound changed with a beefier one.
@@ -22,7 +22,7 @@
 * Shotgun can now fire explosive shells. These spawn randomly in place of regular shells with 25% chance. If you don't want these to randomly appear, comment out the "include scripts/am_mutator_i.con" in "am.con" (Double // at the beginning).
 
 
-- Enemies
+## Enemies
 ----------
 
 * Brute napalm ball does radius damage now.
@@ -46,7 +46,7 @@
 	- There's another variant of this, pal 128 that has a flamethrower for close range and a grenade launcher for longer ranges, and starts with more health.
 
 
-- Pickups
+## Pickups
 ----------
 
 * Overstacking health no longer degenerates.
@@ -58,12 +58,12 @@
 	- Has 25% chance to spawn in place of a medkit. If you don't want these to randomly appear, comment out the "include scripts/am_mutator_i.con" in "am.con" (Double // at the beginning).
 	
 
-- Miscellaneous
+## Miscellaneous
 ----------------
 
 * Third person Shelly run animation made a little faster.
 * Player screen flashes the right colors when harmed by something after being harmed by slime / acid damage.
 
 
-## Contact
+## CONTACT
 - You can contact me in Discord under DrkKsy#9327.

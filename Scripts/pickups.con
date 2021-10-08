@@ -1,0 +1,2740 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, Evan Ramos
+        and Dino Bollinger
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019-2021 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file contains the majority of the pickups in the game, including armor
+shards and pizzas.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+
+// 210 - 216
+var item_gotsecret 0 2
+var pickups_initflags_once 0 2
+var item_pocket_state
+var shardblink 0 2
+var pup_respawn 0 2
+var pickups_nospin 0 2
+
+defstate loadpickup_standard
+    geta[].lotag se_lotag
+    seta[].lotag 0
+    geta[].hitag se_hitag
+    seta[].hitag 0
+    geta[].yvel se_yvel
+    seta[].yvel 0
+    set temp2 sprite.picnum
+    switch temp2
+        case I_ACCESSCARD
+        case I_BOMBRUSH
+        case I_RADAR
+        case I_DKSHOES
+        case I_DAMAGEBOOSTER
+            break
+        default
+            ifn se_hitag 0
+            {
+                getu[].player_skill temp
+                ifand se_hitag 64
+                {
+                    ifg temp 1
+                        killit
+                }
+                else ifand se_hitag 32
+                {
+                    ifg temp 2
+                        killit
+                }
+            }
+            break
+    endswitch
+ends
+
+defstate spawnpickup_standard
+    ife se_lotag 32767
+    {
+        getp[].max_secret_rooms temp
+        add temp 1
+        setp[].max_secret_rooms temp
+    }
+
+    // clean pick-up palettes!
+    ifactor I_ACCESSCARD
+    {
+        ifspritepal PAL_KEYCARD_2
+            nullop
+        else ifspritepal PAL_KEYCARD_3
+            nullop
+        else ifspritepal PAL_KEYCARD_4
+            nullop
+        else
+            spritepal PAL_KEYCARD_1
+    }
+    else
+    {
+        ifspritepal 9
+            set pickups_nospin 1
+
+        spritepal 0
+    }
+ends
+
+defstate item_killconditions
+    ifactor I_ARMOR_SHARD
+        nullop
+    else ifactor I_ACCESSCARD
+        nullop
+    else ife VOLUME EP_HORDE
+    {
+        ifspawnedby A_CULTIST
+            killit
+        else ifspawnedby A_SHOTGUNNER
+            killit
+        else ifspawnedby A_GREATER
+            killit
+    }
+    break
+ends
+
+defstate item_stupidwater_fall
+    ifonwater
+    {
+        getflorzofslope sprite.sectnum sprite.x sprite.y temp2
+        sub temp2 256
+        ifge sprite.z temp2
+            fall
+        else
+        {
+            iffloordistl 1
+                nullop
+            else
+                fall
+        }
+    }
+    else
+        fall
+    ife sprite.htcgg 0
+    {
+        set temp sprite.clipdist
+        shiftl temp 1
+        getzrange sprite.x sprite.y sprite.z sprite.sectnum temp2 temp3 temp4 temp5 temp CLIPMASK0
+        ifl temp5 49152
+            break
+        else
+        {
+            sub temp5 49152
+            ife temp5 player.i
+            {
+                iffloordistl 1
+                    ife sprite.zvel 0
+                    {
+                        geta .z temp
+                        add temp 512
+                        seta .z temp
+                    }
+            }
+        }
+    }
+ends
+
+defstate item_trigger // for secrets or monster closets or whatever the fuck
+    ifg se_yvel 0
+    {
+        ifl st_do_once 2
+        {
+            operateactivators se_yvel THISACTOR
+            operatemasterswitches se_yvel
+            operaterespawns se_yvel
+            setarray preloadactivations[se_yvel] 1
+            set st_do_once 2
+        }
+    }
+ends
+
+defstate item_secret
+    state item_trigger
+    ife item_gotsecret 1
+        break
+    ife se_lotag 32767
+    {
+        getp[].secret_rooms temp
+        add temp 1
+        setp[].secret_rooms temp
+        set p_secret_quote 9
+        set item_gotsecret 1
+        set se_lotag 0
+    }
+ends
+
+defstate item_spin
+    ife pickups_nospin 1
+        break
+    geta[].angoff temp
+    add temp 24
+    and temp 2047
+    seta[].angoff temp
+ends
+
+defstate pup_palflash
+    ife pup_respawn 1
+    {
+        geta .htg_t 0 temp
+        mod temp 5
+        ifl temp 3
+            spritepal 7
+    }
+ends
+
+var pocket_spawn_x
+var pocket_spawn_y
+var pocket_spawn_z
+
+var pocket_target_picnum
+
+defstate pocket_spawn_position
+    ifn RETURN -1
+    {
+        cos pocket_spawn_x player.ang
+        mul pocket_spawn_x 64
+        shiftr pocket_spawn_x 14
+        add pocket_spawn_x player.posx
+        
+        sin pocket_spawn_y player.ang
+        mul pocket_spawn_y 64
+        shiftr pocket_spawn_y 14
+        add pocket_spawn_y player.posy
+        
+        geta .z pocket_spawn_z
+        add pocket_spawn_z 1024
+        
+        setsprite RETURN pocket_spawn_x pocket_spawn_y pocket_spawn_z 
+    }
+ends
+
+include scripts/exp/pocket_spawn.con // more dependency related placement
+var pocket_swap_cstat
+
+defstate fury_i_get_pocket_picnum
+    set pocket_target_picnum -1
+    switch p_item_pocket
+        case 1
+            set pocket_target_picnum I_BOMBRUSH
+            break
+        case 2
+            set pocket_target_picnum I_DKSHOES
+            break
+        case 4
+            set pocket_target_picnum I_DAMAGEBOOSTER
+            break
+        default
+            ifn exp_aftershock 0
+                state ashock_pocket_get_picnum_extension
+            break
+    endswitch
+ends
+defstate fury_i_swap_pocket
+    ifg p_item_pocket 0
+    {
+        set RETURN -1
+        ifn pocket_target_picnum -1
+            espawn pocket_target_picnum
+        state pocket_spawn_position
+        ifn RETURN -1
+        {
+            setav[RETURN].pup_respawn 0
+            geta .cstat pocket_swap_cstat 
+            and pocket_swap_cstat -513
+            seta .cstat pocket_swap_cstat
+            ife sprite[RETURN].picnum I_DKSHOES // special hack
+            {
+                geta[RETURN].cstat pocket_swap_cstat
+                or pocket_swap_cstat 32
+                seta[RETURN].cstat pocket_swap_cstat
+            }
+        }
+    }
+ends
+
+
+defstate item_pocket_check
+    set item_pocket_state 0
+    ifg p_item_pocket 0
+    {
+        ifp pfacing
+        {
+            state fury_i_get_pocket_picnum
+            ife pocket_target_picnum sprite.picnum
+                break
+            else
+            {
+                ifhitspace
+                {
+                    set item_pocket_state 2
+                    setp .sound_pitch -444
+                    globalsound S_SWITCH_LARGE02
+                    setp .sound_pitch 0
+                    
+                    state fury_i_swap_pocket
+                }
+                ifl p_item_pocket_text 30
+                    add p_item_pocket_text 3
+            }
+        }
+    }
+    else
+        set item_pocket_state 1
+ends
+
+defstate item_pocket_grab_sfx
+    globalsound S_ITEM_POCKET
+ends
+
+defstate shotgun_ammorand
+    set temp5 WEAPON2_AMMOAMOUNT
+    div temp5 userdef.player_skill
+
+    ifl temp5 1
+        set temp5 1
+    else
+    {
+        rand temp5 temp5
+
+        ifl temp5 1
+            set temp5 1
+    }
+
+    getp[].ammo_amount WEAPON_SHOTGUN temp4
+    add temp4 temp5
+    clamp temp4 0 WEAPON2_MAXAMMO
+    setp[].ammo_amount WEAPON_SHOTGUN temp4
+ends
+
+defstate grenade_ammorand
+    set temp5 GRENADE_AMMOAMOUNT
+    div temp5 userdef.player_skill
+
+    ifl temp5 1
+        set temp5 1
+    else
+    {
+        rand temp5 temp5
+
+        ifl temp5 1
+            set temp5 1
+    }
+
+    getp[].ammo_amount WEAPON_GRENADE temp4
+    add temp4 temp5
+    clamp temp4 0 GRENADE_MAXAMMO
+    setp[].ammo_amount WEAPON_GRENADE temp4
+ends
+
+// must be placed here due to dependencies
+// TODO: Could improve the dependency mess here
+include scripts/base/subroutines_pickups.con
+include scripts/exp/pickups.con
+
+// used below
+defstate item_initflags
+    ifn exp_aftershock 0
+        state ashock_item_initflags
+    else
+        state fury_item_initflags
+ends
+
+
+appendevent EVENT_CHEATGETBOOT
+    setvar RETURN 0
+endevent
+appendevent EVENT_CHEATGETHEAT
+    setvar RETURN 0
+endevent
+appendevent EVENT_CHEATGETHOLODUKE
+    setvar RETURN 0
+endevent
+appendevent EVENT_CHEATGETJETPACK
+    setvar RETURN 0
+endevent
+appendevent EVENT_CHEATGETSCUBA
+    setvar RETURN 0
+endevent
+appendevent EVENT_CHEATGETSTEROIDS
+    setvar RETURN 0
+endevent
+
+appendevent EVENT_LOADACTOR
+    switch sprite[].picnum
+        case I_LOVERBOY
+        case I_LOVERBOY_AMMO
+        case I_LOVERBOY_AMMO2
+        case I_MEDPACK
+        case I_MEDICOMP
+        case I_MEDKIT
+        case I_BULLETVEST
+        case I_ARMORVEST
+        case I_TECHVEST
+        case I_MINIGUN_AMMO
+        case I_PLASMACROSSBOW_AMMO
+        case I_PLASMACROSSBOW
+        case I_MINIGUN
+        case I_BOWLINGBOMB
+        case I_ACCESSCARD
+        case I_SHOTGUN
+        case I_SHOTGUN_AMMO
+        case I_GRENADELAUNCHER
+        case I_GRENADELAUNCHER_AMMO
+        case I_ARMOR_SHARD
+        case I_SMG
+        case I_SMG_AMMO
+        case I_HAZARDSUIT
+        case I_BOMBRUSH
+        case I_CLUSTERPUCK
+        case I_BOWLINGBOMB_PICKUP
+        case I_RADAR
+        case I_DKSHOES
+        case I_DAMAGEBOOSTER
+        case I_BATON
+            state loadpickup_standard
+            break
+        case I_PIZZA_6
+        case I_PIZZA_5
+        case I_PIZZA_4
+        case I_PIZZA_3
+        case I_PIZZA_2
+        case I_PIZZA_1
+            cstator 512
+            break
+        default
+            ifn exp_aftershock 0
+                state ashock_loadpickup_extensions
+            break
+    endswitch
+endevent
+
+appendevent EVENT_SPAWN
+    switch sprite[].picnum
+        case I_LOVERBOY
+        case I_LOVERBOY_AMMO
+        case I_LOVERBOY_AMMO2
+        case I_MEDPACK
+        case I_MEDICOMP
+        case I_MEDKIT
+        case I_BULLETVEST
+        case I_ARMORVEST
+        case I_TECHVEST
+        case I_MINIGUN_AMMO
+        case I_PLASMACROSSBOW_AMMO
+        case I_PLASMACROSSBOW
+        case I_MINIGUN
+        case I_BOWLINGBOMB
+        case I_ACCESSCARD
+        case I_SHOTGUN
+        case I_SHOTGUN_AMMO
+        case I_GRENADELAUNCHER
+        case I_GRENADELAUNCHER_AMMO
+        case I_ARMOR_SHARD
+        case I_SMG
+        case I_SMG_AMMO
+        case I_CLUSTERPUCK
+        case I_BOWLINGBOMB_PICKUP
+        case I_BATON
+        case I_BOMBRUSH
+        case I_RADAR
+        case I_DKSHOES
+        case I_DAMAGEBOOSTER
+            state spawnpickup_standard
+            break
+        default
+            ifn exp_aftershock 0
+                state ashock_spawnpickup_extensions
+            break
+    endswitch
+endevent
+
+spritenopal I_LOVERBOY
+spritenopal I_LOVERBOY_AMMO
+spritenopal I_LOVERBOY_AMMO2
+spritenopal I_MEDPACK
+spritenopal I_MEDICOMP
+spritenopal I_MEDKIT
+spritenopal I_BULLETVEST
+spritenopal I_ARMORVEST
+spritenopal I_TECHVEST
+spritenopal I_MINIGUN_AMMO
+spritenopal I_PLASMACROSSBOW_AMMO
+spritenopal I_PLASMACROSSBOW
+spritenopal I_MINIGUN
+spritenopal I_BOWLINGBOMB
+spritenopal I_SHOTGUN
+spritenopal I_SHOTGUN_AMMO
+spritenopal I_GRENADELAUNCHER
+spritenopal I_GRENADELAUNCHER_AMMO
+spritenopal I_SMG
+spritenopal I_SMG_AMMO
+spritenopal I_CLUSTERPUCK
+spritenopal I_BOWLINGBOMB_PICKUP
+spritenopal I_BATON
+spritenopal I_BOMBRUSH
+spritenopal I_RADAR
+spritenopal I_DKSHOES
+spritenopal I_DAMAGEBOOSTER
+
+
+
+spriteshadow I_BATON
+useractor notenemy I_BATON
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 12 11
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife player[].gotweapon WEAPON_SHOCKER 0
+            set p_face_grin 30
+        set flash_wasweaponammo 0
+        getp[].weaponswitch temp6
+        setp .gotweapon WEAPON_SHOCKER 0
+        ife player.curr_weapon 0
+            setp .weaponswitch 0
+        else
+            setp .weaponswitch 1
+        addweapon WEAPON_SHOCKER 1
+        setp .weaponswitch temp6
+        getp .sound_pitch temp
+        setp .sound_pitch 256
+        globalsound S_MELEE_THUD03
+        setp .sound_pitch temp
+        // quote 54
+        palfrom 15 5 32 5
+        or p_wantline TALK_PICKUP
+        or c_256 1
+        killit
+    }
+enda
+
+spriteshadow I_LOVERBOY
+useractor notenemy I_LOVERBOY
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 14 12
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife player[].gotweapon WEAPON_LOVERBOY 0
+            set p_face_grin 30
+        ifn player[].ammo_amount 1 WEAPON1_MAXAMMO
+            set flash_wasweaponammo 1
+        ife player[].curr_weapon 0
+        {
+            getp[].weaponswitch temp6
+            ife player[].gotweapon WEAPON_LOVERBOY 1
+            {
+                setp[].weaponswitch 0
+                ife player[].ammo_amount WEAPON_LOVERBOY WEAPON1_MAXAMMO
+                    setp[].weaponswitch temp6
+            }
+            addweapon WEAPON_LOVERBOY WEAPON1_AMMOAMOUNT
+            setp[].weaponswitch temp6
+        }
+        else
+            addweapon WEAPON_LOVERBOY WEAPON1_AMMOAMOUNT
+        getp[].sound_pitch temp
+        setp[].sound_pitch 256
+        globalsound S_TRILOAD1
+        setp[].sound_pitch temp
+        quote 54
+        palfrom 15 5 32 5
+        or p_wantline TALK_PICKUP
+        or c_256 2
+        killit
+    }
+enda
+
+defstate loverboy_ammorand
+    set temp5 WEAPON1_AMMOAMOUNT
+    div temp5 userdef.player_skill
+
+    ifl temp5 1
+        set temp5 1
+    else
+    {
+        rand temp5 temp5
+
+        ifl temp5 1
+            set temp5 1
+    }
+
+    getp[].ammo_amount WEAPON_LOVERBOY temp4
+    add temp4 temp5
+    clamp temp4 0 WEAPON1_MAXAMMO
+    setp[].ammo_amount WEAPON_LOVERBOY temp4
+ends
+defstate loverboy_ammo
+    state item_initflags
+    state item_stupidwater_fall
+    sizeat 18 16
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ifn player[].ammo_amount 1 WEAPON1_MAXAMMO
+            set flash_wasweaponammo 1
+        ife player[].curr_weapon 0
+        {
+            getp[].weaponswitch temp6
+            setp[].weaponswitch 0
+            ife player[].ammo_amount WEAPON_LOVERBOY WEAPON1_MAXAMMO
+                setp[].weaponswitch temp6
+            ifactor I_LOVERBOY_AMMO
+                addammo WEAPON_LOVERBOY AMMOBOX_AMMOAMOUNT
+            else ifactor I_LOVERBOY_AMMO2
+            {
+                ifspawnedby A_CULTIST
+                {
+                    ife player[].ammo_amount WEAPON_LOVERBOY WEAPON1_MAXAMMO
+                        break
+                    state loverboy_ammorand
+                }
+                else
+                    addammo WEAPON_LOVERBOY WEAPON1_AMMOAMOUNT
+            }
+            setp[].weaponswitch temp6
+        }
+        else
+        {
+            ifactor I_LOVERBOY_AMMO
+                addammo WEAPON_LOVERBOY AMMOBOX_AMMOAMOUNT
+            else ifactor I_LOVERBOY_AMMO2
+            {
+                ifspawnedby A_CULTIST
+                {
+                    ife player[].ammo_amount WEAPON_LOVERBOY WEAPON1_MAXAMMO
+                        break
+                    state loverboy_ammorand
+                }
+                else
+                    addammo WEAPON_LOVERBOY WEAPON1_AMMOAMOUNT
+            }
+        }
+        getp[].sound_pitch temp
+        setp[].sound_pitch 256
+        globalsound S_TRILOAD1
+        setp[].sound_pitch temp
+        quote 55
+        palfrom 15 5 32 5
+        or p_wantline TALK_PICKUP
+        killit
+    }
+    ifspawnedby A_CULTIST
+    {
+        geta[].xvel temp
+        ifg temp 0
+        {
+            ssp THISACTOR CLIPMASK0
+            ifg temp 32
+                sub temp 4
+            else
+                sub temp 2
+            seta[].xvel temp
+        }
+    }
+ends
+
+spriteshadow I_LOVERBOY_AMMO
+useractor notenemy I_LOVERBOY_AMMO
+    state loverboy_ammo
+enda
+
+spriteshadow I_LOVERBOY_AMMO2
+useractor notenemy I_LOVERBOY_AMMO2
+    state loverboy_ammo
+enda
+
+// remove for demo
+
+spriteshadow I_PLASMACROSSBOW
+useractor notenemy I_PLASMACROSSBOW
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 14 14
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife player[].gotweapon WEAPON_CROSSBOW 0
+        {
+            set p_face_grin 60
+            set myfavoriteguns 1
+        }
+        ife player[].curr_weapon 0
+        {
+            getp[].weaponswitch temp6
+            ife player[].gotweapon WEAPON_CROSSBOW 1
+            {
+                setp[].weaponswitch 0
+                ife player[].ammo_amount WEAPON_CROSSBOW WEAPON7_MAXAMMO
+                    setp[].weaponswitch temp6
+            }
+            addweapon WEAPON_CROSSBOW WEAPON7_AMMOAMOUNT
+            setp[].weaponswitch temp6
+        }
+        else
+            addweapon WEAPON_CROSSBOW WEAPON7_AMMOAMOUNT
+        quote 130
+        getp .sound_pitch temp3
+        setp .sound_pitch 480
+        sound S_CROSSBOW_READY
+        setp .sound_pitch -480
+        sound S_CROSSBOW_RESET
+        setp .sound_pitch temp3
+        palfrom 15 5 32 5
+        ifn myfavoriteguns 1
+        {
+            ifrnd 64
+                or p_wantline 64
+            else
+                or p_wantline TALK_PICKUP
+        }
+        else
+            or p_wantline 64
+        or c_256 4
+        killit
+    }
+enda
+
+defstate crossbow_ammorand
+    set temp5 WEAPON7_AMMOAMOUNT
+    div temp5 userdef.player_skill
+
+    ifl temp5 1
+        set temp5 1
+    else
+    {
+        rand temp5 temp5
+
+        ifl temp5 1
+            set temp5 1
+    }
+
+    getp[].ammo_amount WEAPON_CROSSBOW temp4
+    add temp4 temp5
+    clamp temp4 0 WEAPON7_MAXAMMO
+    setp[].ammo_amount WEAPON_CROSSBOW temp4
+ends
+
+spriteshadow I_PLASMACROSSBOW_AMMO
+useractor notenemy I_PLASMACROSSBOW_AMMO
+    state item_initflags
+    state item_stupidwater_fall
+    sizeat 14 14
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ifspawnedby A_GREATER
+        {
+            ife player[].ammo_amount WEAPON_CROSSBOW WEAPON7_MAXAMMO
+                break
+            state crossbow_ammorand
+        }
+        else ife player[].curr_weapon 0
+        {
+            getp[].weaponswitch temp6
+            ife player[].gotweapon WEAPON_CROSSBOW 1
+            {
+                setp[].weaponswitch 0
+                ife player[].ammo_amount WEAPON_CROSSBOW WEAPON7_MAXAMMO
+                    setp[].weaponswitch temp6
+            }
+            addammo WEAPON_CROSSBOW WEAPON7_AMMOAMOUNT
+            setp[].weaponswitch temp6
+        }
+        else
+            addammo WEAPON_CROSSBOW WEAPON7_AMMOAMOUNT
+        quote 131
+        getp .sound_pitch temp3
+        setp .sound_pitch 480
+        sound S_CROSSBOW_READY
+        setp .sound_pitch -480
+        sound S_CROSSBOW_RESET
+        setp .sound_pitch temp3
+        palfrom 15 5 32 5
+        killit
+    }
+    ifspawnedby A_GREATER
+    {
+        geta[].xvel temp
+        ifg temp 0
+        {
+            ssp THISACTOR CLIPMASK0
+            ifg temp 32
+                sub temp 4
+            else
+                sub temp 2
+            seta[].xvel temp
+        }
+    }
+enda
+
+
+spriteshadow I_MINIGUN
+spritenoshade I_MINIGUN
+useractor notenemy I_MINIGUN
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 20 18
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        ife player[].gotweapon WEAPON_MINIGUN 0
+        {
+            set p_face_grin 60
+            set myfavoriteguns 1
+        }
+        ifn player[].ammo_amount WEAPON_MINIGUN WEAPON3_MAXAMMO
+            set flash_wasweaponammo 3
+        ifspawnedby A_MECHBOSS_TOP
+        {
+            ife st_do_once 0
+            {
+                stopactorsound player[].i S_SHELLY_SEARCHTALK1
+                stopactorsound player[].i S_SHELLY_SEARCHTALK2
+                stopactorsound player[].i p_lastline
+                setarray sound_playback[p_lastline] 0
+                actorsound player[].i S_SHELLYVO_LVLSND8
+                set p_lastline S_SHELLYVO_LVLSND8
+                set st_do_once 1
+            }
+            ife VOLUME EP_PREVIEW
+                add need_eol 1
+            else ifg se_yvel 0
+            {
+                ifl st_do_once 2
+                {
+                    operateactivators se_yvel THISACTOR
+                    operatemasterswitches se_yvel
+                    operaterespawns se_yvel
+                    setarray preloadactivations[se_yvel] 1
+                    sound S_SWITCH_SNAPPY
+                    set st_do_once 2
+                }
+            }
+            ife player[].max_ammo_amount WEAPON_MINIGUN 0
+                setp[].max_ammo_amount WEAPON_MINIGUN WEAPON4_MAXAMMO
+            ife player[].curr_weapon 0
+            {
+                getp[].weaponswitch temp6
+                ife player[].gotweapon WEAPON_MINIGUN 1
+                {
+                    setp[].weaponswitch 0
+                    ife player[].ammo_amount WEAPON_MINIGUN WEAPON4_MAXAMMO
+                        setp[].weaponswitch temp6
+                }
+                ife VOLUME EP_PREVIEW
+                    setp[].curr_weapon WEAPON_MINIGUN
+                addweapon WEAPON_MINIGUN WEAPON4_AMMOAMOUNT
+                setp[].weaponswitch temp6
+            }
+            else
+            {
+                ife VOLUME EP_PREVIEW
+                    setp[].curr_weapon WEAPON_MINIGUN
+                addweapon WEAPON_MINIGUN WEAPON4_AMMOAMOUNT
+            }
+        }
+        else
+        {
+            state item_secret
+            // #exclude from demo
+            ife VOLUME EP_HORDE
+                set minigun 1
+            ife player[].curr_weapon 0
+            {
+                getp[].weaponswitch temp6
+                ife player[].gotweapon WEAPON_MINIGUN 1
+                {
+                    setp[].weaponswitch 0
+                    ife player[].ammo_amount WEAPON_MINIGUN WEAPON4_MAXAMMO
+                        setp[].weaponswitch temp6
+                }
+                addweapon WEAPON_MINIGUN WEAPON4_AMMOAMOUNT
+                setp[].weaponswitch temp6
+            }
+            else
+                addweapon WEAPON_MINIGUN WEAPON4_AMMOAMOUNT
+        }
+        globalsound S_MINIGUN_PICKUP
+        quote 132
+        palfrom 15 5 32 5
+        ifn myfavoriteguns 1
+        {
+            ifrnd 64
+                or p_wantline 16
+            else
+                or p_wantline TALK_PICKUP
+        }
+        else
+            or p_wantline 16
+        or c_256 8
+        killit
+    }
+    ifoutside
+        set temp sector[].ceilingshade
+    else
+        set temp sector[].floorshade
+    ifspawnedby A_MECHBOSS_TOP
+    {
+        geta[].xvel temp2
+        ifg temp2 0
+        {
+            ssp THISACTOR CLIPMASK0
+            ifg temp2 32
+                sub temp2 4
+            else
+                sub temp2 2
+            seta[].xvel temp2
+            iffloordistl 4
+                nullop
+            else
+            {
+                espawn FRAMEEFFECT1
+                seta[RETURN].cstat 514
+                geta[].xrepeat temp2
+                shiftr temp2 1
+                seta[RETURN].xrepeat temp2
+                seta[RETURN].yrepeat temp2
+                seta[RETURN].shade 0
+            }
+        }
+        ife st_do_once 0
+        {
+            clamp temp 12 32
+            ifl counter 24
+            {
+                set temp2 counter
+                shiftr temp2 1
+                sub temp temp2
+            }
+            else
+            {
+                set temp2 counter
+                sub temp2 48
+                abs temp2
+                shiftr temp2 1
+                sub temp temp2
+            }
+            add counter 1
+            ifge counter 48
+            {
+                set counter 0
+                setp[].sound_pitch 0
+			    sound S_MINIGUN_PULSE
+            }
+        }
+        else
+            stopactorsound THISACTOR S_MINIGUN_PULSE
+    }
+    sub temp 3
+    seta[].shade temp
+enda
+
+// remove for demo
+
+spriteshadow I_MINIGUN_AMMO
+useractor notenemy I_MINIGUN_AMMO
+    state item_initflags
+    state item_stupidwater_fall
+    sizeat 14 14
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife player[].curr_weapon 0
+        {
+            getp[].weaponswitch temp6
+            ife player[].gotweapon WEAPON_MINIGUN 1
+            {
+                setp[].weaponswitch 0
+                ife player[].ammo_amount WEAPON_MINIGUN WEAPON4_MAXAMMO
+                    setp[].weaponswitch temp6
+            }
+            addammo WEAPON_MINIGUN 50
+            setp[].weaponswitch temp6
+        }
+        else
+            addammo WEAPON_MINIGUN 50
+        quote 133
+        getp .sound_pitch temp3
+        rand temp 64
+        add temp 192
+        setp .sound_pitch temp
+        globalsound S_SHELL04
+        setp .sound_pitch 480
+        globalsound S_MINIGUN_PICKUP
+        setp .sound_pitch temp3
+        palfrom 15 5 32 5
+        killit
+    }
+enda
+
+spriteshadow I_SHOTGUN
+useractor notenemy I_SHOTGUN
+    ifn exp_aftershock 0
+        state ashock_i_shotgun
+    else
+        state fury_i_shotgun
+enda
+
+spriteshadow I_SHOTGUN_AMMO
+useractor notenemy I_SHOTGUN_AMMO
+    ifn exp_aftershock 0
+        state ashock_i_shotgunammo
+    else
+        state fury_i_shotgunammo
+enda
+
+spriteshadow I_GRENADELAUNCHER
+useractor notenemy I_GRENADELAUNCHER
+    ifn exp_aftershock 0
+        state ashock_i_grenadelauncher
+    else
+        state fury_i_grenadelauncher
+enda
+
+spriteshadow I_GRENADELAUNCHER_AMMO
+useractor notenemy I_GRENADELAUNCHER_AMMO
+    ifn exp_aftershock 0
+        state ashock_i_grenadeammo
+    else
+        state fury_i_grenadeammo
+enda
+
+spriteshadow I_SMG
+useractor notenemy I_SMG
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 14 12
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife player[].gotweapon WEAPON_SMG 0
+        {
+            set p_face_grin 30
+            set myfavoriteguns 1
+        }
+        ifn player[].ammo_amount 3 WEAPON3_MAXAMMO
+            set flash_wasweaponammo 3
+        set temp3 0
+        set temp8 0
+        ife other_smg 0
+        {
+            ife player[].gotweapon WEAPON_SMG 1
+            {
+                ifn player[].curr_weapon WEAPON_SMG
+                {
+                    setplayer[].gotweapon WEAPON_SMG 0
+                    set other_smg_toggle 1
+                    addweapon WEAPON_SMG 0
+                }
+                else
+                    set other_smg_toggle 12
+                set other_smg 1
+                ife player[].ammo_amount WEAPON_SMG WEAPON3_MAXAMMO
+                    set temp3 1
+                set myfavoriteguns 1
+                set temp8 1
+            }
+        }
+        ife player[].curr_weapon 0
+        {
+            getp[].weaponswitch temp6
+            ife player[].gotweapon WEAPON_SMG 1
+            {
+                setp[].weaponswitch 0
+                ife player[].ammo_amount WEAPON_SMG WEAPON3_MAXAMMO
+                    setp[].weaponswitch temp6
+            }
+            ife temp3 0
+                addweapon WEAPON_SMG WEAPON3_AMMOAMOUNT
+            setp[].weaponswitch temp6
+        }
+        else ife temp3 0
+            addweapon WEAPON_SMG WEAPON3_AMMOAMOUNT
+        getp[].sound_pitch temp
+        setp[].sound_pitch 480
+        globalsound S_SHOTGUN_RELOAD2
+        setp[].sound_pitch temp
+        quote 137
+        palfrom 15 5 32 5
+        ifn myfavoriteguns 1
+        {
+            ifrnd 64
+            {
+                ifn other_smg 0
+                {
+                    ifrnd 96
+                        or p_wantline TALK_SMG
+                    else
+                        or p_wantline 4096
+                }
+                else
+                    or p_wantline TALK_SMG
+            }
+            else
+                or p_wantline TALK_PICKUP
+        }
+        else
+        {
+            ifn other_smg 0
+            {
+                ife temp8 1
+                {
+                    or p_wantline 4096
+                    ifand p_wantline TALK_SMG
+                        xor p_wantline TALK_SMG
+                }
+                else
+                {
+                    ifrnd 96
+                        or p_wantline TALK_SMG
+                    else
+                        or p_wantline 4096
+                }
+            }
+            else
+                or p_wantline TALK_SMG
+        }
+        or c_256 64
+        killit
+    }
+enda
+
+spriteshadow I_SMG_AMMO
+useractor notenemy I_SMG_AMMO
+    state item_initflags
+    state item_stupidwater_fall
+    sizeat 18 16
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ifn player[].ammo_amount 1 WEAPON3_MAXAMMO
+            set flash_wasweaponammo 3
+        ife player[].curr_weapon 0
+        {
+            getp[].weaponswitch temp6
+            setp[].weaponswitch 0
+            ife player[].ammo_amount WEAPON_SMG WEAPON3_MAXAMMO
+                setp[].weaponswitch temp6
+            addammo WEAPON_SMG WEAPON3_AMMOAMOUNT
+            setp[].weaponswitch temp6
+        }
+        else
+            addammo WEAPON_SMG WEAPON3_AMMOAMOUNT
+        getp[].sound_pitch temp
+        setp[].sound_pitch 480
+        globalsound S_SHOTGUN_RELOAD2
+        setp[].sound_pitch temp
+        quote 138
+        palfrom 15 5 32 5
+        or p_wantline TALK_PICKUP
+        killit
+    }
+enda
+
+spriteshadow I_MEDPACK
+useractor notenemy I_MEDPACK
+    state item_initflags
+    state item_stupidwater_fall
+    sizeat 14 12
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ifl sprite[player[].i].extra player[].max_player_health
+        {
+            set flash_hp 3
+            set temp player[].max_player_health
+            shiftr temp 2
+            ifl sprite[player[].i].extra temp
+            {
+                stopactorsound player[].i S_SHELLY_SEARCHTALK1
+                stopactorsound player[].i S_SHELLY_SEARCHTALK2
+                or p_wantline TALK_HEALTH
+            }
+            addphealth MEDPACK_AMOUNT
+            quote 56
+            palfrom 15 5 32 5
+            globalsound S_PICKUP01
+            killit
+        }
+    }
+enda
+
+
+defstate item_bob
+    switch sprite.picnum
+        case I_HAZARDSUIT
+            // special cased to fit containers
+            add counter3 64
+            and counter3 2047
+            sin temp counter3
+            shiftr temp 8
+            div temp sprite[].yrepeat
+            add temp 1
+            seta .yoffset temp
+            break
+        default
+            add counter3 32
+            and counter3 2047
+            sin temp counter3
+            shiftr temp 7
+            div temp sprite[].yrepeat
+            add temp 8
+            seta .yoffset temp
+            break
+    endswitch
+ends
+
+var enemy_medkit_count
+
+spritenopal I_SYRINGE
+spriteshadow I_SYRINGE
+spritenoshade I_SYRINGE
+useractor notenemy I_SYRINGE
+    state item_spin
+    cstat 0
+    sizeat 14 12
+    fall
+    spritepal 0
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 15 25
+
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 12
+    {
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 24
+        abs temp2
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ife counter 24
+            set counter 0
+        set shardblink 0
+    }
+
+    state item_bob
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        set temp2 1
+        getp[].pals 0 temp5
+        getp[].pals 1 temp4
+        add temp5 temp4
+        getp[].pals 2 temp4
+        add temp5 temp4
+        getp[].pals_time temp4
+        getp[].pals 1 temp6
+        ifge temp4 15 ife temp5 42 ife temp6 32 // failsafe so all of the messages appear
+            set temp2 0
+        ife temp2 1
+        {
+            set flash_hp 3
+            add p_pizza_health 5
+            quote 34
+            palfrom 15 5 32 5
+            globalsound S_BOOSTER
+            sub enemy_medkit_count 1
+            killit
+        }
+    }
+    geta[].xvel temp
+    ifg temp 0
+    {
+        ssp THISACTOR CLIPMASK0
+        ifg temp 32
+            sub temp 4
+        else
+            sub temp 2
+        clamp temp 0 65536
+        seta[].xvel temp
+    }
+enda
+spriteshadow I_MEDICOMP
+useractor notenemy I_MEDICOMP
+    state item_initflags
+    state item_stupidwater_fall
+    sizeat 14 12
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ifl sprite[player[].i].extra player[].max_player_health
+        {
+            set flash_hp 3
+            set temp player[].max_player_health
+            shiftr temp 2
+            ifl sprite[player[].i].extra temp
+            {
+                stopactorsound player[].i S_SHELLY_SEARCHTALK1
+                stopactorsound player[].i S_SHELLY_SEARCHTALK2
+                or p_wantline TALK_HEALTH
+            }
+            ifg userdef.player_skill 3
+            {
+                addphealth MEDICOMP_MF_AMOUNT
+                quote 62
+            }
+            else
+            {
+                addphealth MEDICOMP_AMOUNT
+                quote 57
+            }
+            palfrom 15 5 32 5
+            globalsound S_PICKUP01
+            killit
+        }
+    }
+enda
+
+spriteshadow I_MEDKIT
+useractor notenemy I_MEDKIT
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 14 12
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ifl player [].firstaid_amount MEDKIT_MAXAMOUNT
+        {
+            set flash_medkit -3
+            getp[].firstaid_amount temp
+            add temp 1
+            setp[].firstaid_amount temp
+            quote 3
+            palfrom 15 5 32 5
+            globalsound S_PICKUP04
+            or p_wantline TALK_PICKUP
+            killit
+        }
+    }
+enda
+
+spriteshadow I_HAZARDSUIT
+useractor notenemy I_HAZARDSUIT
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 24 21
+    clipdist 16
+    spritepal PAL_HAZARDSUIT
+    ifg counter 0
+    {
+        sub counter 1
+        ifl counter 32
+        {
+            cstat 2
+            seta[].blend counter
+            ife counter 0
+                cstat 0
+            ifand counter 1
+            {
+                espawn A_GENERIC_PARTICLE
+                seta[RETURN].xrepeat 120
+                seta[RETURN].pal 28
+
+                rand temp2 2047
+                seta[RETURN].ang temp2
+
+
+                geta[].picnum temp2
+                set temp4 tilesizy[temp2]
+                shiftl temp4 2
+                mul temp4 sprite[].yrepeat
+                set temp2 sprite[].z
+                rand temp3 temp4
+                sub temp2 temp3
+                seta[RETURN].z temp2
+
+                rand temp2 96
+                ifrnd 127
+                    inv temp2
+                add temp2 sprite[].x
+                seta[RETURN].x temp2
+                rand temp2 96
+                ifrnd 127
+                    inv temp2
+                add temp2 sprite[].y
+                seta[RETURN].y temp2
+            }
+        }
+        set counter3 0
+        break
+    }
+    cstat 0
+    state item_bob
+    seta[].blend 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife se_lotag 32767
+            set se_lotag 0
+        quote 42
+        palfrom 15 5 32 5
+        globalsound S_PICKUP04
+        or p_wantline TALK_HAZARD
+        cstat 32768
+        set counter 300
+        set p_hazard_amount 900
+    }
+enda
+
+spriteshadow I_BOMBRUSH
+spritenoshade I_BOMBRUSH
+useractor notenemy I_BOMBRUSH
+    state item_initflags
+    geta[].ang temp
+    add temp 32
+    and temp 2047
+    seta[].ang temp
+    state item_stupidwater_fall
+    ifand sprite.cstat 512
+        set pup_respawn 1
+
+    ifg pup_respawn 1
+    {
+        cstat 32768
+        sub pup_respawn 1
+        set counter 0
+        set shardblink 0
+        break
+    }
+    cstat 16
+    sizeat 10 10
+    spritepal 0
+    state pup_palflash
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 15 25
+
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 12
+    {
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 24
+        abs temp2
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ife counter 24
+            set counter 0
+        set shardblink 0
+    }
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife se_lotag 32767
+            set se_lotag 0
+        state item_pocket_check
+        ife item_pocket_state 0
+            break
+        quote 39
+        palfrom 15 25 32 5
+        // old sound code
+        state item_pocket_grab_sfx
+        or p_wantline TALK_PICKUP
+        cstat 32768
+        set counter 300
+// old activation code
+        set p_item_pocket 1
+        ifg se_hitag 0
+        {
+            operateactivators se_hitag THISACTOR
+            operatemasterswitches se_hitag
+            operaterespawns se_hitag
+            setarray preloadactivations[se_hitag] 1
+        }
+        or p_wantline TALK_BOMBRUSH
+        ife pup_respawn 0
+            killit
+        else
+        {
+            set pup_respawn PUP_RESPAWN_TIME
+            spawn A_RESPAWNICON
+        }
+    }
+enda
+
+
+spriteshadow I_RADAR
+spritenoshade I_RADAR
+useractor notenemy I_RADAR
+    state item_initflags
+    geta[].ang temp
+    add temp 32
+    and temp 2047
+    seta[].ang temp
+    state item_stupidwater_fall
+    cstat 16
+    sizeat 10 10
+    spritepal 0
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 15 25
+
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 12
+    {
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 24
+        abs temp2
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ife counter 24
+            set counter 0
+        set shardblink 0
+    }
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+
+        state item_secret
+        ifl player.heat_amount RADAR_MAXAMOUNT
+        {
+            set flash_radar -3
+            getp[].heat_amount temp
+            add temp RADAR_GETAMOUNT
+            clamp temp 0 RADAR_MAXAMOUNT
+            setp[].heat_amount temp
+            ife se_lotag 32767
+                set se_lotag 0
+            quote 37
+            palfrom 15 25 32 5
+            setp .sound_pitch 480
+            globalsound S_BBOMB_THROW
+            setp .sound_pitch 512
+            globalsound S_PICKUP04
+            globalsound S_MINIGUN_PULSE
+            setp .sound_pitch 0
+            ifrnd 64
+                or p_wantline TALK_RADAR
+            else
+                or p_wantline TALK_PICKUP
+            cstat 32768
+            set counter 300
+            ifg se_hitag 0
+            {
+                operateactivators se_hitag THISACTOR
+                operatemasterswitches se_hitag
+                operaterespawns se_hitag
+                setarray preloadactivations[se_hitag] 1
+            }
+            killit
+        }
+    }
+enda
+
+spriteshadow I_DKSHOES
+spritenoshade I_DKSHOES
+useractor notenemy I_DKSHOES
+    state item_initflags
+    geta[].ang temp
+    add temp 32
+    and temp 2047
+    seta[].ang temp
+    state item_stupidwater_fall
+    ifand sprite.cstat 512
+        set pup_respawn 1
+
+    ife counter2 0
+    {
+        ifand sprite.cstat 32
+            set pup_respawn 0
+        else
+            set pup_respawn 1
+        set counter2 1
+    }
+    ifg pup_respawn 1
+    {
+        cstat 32768
+        sub pup_respawn 1
+        set counter 0
+        set shardblink 0
+        break
+    }
+    cstat 16
+    sizeat 14 14
+    spritepal 0
+    state pup_palflash
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 15 25
+
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 12
+    {
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 24
+        abs temp2
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ife counter 24
+            set counter 0
+        set shardblink 0
+    }
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife se_lotag 32767
+            set se_lotag 0
+        state item_pocket_check
+        ife item_pocket_state 0
+            break
+        quote 36
+        palfrom 15 25 32 5
+        // old sound code
+        state item_pocket_grab_sfx
+        or p_wantline TALK_BOOTS
+        cstat 32768
+        set counter 300
+        // old activation code
+        set p_item_pocket 2
+        ifg se_hitag 0
+        {
+            operateactivators se_hitag THISACTOR
+            operatemasterswitches se_hitag
+            operaterespawns se_hitag
+            setarray preloadactivations[se_hitag] 1
+        }
+//        or p_wantline 32768
+        ife pup_respawn 0
+            killit
+        else
+        {
+            set pup_respawn PUP_RESPAWN_TIME
+            spawn A_RESPAWNICON
+        }
+    }
+enda
+
+spriteshadow I_DAMAGEBOOSTER
+spritenoshade I_DAMAGEBOOSTER
+useractor notenemy I_DAMAGEBOOSTER
+    state item_initflags
+    geta[].ang temp
+    add temp 32
+    and temp 2047
+    seta[].ang temp
+    state item_stupidwater_fall
+    ifand sprite.cstat 512
+        set pup_respawn 1
+
+    ifg pup_respawn 1
+    {
+        cstat 32768
+        sub pup_respawn 1
+        set counter 0
+        set shardblink 0
+        break
+    }
+    cstat 16
+    sizeat 10 10
+    spritepal 0
+    state pup_palflash
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 15 25
+
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 12
+    {
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 24
+        abs temp2
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ife counter 24
+            set counter 0
+        set shardblink 0
+    }
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife se_lotag 32767
+            set se_lotag 0
+        state item_pocket_check
+        ife item_pocket_state 0
+            break
+        quote 35
+        palfrom 15 25 32 5
+    // old sound code
+        state item_pocket_grab_sfx
+        or p_wantline TALK_DAMAGE
+        cstat 32768
+        set counter 300
+    // old activation code
+        set p_item_pocket 4
+        ifg se_hitag 0
+        {
+            operateactivators se_hitag THISACTOR
+            operatemasterswitches se_hitag
+            operaterespawns se_hitag
+            setarray preloadactivations[se_hitag] 1
+        }
+//        or p_wantline 32768
+        ife pup_respawn 0
+            killit
+        else
+        {
+            set pup_respawn PUP_RESPAWN_TIME
+            spawn A_RESPAWNICON
+        }
+    }
+enda
+
+spriteshadow I_BULLETVEST
+useractor notenemy I_BULLETVEST
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 17 14
+    cstat 0
+    set temp2 0
+
+    ifl player[].shield_amount BULLETVEST_MAXAMOUNT
+        set temp2 1
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret // overwrites temp
+        ife temp2 1
+        {
+            set p_armor_type 0
+            set p_face_grin 30
+                setp[].max_shield_amount BULLETVEST_MAXAMOUNT
+
+            set flash_armor 3
+
+            addinventory 1 BULLETVEST_MAXAMOUNT
+            globalsound S_VEST_ZIP
+            quote 58
+            palfrom 15 5 32 5
+            ifrnd 127
+                or p_wantline TALK_PICKUP
+            else
+                or p_wantline TALK_ARMOR
+            killit
+        }
+    }
+enda
+
+spriteshadow I_ARMORVEST
+useractor notenemy I_ARMORVEST
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 17 14
+    cstat 0
+    set temp2 0
+
+    ifl player[].shield_amount ARMORVEST_MAXAMOUNT
+        set temp2 1
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret // overwrites temp
+        ife temp2 1
+        {
+            set p_armor_type 1
+            set p_face_grin 30
+            setp[].max_shield_amount ARMORVEST_MAXAMOUNT
+            set flash_armor 3
+
+            addinventory 1 ARMORVEST_MAXAMOUNT
+            getp[].sound_pitch temp
+            setp[].sound_pitch -192
+            globalsound S_VEST_ZIP
+            setp[].sound_pitch temp
+            quote 59
+            palfrom 15 5 32 5
+            ifrnd 127
+                or p_wantline TALK_PICKUP
+            else
+                or p_wantline TALK_ARMOR
+            killit
+        }
+    }
+enda
+spriteshadow I_TECHVEST
+spritenoshade I_TECHVEST
+useractor notenemy I_TECHVEST
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 17 14
+    cstat 0
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 15 25
+
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 12
+    {
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 24
+        abs temp2
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ife counter 24
+            set counter 0
+        set shardblink 0
+    }
+
+    set temp2 0
+
+    ifl player[].shield_amount TECHVEST_MAXAMOUNT
+        set temp2 1
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret // overwrites temp
+        ife temp2 1
+        {
+            set p_armor_type 2
+            set p_face_grin 30
+            setp[].max_shield_amount TECHVEST_MAXAMOUNT
+            set flash_armor 3
+
+            addinventory 1 TECHVEST_MAXAMOUNT
+            getp[].sound_pitch temp
+            setp[].sound_pitch -256
+            globalsound S_VEST_ZIP
+            setp[].sound_pitch temp
+            quote 60
+            palfrom 15 5 32 5
+            ifrnd 127
+                or p_wantline TALK_PICKUP
+            else
+                or p_wantline TALK_ARMOR
+            killit
+        }
+    }
+enda
+
+spriteshadow I_ARMOR_SHARD
+spritenoshade I_ARMOR_SHARD
+spritenopal I_ARMOR_SHARD
+
+var shard_life 0 2
+appendevent EVENT_SPAWN
+    ifactor I_ARMOR_SHARD
+        changespritestat THISACTOR STAT_ARMORSHARD
+endevent
+useractor notenemy I_ARMOR_SHARD
+    changespritestat THISACTOR STAT_ARMORSHARD
+enda
+
+appendevent EVENT_EGS
+    ifactor I_ARMOR_SHARD
+    {
+        ife VOLUME EP_HORDE
+            seta .mdflags 1
+    }
+endevent
+appendevent EVENT_WORLD
+    for temp6 sprofstat STAT_ARMORSHARD
+    {
+        setu[].vm_sprite temp6
+        setu[].vm_player myconnectindex
+        dist temp2 THISACTOR player[].i
+        setu[].vm_distance temp2
+        geta[].htg_t 0 temp
+        add temp 1
+        seta[].htg_t 0 temp
+        state item_initflags
+        state item_spin
+        state item_stupidwater_fall
+        sizeat 8 8
+        spritepal 0
+        ifl sector[].floorshade 6
+            set temp 6
+        else
+            set temp sector[].floorshade
+
+        ifl counter 6
+            sub temp counter
+        else
+        {
+            set temp2 counter
+            sub temp2 12
+            abs temp2
+            sub temp temp2
+        }
+        sub temp 3
+        seta[].shade temp
+
+        add shardblink 1
+        ifg shardblink 2
+        {
+            add counter 1
+            ifg counter 12
+                set counter 0
+            set shardblink 0
+        }
+
+        cstat 0
+
+        getp[].max_shield_amount temp3
+        add temp3 ARMORSHARD_EXTRAAMOUNT
+        ifl player[].shield_amount temp3
+            set temp2 1
+        else set temp2 0
+
+        getp[].pals 0 temp5
+        getp[].pals 1 temp4
+        add temp5 temp4
+        getp[].pals 2 temp4
+        add temp5 temp4
+        getp[].pals_time temp4
+        getp[].pals 1 temp6
+        ifge temp4 15 ife temp5 42 ife temp6 32 // failsafe so all of the messages appear
+            set temp2 0
+        ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+        {
+            state item_secret // overwrites temp
+            ife temp2 1
+            {
+                set flash_armor 1
+                getp[].sound_pitch temp
+                setp[].sound_pitch 512
+                globalsound S_SWITCH_BUTTONBLEEP
+                setp[].sound_pitch temp
+                getp[].shield_amount temp
+                add temp ARMORSHARD_AMOUNT
+                ifg temp temp3
+                    set temp temp3
+                setp[].shield_amount temp
+                quote 61
+                palfrom 15 5 32 5
+                seta[].xrepeat 0
+                changespritestat THISACTOR STAT_ACTOR
+            }
+        }
+
+        ifspawnedby I_ARMOR_SHARD
+            nullop
+        else
+        {
+            spritepal 14
+            ife shard_life 0
+                set shard_life 600
+            geta[].xvel temp
+            ifg temp 0
+            {
+                ssp THISACTOR CLIPMASK0
+                ifg temp 32
+                    sub temp 4
+                else
+                    sub temp 1
+                iffloordistl 1
+                    sub temp 2
+                seta[].xvel temp
+            }
+            ife shard_life 1
+            {
+                seta[].xrepeat 0
+                changespritestat THISACTOR STAT_ACTOR
+            }
+            else ifg shard_life 0
+                sub shard_life 1
+            ifl shard_life 240
+            {
+                ifg shard_life 120
+                {
+                    ifand shard_life 4
+                        spritepal 13
+                }
+                else
+                {
+                    ifand shard_life 2
+                        spritepal 13
+                }
+                ifl shard_life 30
+                {
+                    spritepal 56
+                    set temp shard_life
+                    sub temp 30
+                    ifg temp 0
+                        set temp 0
+                    inv temp
+                    geta[].shade temp2
+                    add temp2 10
+                    add temp2 temp
+                    seta[].shade temp2
+                    seta[].blend 129
+                    cstator 2
+                    ifg temp2 24
+                    {
+                        set temp3 0
+                        for temp3 range 2
+                        {
+                            espawn A_GENERIC_PARTICLE
+                            seta[RETURN].xrepeat 129
+                            setav[RETURN].particle_force_pal 14
+                            rand temp2 2048
+                            seta[RETURN].ang temp2
+                            geta[].z temp2
+                            add temp2 1024
+                            seta[RETURN].z temp2
+                        }
+                        espawn A_GENERIC_PARTICLE
+                        seta[RETURN].xrepeat 120
+                        setav[RETURN].particle_force_pal 14
+                        rand temp2 2048
+                        seta[RETURN].ang temp2
+                        geta[].z temp2
+                        add temp2 1024
+                        seta[RETURN].z temp2
+                        seta[].xrepeat 0
+                        changespritestat THISACTOR STAT_ACTOR
+                    }
+                }
+            }
+        }
+    }
+endevent
+
+spriteshadow I_BOWLINGBOMB
+action AC_BOWLINGBOMB_PICKUP 0 1 7 1 1
+useractor notenemy I_BOWLINGBOMB 0 AC_BOWLINGBOMB_PICKUP
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 11 10
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife player[].gotweapon WEAPON_BOWLINGBOMB 0
+        {
+            set p_face_grin 30
+            set myfavoriteguns 1
+            or p_wantline TALK_BOMB
+            ife player[].curr_weapon 0
+            {
+                ifand player.weaponswitch 1
+                    addweapon WEAPON_BOWLINGBOMB 1
+                else
+                {
+                    getp[].weaponswitch temp6
+                    setp[].weaponswitch 0
+                    ife player[].ammo_amount WEAPON_BOWLINGBOMB WEAPON5_MAXAMMO
+                        setp[].weaponswitch temp6
+                    addweapon WEAPON_BOWLINGBOMB 1
+                    setp[].weaponswitch temp6
+                }
+            }
+            else
+                addweapon WEAPON_BOWLINGBOMB 1
+        }
+        else
+        {
+            ife player[].curr_weapon 0
+            {
+                getp[].weaponswitch temp6
+                setp[].weaponswitch 0
+                ife player[].ammo_amount WEAPON_BOWLINGBOMB WEAPON5_MAXAMMO
+                    setp[].weaponswitch temp6
+                addammo WEAPON_BOWLINGBOMB 1
+                setp[].weaponswitch temp6
+            }
+            else
+                addammo WEAPON_BOWLINGBOMB 1
+        }
+        quote 69
+        palfrom 15 5 32 5
+        globalsound S_BBOMB_THROW
+        globalsound S_BBOMB_LAND
+        ifrnd 64
+            or p_wantline TALK_BOMB
+        else
+            or p_wantline TALK_PICKUP
+        or c_256 128
+        killit
+    }
+enda
+
+spriteshadow I_BOWLINGBOMB_PICKUP
+useractor notenemy I_BOWLINGBOMB_PICKUP 0 AC_BOWLINGBOMB_PICKUP cactor I_BOWLINGBOMB enda
+
+
+spriteshadow I_CLUSTERPUCK
+useractor notenemy I_CLUSTERPUCK
+    state item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 8 7
+    cstat 0
+    spritepal 21
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife player[].gotweapon WEAPON_LAM 0
+        {
+            set p_face_grin 30
+            set myfavoriteguns 1
+            or p_wantline TALK_LAM
+        }
+        addweapon WEAPON_LAM 1
+        quote 139
+        palfrom 15 5 32 5
+        globalsound S_BBOMB_THROW
+        globalsound S_BBOMB_LAND
+        getp .sound_pitch temp
+        setp .sound_pitch 480
+        globalsound S_SHOTGUN_OPENCLOSE
+        setp .sound_pitch temp
+        ifrnd 64
+            or p_wantline TALK_LAM
+        else
+            or p_wantline TALK_PICKUP
+        or c_256 256
+        killit
+    }
+enda
+
+spriteshadow I_ACCESSCARD
+spritenoshade I_ACCESSCARD
+spritenopal I_ACCESSCARD
+useractor notenemy I_ACCESSCARD
+    state item_initflags
+    ifcount 30
+        state item_spin
+    state item_stupidwater_fall
+    sizeat 16 14
+    cstat 0
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 12 25
+
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 6
+    {
+        shiftl temp2 1
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 12
+        abs temp2
+        shiftl temp2 1
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ifg counter 12
+            set counter 0
+        set shardblink 0
+    }
+
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        set p_face_grin 30
+        getp[].got_access temp
+        switch sprite[].pal
+            case PAL_KEYCARD_1
+                or temp 1
+                quote 44
+                break
+            case PAL_KEYCARD_2
+                or temp 2
+                quote 45
+                break
+            case PAL_KEYCARD_3
+                or temp 4
+                quote 46
+                break
+            case PAL_KEYCARD_4
+                or temp 8
+                quote 47
+                break
+            default
+                quote 43
+                break
+        endswitch
+        setp[].got_access temp
+        palfrom 15 5 32 5
+        getp[].sound_pitch temp
+        setp[].sound_pitch 512
+        globalsound S_SWITCH_CARDUNLOCK
+        setp[].sound_pitch 640
+        globalsound S_PICKUP04
+        setp[].sound_pitch temp
+        state item_secret
+        set temp 0
+        set flash_keycards 10
+        ifg se_hitag 0
+        {
+            operateactivators se_hitag THISACTOR
+            operatemasterswitches se_hitag
+            operaterespawns se_hitag
+            setarray preloadactivations[se_hitag] 1
+        }
+        or p_wantline TALK_PICKUP
+        killit
+    }
+enda
+
+action AC_PIZZA_6 0 1 1 1 1
+action AC_PIZZA_5 1 1 1 1 1
+action AC_PIZZA_4 2 1 1 1 1
+action AC_PIZZA_3 3 1 1 1 1
+action AC_PIZZA_2 4 1 1 1 1
+action AC_PIZZA_1 5 1 1 1 1
+
+defstate pizzastate
+    add p_pizza_health 5
+    ifphealthl 100
+        quote 38
+    else quote 41
+    palfrom 15 5 32 5
+    globalsound S_PICKUP01
+    or p_wantline TALK_EAT
+    redefinequote 115 gamestate.bin
+    readarrayfromfile gamestate 115
+    set temp gamestate[5]
+
+    add temp 1
+    setarray gamestate[5] temp
+    writearraytofile gamestate 115
+    or cheevo_tracker 1024
+ends
+
+spritenoshade I_PIZZA_6
+useractor notenemy I_PIZZA_6 0 AC_PIZZA_6
+    set actor_switch 1
+    sizeat 21 21
+    cstat 32
+    cstator 512
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 15 25
+
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 12
+    {
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 24
+        abs temp2
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ife counter 24
+            set counter 0
+        set shardblink 0
+    }
+    set temp8 0
+    ife actor_switch_usable 1
+    {
+        ifpdistl 1536
+        {
+            ifhitspace
+            {
+                ifactioncount 2
+                    set temp8 1
+                resetactioncount
+            }
+        }
+    }
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 15 ifp palive
+    {
+        state item_secret
+        set temp8 1
+        resetcount
+    }
+    ifg counter2 0
+    {
+        sub counter2 1
+        set temp8 0
+    }
+    ife temp8 1
+    {
+        set p_face_grin 30
+        getp .sound_pitch temp5
+        setp .sound_pitch 128
+        switch sprite[].htg_t 4
+            case AC_PIZZA_6
+                state pizzastate
+                action AC_PIZZA_5
+                break
+            case AC_PIZZA_5
+                state pizzastate
+                action AC_PIZZA_4
+                break
+            case AC_PIZZA_4
+                state pizzastate
+                action AC_PIZZA_3
+                break
+            case AC_PIZZA_3
+                state pizzastate
+                action AC_PIZZA_2
+                break
+            case AC_PIZZA_2
+                state pizzastate
+                action AC_PIZZA_1
+                break
+            case AC_PIZZA_1
+                state pizzastate
+                killit
+                break
+        endswitch
+        setp .sound_pitch temp5
+    }
+    set actor_switch_usable 0
+enda
+useractor notenemy I_PIZZA_5 0 AC_PIZZA_5 cactor I_PIZZA_6 enda
+useractor notenemy I_PIZZA_4 0 AC_PIZZA_4 cactor I_PIZZA_6 enda
+useractor notenemy I_PIZZA_3 0 AC_PIZZA_3 cactor I_PIZZA_6 enda
+useractor notenemy I_PIZZA_2 0 AC_PIZZA_2 cactor I_PIZZA_6 enda
+useractor notenemy I_PIZZA_1 0 AC_PIZZA_1 cactor I_PIZZA_6 enda
+
+appendevent EVENT_SPAWN
+    ifactor A_RESPAWNICON
+    {
+        sizeat 10 10
+        cstat 18
+        seta .blend 129
+        seta .shade 0
+        seta .pal 7
+
+        set counter PUP_RESPAWN_TIME
+    }
+endevent
+spritenoshade A_RESPAWNICON
+spritenopal A_RESPAWNICON
+useractor notenemy A_RESPAWNICON
+    ifg counter 0
+    {
+        ifrnd 64
+        {
+            espawn A_FIRE_SPARK
+            seta[RETURN].pal 6
+            seta[RETURN].cstat 32768
+        }
+        setp .sound_pitch 510
+        soundonce S_AMB_CLOCKTICK
+        setp .sound_pitch 0
+        sub counter 1
+        geta .ang temp
+        add temp 32
+        and temp 2047
+        seta .ang temp
+        set temp counter
+        and temp 15
+        sub temp 8
+        abs temp
+        ifl counter 150
+        {
+            set temp2 counter
+            sub temp2 150
+            abs temp2
+            shiftr temp2 4
+            add temp temp2
+            shiftl temp 1
+            clamp temp 0 32
+        }
+        else
+            shiftl temp 1
+        add temp 5
+        seta .shade temp
+        ifl counter 91
+        {
+            set temp counter
+            mod temp 3
+            ife temp 0
+            {
+                geta .cstat temp
+                xor temp 32768
+                seta .cstat temp
+            }
+        }
+        ife counter 1
+        {
+            setp .sound_pitch 480
+            sound S_EXPL_SM005
+            setp .sound_pitch 0
+            espawn A_SMOKE2
+            seta[RETURN].pal 7
+        }
+    }
+    ife counter 0
+    {
+        stopactorsound THISACTOR S_AMB_CLOCKTICK
+        killit
+    }
+enda
+
+eventloadactor I_AMMOCRATE
+    geta .lotag se_lotag
+    geta .hitag se_hitag
+    clamp se_hitag 1 65536
+    geta .extra se_extra
+    clamp se_extra 1 65536
+    seta .lotag 0
+    seta .hitag 0
+    geta .cstat temp
+    geta .yvel se_yvel
+    clamp se_yvel 0 65536
+    geta .xvel se_xvel
+    seta .xvel 0
+    ifand temp 32
+        cstat 33312
+    else ifand temp 16
+        cstat 33296
+    else
+        cstat 33280
+enda
+
+useractor notenemy I_AMMOCRATE
+    set actor_switch 1
+    ifg se_xvel 0
+    getu .vm_distance temp
+    ifg se_xvel 0
+    {
+        ifle temp se_xvel
+        {
+            ifcanseetarget ifcount 6 ifp palive
+            {
+                ife counter 0
+                    set counter se_extra
+            }
+        }
+        else
+        {
+             set temp2 se_xvel
+             shiftl temp2 1
+             ifg temp temp2
+                ifg counter3 0
+                    sub counter3 1
+        }
+    }
+    else ifhitspace
+    {
+        ife counter 0
+        {
+            ife actor_switch_usable 1
+                ifpdistl 1536
+                    ifcount 2
+                    {
+                        set counter se_extra
+                        set counter3 0
+                    }
+        }
+        resetcount
+    }
+    set actor_switch_usable 0
+    ife counter se_extra
+    {
+        sub counter 1
+
+        ife se_lotag 0
+        {
+            addweapon WEAPON_SHOCKER 1
+            ifg se_yvel 0
+            {
+                operateactivators se_yvel THISACTOR
+                operatemasterswitches se_yvel
+                operaterespawns se_yvel
+                setarray preloadactivations[se_yvel] 1
+            }
+            setp .sound_pitch 480
+            sound S_SHOTGUN_RELOAD1
+            sound S_SHOTGUN_OPENCLOSE
+            sound S_BBOMB_THROW
+            sound S_PRINTER_SERVO
+            setp .sound_pitch 0
+            palfrom 15 5 32 5
+            or p_wantline TALK_PICKUP
+            quote 320
+        }
+        else
+        {
+            getp[].weaponswitch temp6
+            setp[].weaponswitch 0
+
+            set temp 0
+            switch se_lotag
+                case 1
+                    set temp WEAPON1_MAXAMMO
+                    break
+                case 2
+                    set temp WEAPON2_MAXAMMO
+                    break
+                case 3
+                    set temp WEAPON3_MAXAMMO
+                    break
+                case 4
+                    set temp WEAPON4_MAXAMMO
+                    break
+                case 5
+                    set temp WEAPON5_MAXAMMO
+                    break
+                case 6
+                    set temp GRENADE_MAXAMMO
+                    break
+                case 7
+                    set temp WEAPON7_MAXAMMO
+                    break
+                case 8
+                    set temp WEAPON8_MAXAMMO
+                    break
+            endswitch
+
+            getp .ammo_amount se_lotag temp2
+            ifl temp2 temp
+            {
+                set counter3 0
+                ifg se_yvel 0
+                {
+                    operateactivators se_yvel THISACTOR
+                    operatemasterswitches se_yvel
+                    operaterespawns se_yvel
+                    setarray preloadactivations[se_yvel] 1
+                }
+                palfrom 15 5 32 5
+                setp .sound_pitch 480
+                sound S_SHOTGUN_RELOAD1
+                sound S_SHOTGUN_OPENCLOSE
+                sound S_BBOMB_THROW
+                sound S_PRINTER_SERVO
+                setp .sound_pitch 0
+                or p_wantline TALK_PICKUP
+                add temp2 se_hitag
+                clamp temp2 0 temp
+                setp .ammo_amount se_lotag temp2
+                set p_face_grin 30
+                set temp se_lotag
+                ifspritepal 9
+                    add temp 329
+                else
+                    add temp 320
+                setp .ftq temp
+                setp .fta 99
+                switch se_lotag
+                    case 2
+                        ife player.gotweapon WEAPON_GRENADE 1
+                            setp .gotweapon WEAPON_SHOTGUN 1
+                        break
+                    case 5
+                        setp .gotweapon WEAPON_BOWLINGBOMB 1
+                        break
+                    case 6
+                        ife player.gotweapon WEAPON_SHOTGUN 1
+                            setp .gotweapon WEAPON_GRENADE 1
+                        break
+                    case 8
+                        setp .gotweapon WEAPON_LAM 1
+                        break
+                endswitch
+            }
+            else ife counter3 0
+            {
+                palfrom 15 5 32 5
+                setp .sound_pitch 480
+                sound S_SHOTGUN_RELOAD1
+                sound S_SHOTGUN_OPENCLOSE
+                sound S_SWITCH_CARDLOCKED
+                setp .sound_pitch 0
+                set temp se_lotag
+                add temp 338
+                setp .ftq temp
+                setp .fta 99
+                ifg se_xvel 0
+                    set counter3 120
+            }
+            setp[].weaponswitch temp6
+        }
+    }
+    else ifg counter 0
+        sub counter 1
+enda

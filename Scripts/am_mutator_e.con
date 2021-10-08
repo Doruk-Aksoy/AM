@@ -1,0 +1,78 @@
+/*
+THIS IS THE ENEMY MUTATOR FILE FOR ANGER MANAGEMENT. Without this file, enemies won't get custom stuff.
+*/
+gamearray am_cultist_weights AM_CULTIST_TYPES
+
+appendevent EVENT_PRELEVEL
+	// init the cultist weight list
+	set am_weight_comp 0
+	for am_tmp range AM_CULTIST_TYPES {
+		switch am_tmp
+			case 0	
+				set am_weight AM_REGULARCULTIST_WEIGHT
+			break
+			case 1
+				set am_weight AM_FIRECULTIST_WEIGHT
+			break
+			case 2
+				set am_weight AM_AUTOCULTIST_WEIGHT
+			break
+		endswitch
+		add am_weight_comp am_weight
+		setarray am_cultist_weights[am_tmp] am_weight_comp
+	}
+endevent
+
+/*
+INPUT: NONE
+OUTPUT: am_weight => Resulting weight ranging from 1 to 1000
+*/
+defstate roll_weight
+	rand am_weight AM_DEFAULT_WEIGHTMAX
+	add am_weight 1
+ends
+
+/*
+INPUT: NONE
+OUTPUT: sprite's pal is changed
+*/
+defstate roll_cultist_type
+	state roll_weight
+	set am_tmp 0
+	set am_rolled 0
+	whilen am_tmp AM_CULTIST_TYPES {
+		ifle am_weight am_cultist_weights[am_tmp] ifn am_rolled 1 {
+			set am_rolled 1
+			ife am_tmp 1
+				spritepal PAL_FIRECULTIST
+			else ife am_tmp 2
+				spritepal PAL_AUTOCULTIST
+		}
+		add am_tmp 1
+	}
+	// won't do anything otherwise
+ends
+
+appendevent EVENT_LOADACTOR
+	switch sprite[].picnum
+		case A_CULTIST
+		case A_CULTIST_STAYPUT
+			state roll_cultist_type
+		break
+	endswitch
+endevent
+		
+appendevent EVENT_SPAWN
+	ifspawnedby RESPAWN {
+		geta[sprite.owner].pal am_tmp
+		ife am_tmp 0 {
+			// do this mutation only if respawn doesn't have a palette given to it already
+			switch sprite[].picnum
+				case A_CULTIST
+				case A_CULTIST_STAYPUT
+					state roll_cultist_type
+				break
+			endswitch
+		}
+	}
+endevent

@@ -1,0 +1,66 @@
+/*
+THIS IS THE ITEM MUTATOR FILE FOR ANGER MANAGEMENT. Without this file, items won't get custom stuff.
+*/
+
+// yes, technically the rng distribution isn't as stated, chance to find a radar is (1 - p_ammobonus) * (1 - p_deflector) = 0.5025, this is not 42%.
+appendevent EVENT_LOADACTOR
+	switch sprite[].picnum
+		case I_RADAR
+			// 33% chance to instead drop an ammo booster in this thing's place
+			ifrnd AM_AMMOBONUS_SPAWNCHANCE {
+				espawn I_AMMOBOOST
+				killit
+			}
+			else ifrnd AM_DEFLECTOR_SPAWNCHANCE {
+				espawn I_DEFLECTOR
+				killit
+			}
+		break
+		case I_MEDKIT
+			// 25% chance to instead drop a health syringe in this thing's place
+			ifrnd AM_STAMINA_SPAWNCHANCE {
+				espawn I_SYRINGE
+				killit
+			}
+			else ifrnd AM_BUDDY_SPAWNCHANCE {
+				espawn I_BUDDY
+				killit
+			}
+		break
+		case I_SHOTGUN_AMMO
+			ifrnd AM_EXPLOSIVESHELL_SPAWNCHANCE
+				spritepal AM_PAL_EXPLOSIVESHELL
+		break
+	endswitch
+endevent
+		
+appendevent EVENT_SPAWN
+	switch sprite[].picnum
+		case I_RADAR
+			// 33% chance to instead drop an ammo booster in this thing's place
+			ifrnd AM_AMMOBONUS_SPAWNCHANCE {
+				espawn I_AMMOBOOST
+				killit
+			}
+			else ifrnd AM_DEFLECTOR_SPAWNCHANCE {
+				espawn I_DEFLECTOR
+				killit
+			}
+		break
+		case I_MEDKIT
+			// 25% chance to instead drop a health syringe in this thing's place
+			ifrnd AM_STAMINA_SPAWNCHANCE {
+				espawn I_SYRINGE
+				killit
+			}
+			else ifrnd AM_BUDDY_SPAWNCHANCE {
+				espawn I_BUDDY
+				killit
+			}
+		break
+		case I_SHOTGUN_AMMO
+			ifrnd AM_EXPLOSIVESHELL_SPAWNCHANCE
+				spritepal AM_PAL_EXPLOSIVESHELL
+		break
+	endswitch
+endevent

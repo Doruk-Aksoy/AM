@@ -1,0 +1,4710 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:                                                   
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#  
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, and Evan Ramos
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file contains surface definitions. The majority of textures in the game are
+given a specific "surface type" and in some cases a swapped damage frame.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+var surface_type 0 2
+var vent_spr 0 2
+
+define SURFACE_STONE 1
+define SURFACE_TILE 2
+define SURFACE_METAL 3
+define SURFACE_GLASS 4
+define SURFACE_WOOD 5
+define SURFACE_DIRT 6
+define SURFACE_GRASS 7
+define SURFACE_WATER 8
+define SURFACE_SLIME 9
+define SURFACE_LIGHT 10
+define SURFACE_ELECTRICAL 11
+define SURFACE_PAPER 12
+define SURFACE_PLASTIC 13
+define SURFACE_FABRIC 14
+define SURFACE_CARPET 15
+define SURFACE_FLESH 16
+define SURFACE_BULLETHOLE 17
+
+// Kill HITSCAN on certain sprites
+var bbomb_reflect 0 2
+defstate remove_hitscan
+    ife sprite[].statnum STAT_FALLER
+        break
+    geta[].cstat temp
+    ifand temp 256
+        xor temp 256
+    seta[].cstat temp
+    changespritestat THISACTOR 0
+ends
+
+appendevent EVENT_SPAWN
+    switch sprite[].picnum
+        case 6398
+        case 6466
+        case 6467
+        case 6534
+        case 6600
+        case 6611
+        case 7961
+        case 7963
+        case 7964
+        case 8610
+        case 8611
+        case 8629
+        case 8630
+        case 8641
+        case 8666
+        case 8670
+        case 8818
+        case 9939
+        case 9941
+        case 10680
+        case 10681
+        case 10756
+        case 10758
+        case 10760
+        case 10762
+        case 10764
+        case 10766
+        case 10768
+        case 10770
+        case 10772
+        case 10774
+        case 10776
+            state remove_hitscan
+            break
+        case 6220
+        case 6221
+        case 6312
+        case 6532
+        case 7610
+        case 7948
+        case 7959
+        case 8187
+        case 8238
+        case 8240
+        case 8652
+        case 8653
+        case 8654
+        case 10276
+        case 10277
+        case 10342
+        case 10343
+        case 10344
+        case 10345
+        case 10346
+        case 10347
+        case 10390
+        case 10430
+        case 10490
+        case 10491
+        case 10492
+        case 10493
+        case 10494
+        case 10740
+        case 10742
+        case 10745
+        case 10746
+        case 10748
+        case 10780
+        case 10781
+        case 10782
+        case 10783
+        case 10784
+        case 10785
+        case 10786
+        case 10787
+        case 10788
+        case 10789
+        case 10790
+        case 10791
+        case 10792
+        case 10793
+        case 10794
+        case 10795
+        case 10796
+        case 10810
+        case 11171
+        case 11172
+        case 11173
+            state remove_hitscan
+            set bbomb_reflect 1
+            break
+    endswitch
+    
+    switch sprite.picnum
+        case 6466
+        case 6532
+        case 8818
+        case 8819
+        case 10332
+        case 10408
+        case 10740
+        case 10742
+            geta .cstat temp
+            ifand temp 4
+            {
+                xor temp 4
+                seta .cstat temp
+            }
+            break
+        case 6611
+            geta .cstat temp
+            ifand temp 4
+            {
+                xor temp 4
+                seta .cstat temp
+                ifand temp 16
+                {
+                    geta .ang temp
+                    add temp 1024
+                    and temp 2047
+                    seta .ang temp
+                }
+            }
+            break
+    endswitch
+endevent
+
+defstate check_vent
+    set vent_spr 0
+    switch surface_type
+        case T_GRATE
+        case T_GRATEBROKE
+        case T_FAN
+        case T_FANBROKE
+            set vent_spr 1
+            break
+    endswitch
+ends
+
+defstate propogate_surfaces
+    switch temp
+        case 71
+        case 73
+        case 6144
+        case 6145
+        case 6146
+        case 6147
+        case 6149
+        case 6150
+        case 6152
+        case 6154
+        case 6170
+        case 6171
+        case 6172
+        case 6173
+        case 6174
+        case 6175
+        case 6178
+        case 6179
+        case 6180
+        case 6181
+        case 6182
+        case 6198
+        case 6199
+        case 6200
+        case 6201
+        case 6202
+        case 6203
+        case 6204
+        case 6205
+        case 6206
+        case 6207
+        case 6209
+        case 6210
+        case 6211
+        case 6212
+        case 6213
+        case 6222
+        case 6231
+        case 6239
+        case 6308
+        case 6317
+        case 6318
+        case 6319
+        case 6320
+        case 6327
+        case 6331
+        case 6337
+        case 6340
+        case 6342
+        case 6343
+        case 6344
+        case 6345
+        case 6346
+        case 6347
+        case 6348
+        case 6349
+        case 6369
+        case 6377
+        case 6379
+        case 6387
+        case 6393
+        case 6394
+        case 6399
+        case 6402
+        case 6406
+        case 6423
+        case 6425
+        case 6428
+        case 6429
+        case 6441
+        case 6442
+        case 6454
+        case 6455
+        case 6456
+        case 6457
+        case 6458
+        case 6459
+        case 6460
+        case 6461
+        case 6462
+        case 6499
+        case 6500
+        case 6520
+        case 6528
+        case 6539
+        case 6574
+        case 6576
+        case 6586
+        case 6593
+        case 6595
+        case 6596
+        case 6597
+        case 6598
+        case 6602
+        case 6605
+        case 6636
+        case 6642
+        case 6654
+        case 7423
+        case 7424
+        case 7427
+        case 7449
+        case 7461
+        case 7462
+        case 7481
+        case 7552
+        case 7599
+        case 7601
+        case 7604
+        case 7609
+        case 7613
+        case 7622
+        case 7623
+        case 7624
+        case 7625
+        case 7626
+        case 7627
+        case 7637
+        case 7638
+        case 7639
+        case 7640
+        case 7646
+        case 7647
+        case 7648
+        case 7651
+        case 7652
+        case 7653
+        case 7654
+        case 7656
+        case 7667
+        case 7668
+        case 7672
+        case 7911
+        case 7912
+        case 7918
+        case 7919
+        case 7920
+        case 7921
+        case 7944
+        case 7946
+        case 7947
+        case 7955
+        case 7956
+        case 7966
+        case 8022
+        case 8200
+        case 8209
+        case 8210
+        case 8211
+        case 8239
+        case 8241
+        case 8242
+        case 8243
+        case 8244
+        case 8245
+        case 8569
+        case 8570
+        case 8571
+        case 8572
+        case 8573
+        case 8574
+        case 8575
+        case 8576
+        case 8577
+        case 8578
+        case 8579
+        case 8580
+        case 8581
+        case 8582
+        case 8583
+        case 8584
+        case 8585
+        case 8586
+        case 8587
+        case 8588
+        case 8622
+        case 8623
+        case 8625
+        case 8626
+        case 8627
+        case 8632
+        case 8634
+        case 8636
+        case 8643
+        case 8647
+        case 8648
+        case 8649
+        case 8650
+        case 8674
+        case 8691
+        case 8692
+        case 8699
+        case 8700
+        case 9101
+        case 9102
+        case 9103
+        case 9104
+        case 9105
+        case 9106
+        case 9107
+        case 9108
+        case 9109
+        case 9110
+        case 9111
+        case 9112
+        case 9113
+        case 9114
+        case 9115
+        case 9116
+        case 9117
+        case 9118
+        case 9119
+        case 9120
+        case 9121
+        case 9122
+        case 9123
+        case 9124
+        case 9157
+        case 9160
+        case 9170
+        case 9171
+        case 9172
+        case 9173
+        case 9174
+        case 9175
+        case 9178
+        case 9179
+        case 9184
+        case 9185
+        case 9186
+        case 9187
+        case 9188
+        case 9189
+        case 9190
+        case 9191
+        case 9194
+        case 9195
+        case 9196
+        case 9197
+        case 9198
+        case 9199
+        case 9200
+        case 9201
+        case 9243
+        case 9244
+        case 9245
+        case 9246
+        case 9247
+        case 9248
+        case 9249
+        case 9258
+        case 9889
+        case 9890
+        case 9891
+        case 9892
+        case 9912
+        case 10116
+        case 10117
+        case 10118
+        case 10119
+        case 10121
+        case 10122
+        case 10123
+        case 10124
+        case 10125
+        case 10133
+        case 10134
+        case 10135
+        case 10136
+        case 10146
+        case 10160
+        case 10161
+        case 10166
+        case 10167
+        case 10168
+        case 10256
+        case 10257
+        case 10258
+        case 10267
+        case 10268
+        case 10269
+        case 10357
+        case 10376
+        case 10377
+        case 10378
+        case 10379
+        case 10448
+        case 10526
+        case 10527
+        case 10664
+        case 10665
+        case 10822
+        case 10823
+        case 10830
+        case 10831
+        case 10839
+        case 10840
+        case 10841
+        case 10842
+        case 10843
+        case 10844
+        case 10845
+        case 10846
+        case 10847
+        case 10848
+        case 10849
+        case 10850
+        case 10851
+        case 10852
+        case 10853
+        case 10854
+        case 10855
+        case 10856
+        case 10864
+        case 10867
+        case 10868
+        case 10869
+        case 10870
+        case 10871
+        case 10879
+        case 10884
+        case 10885
+        case 10886
+        case 10888
+        case 10890
+        case 10898
+        case 10900
+        case 10901
+        case 10902
+        case 10903
+        case 10907
+        case 10908
+        case 10911
+        case 10912
+        case 10918
+        case 10926
+        case 11188
+        case 11189
+        case 11194
+        case 11195
+        case 11197
+        case 11199
+        case 11212
+        case 11213
+        case 11214
+        case 11215
+        case 11256
+        case 11258
+        case 11259
+        case 11264
+        case 11265
+        case 14123
+        case 14124
+            setarray pre_surface_type[temp] SURFACE_STONE
+            break
+        case 6176
+        case 6196
+        case 6197
+        case 6215
+        case 6235
+        case 6237
+        case 6238
+        case 6304
+        case 6315
+        case 6316
+        case 6322
+        case 6323
+        case 6341
+        case 6355
+        case 6356
+        case 6365
+        case 6366
+        case 6367
+        case 6368
+        case 6378
+        case 6380
+        case 6381
+        case 6405
+        case 6416
+        case 6417
+        case 6418
+        case 6419
+        case 6422
+        case 6497
+        case 6498
+        case A_TEACUP_1 // 6554
+        case A_COFFEEMUG_1 // 6555
+        case A_PLATE_DESSERT // 6563
+        case 6577
+        case 6578
+        case A_PLATE // 6580
+        case A_PLATE_STACK // 6581
+        case 6608
+        case 6609
+        case 7438
+        case 7474
+        case 7475
+        case 7476
+        case 7477
+        case 7478
+        case 7479
+        case 7480
+        case 7482
+        case 7483
+        case 7506
+        case 7509
+        case 7510
+        case 7632
+        case 7674
+        case 8192
+        case 8675
+        case 8695
+        case 9094
+        case 9161
+        case 9266
+        case 9267
+        case 9268
+        case 9269
+        case A_URINAL // 9270
+        case 9271
+        case 9936
+        case 9989
+        case 9990
+        case 9991
+        case 9992
+        case 9993
+        case 10143
+        case 10144
+        case 10380
+        case 10381
+        case 10382
+        case 10383
+        case 10384
+        case 10385
+        case 10396
+        case 10397
+        case 10398
+        case 10399
+        case 10427
+        case 10431
+        case 10434
+        case 10514
+        case 10515
+        case 10666
+        case 10667
+        case 10668
+        case 10669
+        case 10670
+        case 10671
+        case 10672
+        case 10673
+        case 10674
+        case 10675
+        case 10804
+        case 10805
+        case 10806
+        case 10807
+        case 10808
+        case 10811
+        case 10812
+        case 10813
+        case 10816
+        case 10817
+        case 10818
+        case 10819
+        case 10824
+        case 10825
+        case 10826
+        case 10827
+        case 10828
+        case 10829
+        case 10834
+        case 10897
+        case 10925
+        case 10941
+        case 11192
+        case 11193
+        case 11216
+        case 11217
+        case 11244
+        case 11262
+        case 11266
+        case 11267
+        case 14091
+        case 14117
+        case 14118
+        case 14119
+        case 14120
+        case 14121
+        case 14122
+        case 14125
+            setarray pre_surface_type[temp] SURFACE_TILE
+            break
+        case I_CLUSTERPUCK // 222
+        case I_BOWLINGBOMB_PICKUP // 232
+        case A_VALVESWITCH_1 // 3643
+        case A_VALVESWITCH_2 // 3651
+        case A_VALVESWITCH_1_BASE // 3659
+        case A_VALVESWITCH_2_BASE // 3660
+        case 5636
+        case 5668
+        case 5669
+        case 5670
+        case 5671
+        case 5672
+        case 5673
+        case 5674
+        case 5675
+        case 5676
+        case 5677
+        case 5678
+        case 5679
+        case 5680
+        case 5683
+        case 5684
+        case 5685
+        case 5686
+        case 5687
+        case 5688
+        case 5689
+        case 5690
+        case 5691
+        case 5694
+        case 5695
+        case 5696
+        case 5702
+        case A_SHOVEL // 5704
+        case 5705
+        case 5706
+        case 5707
+        case 5708
+        case 5709
+        case 5710
+        case 5712
+        case 5715
+        case 5718
+        case 5719
+        case 5720
+        case 5721
+        case 5722
+        case 5723
+        case 5724
+        case 5725
+        case 6104
+        case 6105
+        case 6108
+        case 6155
+        case 6156
+        case 6157
+        case 6158
+        case 6159
+        case 6160
+        case 6161
+        case 6162
+        case 6163
+        case 6164
+        case 6165
+        case 6166
+        case 6167
+        case 6168
+        case 6169
+        case 6184
+        case 6185
+        case 6186
+        case 6187
+        case 6188
+        case 6189
+        case 6190
+        case 6214
+        case 6216
+        case 6217
+        case 6218
+        case 6219
+        case 6220
+        case 6221
+        case 6225
+        case 6312
+        case 6326
+        case 6328
+        case 6329
+        case 6332
+        case 6333
+        case 6334
+        case 6338
+        case 6339
+        case 6350
+        case 6386
+        case 6388
+        case 6389
+        case 6396
+        case 6397
+        case 6398
+        case 6400
+        case 6407
+        case 6408
+        case 6409
+        case 6410
+        case 6411
+        case 6412
+        case 6413
+        case 6414
+        case 6415
+        case 6420
+        case 6421
+        case 6424
+        case A_VENT_BREAKABLE // 6426
+        case A_VENT_BROKE // 6427
+        case 6435
+        case 6436
+        case 6437
+        case 6438
+        case 6440
+        case 6448
+        case 6449
+        case 6450
+        case 6465
+        case 6466
+        case 6467
+        case 6472
+        case 6473
+        case T_GRATE // 6490
+        case T_GRATEBROKE // 6491
+        case T_FAN // 6492
+        case 6493
+        case 6494
+        case 6495
+        case T_FANBROKE // 6496
+        case 6504
+        case 6505
+        case 6517
+        case 6518
+        case 6519
+        case 6521
+        case 6524
+        case 6525
+        case 6526
+        case 6527
+        case 6530
+        case 6532
+        case 6533
+        case 6534
+        case 6535
+        case 6536
+        case 6537
+        case 6538
+        case A_FIREEXT // 6540
+        case 6541
+        case 6542
+        case A_TRASHCAN_DMG_1 // 6546
+        case A_TRASHCAN_DMG_2 // 6547
+        case A_SODA_1 // 6553
+        case A_BUCKET_1 // 6556
+        case 6567
+        case 6568
+        case A_TRASHCAN // 6569
+        case 6573
+        case 6587
+        case 6588
+        case 6594
+        case 6599
+        case 6600
+        case 6603
+        case 6604
+        case 6610
+        case 6611
+        case A_GASCAN // 6620
+        case 6625
+        case 6626
+        case 6627
+        case 6633
+        case 6634
+        case 6635
+        case 6639
+        case 6641
+        case 6644
+        case 6645
+        case 6646
+        case 6647
+        case 6648
+        case 6649
+        case 6650
+        case 6651
+        case 6652
+        case 6653
+        case 6655
+        case I_BOWLINGBOMB // 6800
+        case P_PUCK_THROWN // 6953
+        case P_PUCK_PLACED // 6957
+        case 7245
+        case 7254
+        case 7425
+        case 7428
+        case 7429
+        case 7430
+        case 7431
+        case 7432
+        case 7454
+        case 7455
+        case 7456
+        case 7457
+        case 7458
+        case 7459
+        case 7460
+        case 7463
+        case 7464
+        case 7465
+        case 7466
+        case 7467
+        case 7468
+        case 7469
+        case 7487
+        case 7488
+        case 7491
+        case 7492
+        case 7493
+        case 7494
+        case 7495
+        case 7496
+        case 7497
+        case 7498
+        case 7499
+        case 7500
+        case 7504
+        case 7505
+        case 7507
+        case 7508
+        case 7511
+        case 7512
+        case 7513
+        case 7525
+        case 7526
+        case 7529
+        case 7549
+        case 7550
+        case A_HYDRANT_1 // 7553
+        case 7558
+        case 7562
+        case 7563
+        case 7564
+        case 7565
+        case 7566
+        case 7567
+        case 7568
+        case 7569
+        case 7570
+        case 7571
+        case 7572
+        case 7573
+        case 7574
+        case 7576
+        case 7577
+        case 7582
+        case 7583
+        case 7584
+        case 7587
+        case 7588
+        case 7590
+        case 7593
+        case 7595
+        case 7600
+        case 7605
+        case 7606
+        case 7607
+        case 7608
+        case 7610
+        case 7611
+        case 7614
+        case 7615
+        case 7616
+        case 7628
+        case 7629
+        case 7630
+        case 7631
+        case 7642
+        case 7643
+        case 7644
+        case 7645
+        case 7655
+        case 7675
+        case 7677
+        case A_BARREL_2 // 7819
+        case 7820
+        case 7821
+        case A_BARREL_1 // 7824
+        case 7825
+        case 7826
+        case A_CANISTER_1 // 7829
+        case 7880
+        case A_BARREL_GIB // 7885
+        case A_REDSWINGLINE // 7934
+        case 7948
+        case 7951
+        case 7952
+        case 7953
+        case 7954
+        case 7959
+        case 7960
+        case 7961
+        case 7962
+        case 7963
+        case 7964
+        case 7965
+        case 7967
+        case 7968
+        case 7969
+        case 7970
+        case 7972
+        case 7973
+        case 7974
+        case 7975
+        case 7976
+        case 7977
+        case 7978
+        case 7979
+        case 7980
+        case 7981
+        case 7982
+        case 7983
+        case 7990
+        case 7991
+        case 7992
+        case 7995
+        case 7996
+        case 8000
+        case 8025
+        case 8026
+        case 8030
+        case 8033
+        case 8036
+        case 8039
+        case 8042
+        case 8045
+        case 8048
+        case 8051
+        case 8054
+        case 8057
+        case 8066
+        case 8069
+        case 8076
+        case 8077
+        case 8078
+        case 8079
+        case 8080
+        case 8081
+        case 8082
+        case 8083
+        case 8084
+        case 8085
+        case 8086
+        case 8087
+        case 8088
+        case 8089
+        case 8090
+        case 8091
+        case 8092
+        case 8093
+        case 8094
+        case 8095
+        case 8096
+        case 8097
+        case 8100
+        case 8101
+        case 8102
+        case 8103
+        case 8106
+        case 8107
+        case 8108
+        case 8109
+        case 8110
+        case 8111
+        case 8112
+        case 8113
+        case 8114
+        case 8115
+        case 8116
+        case 8117
+        case 8133
+        case 8136
+        case 8139
+        case 8142
+        case 8145
+        case 8157
+        case 8158
+        case 8163
+        case 8165
+        case 8187
+        case 8201
+        case 8202
+        case 8203
+        case 8212
+        case 8213
+        case 8221
+        case 8222
+        case 8223
+        case 8224
+        case 8225
+        case 8226
+        case 8228
+        case 8235
+        case 8236
+        case 8238
+        case 8240
+        case 8246
+        case 8247
+        case 8258
+        case 8259
+        case 8260
+        case 8261
+        case 8262
+        case 8263
+        case 8264
+        case 8265
+        case 8266
+        case 8267
+        case 8271
+        case 8272
+        case T_LADDER_1 // 8280
+        case T_LADDER_3 // 8282
+        case 8300
+        case 8302
+        case 8304
+        case 8306
+        case T_LADDER_4 // 8316
+        case T_LADDER_6 // 8318
+        case 8599
+        case 8610
+        case 8611
+        case 8614
+        case 8619
+        case 8629
+        case 8630
+        case 8631
+        case 8640
+        case 8641
+        case 8642
+        case 8651
+        case 8652
+        case 8653
+        case 8654
+        case 8655
+        case 8665
+        case 8666
+        case 8667
+        case 8668
+        case 8669
+        case 8670
+        case 8693
+        case 8729
+        case 8757
+        case 8758
+        case 8759
+        case 8760
+        case 8761
+        case 8762
+        case 8763
+        case 8764
+        case 8765
+        case 8766
+        case 8767
+        case 8768
+        case 8769
+        case 8770
+        case 8776
+        case A_CANISTER_2 // 8780
+        case 8785
+        case 8786
+        case 8787
+        case 8788
+        case 8789
+        case 8790
+        case 8791
+        case 8792
+        case 8793
+        case 8794
+        case 8795
+        case 8796
+        case 8797
+        case 8798
+        case 8799
+        case 8811
+        case 8812
+        case 8814
+        case 8818
+        case 8819
+        case 8900
+        case 8901
+        case 8902
+        case 8903
+        case 8904
+        case 8905
+        case 8906
+        case 8907
+        case 8908
+        case 8909
+        case 8910
+        case 8911
+        case 8912
+        case 8913
+        case 8914
+        case 8915
+        case 8930
+        case 8931
+        case 8932
+        case 8933
+        case 8937
+        case 8938
+        case 8939
+        case 8977
+        case 8981
+        case 8985
+        case I_SODA_STAND // 9002
+        case I_SODA // 9003
+        case 9040
+        case 9041
+        case 9042
+        case 9043
+        case 9044
+        case 9045
+        case 9046
+        case 9047
+        case 9048
+        case 9049
+        case 9050
+        case 9051
+        case 9052
+        case 9053
+        case 9054
+        case 9055
+        case 9056
+        case 9057
+        case A_SODASIDE_1 // 9069
+        case 9081
+        case 9095
+        case 9097
+        case T_LADDER_1_BROKE_1 // 9152
+        case T_LADDER_1_BROKE_2 // 9153
+        case 9154
+        case 9158
+        case 9159
+        case 9162
+        case 9163
+        case 9164
+        case 9165
+        case 9169
+        case 9180
+        case 9181
+        case 9210
+        case 9211
+        case 9212
+        case A_TRASHCAN_LID // 9213
+        case A_GARBAGE_DEAD // 9221
+        case A_TRASHCAN_DEAD // 9222
+        case 9250
+        case 9251
+        case 9252
+        case 9253
+        case 9256
+        case 9257
+        case 9262
+        case 9263
+        case 9272
+        case 9273
+        case 9274
+        case 9275
+        case 9276
+        case 9278
+        case 9279
+        case 9284
+        case 9297
+        case 9298
+        case 9300
+        case 9301
+        case 9302
+        case 9303
+        case 9304
+        case 9305
+        case 9306
+        case 9307
+        case 9308
+        case 9309
+        case 9310
+        case 9311
+        case 9312
+        case 9314
+        case 9320
+        case 9321
+        case 9322
+        case 9323
+        case 9324
+        case 9325
+        case 9326
+        case 9327
+        case 9328
+        case 9330
+        case 9331
+        case 9332
+        case A_TIRE1 // 9333
+        case 9334
+        case 9336
+        case A_TIRE7 // 9337
+        case 9338
+        case A_TIRE2 // 9339
+        case 9340
+        case 9342
+        case A_TIRE8 // 9343
+        case 9344
+        case A_TIRE3 // 9345
+        case 9346
+        case 9348
+        case A_TIRE9 // 9349
+        case 9350
+        case A_TIRE4 // 9351
+        case 9352
+        case 9354
+        case A_TIRE10 // 9355
+        case 9356
+        case A_TIRE5 // 9357
+        case 9358
+        case 9360
+        case A_TIRE11 // 9361
+        case 9362
+        case A_TIRE6 // 9363
+        case 9364
+        case 9366
+        case A_TIRE12 // 9367
+        case 9368
+        case 9380
+        case 9381
+        case 9391
+        case 9392
+        case 9393
+        case 9394
+        case 9396
+        case 9397
+        case 9399
+        case 9410
+        case 9412
+        case 9413
+        case 9414
+        case 9415
+        case 9420
+        case 9421
+        case 9422
+        case 9423
+        case 9424
+        case 9425
+        case 9426
+        case 9427
+        case 9428
+        case 9429
+        case 9430
+        case 9431
+        case 9432
+        case 9433
+        case 9434
+        case 9435
+        case 9440
+        case 9441
+        case 9442
+        case 9443
+        case 9444
+        case 9445
+        case 9446
+        case 9447
+        case 9448
+        case 9449
+        case 9450
+        case 9451
+        case 9452
+        case 9453
+        case 9454
+        case 9455
+        case 9456
+        case 9457
+        case 9458
+        case 9459
+        case 9460
+        case 9461
+        case 9462
+        case 9463
+        case 9464
+        case 9465
+        case 9466
+        case 9467
+        case 9468
+        case 9469
+        case 9490
+        case 9491
+        case 9520
+        case 9521
+        case 9522
+        case 9527
+        case 9528
+        case 9529
+        case 9540
+        case 9541
+        case 9542
+        case 9543
+        case 9550
+        case 9551
+        case 9552
+        case 9553
+        case 9554
+        case 9555
+        case 9559
+        case 9560
+        case 9561
+        case 9562
+        case 9563
+        case 9565
+        case 9566
+        case 9568
+        case 9569
+        case 9570
+        case 9571
+        case 9572
+        case 9573
+        case 9590
+        case 9591
+        case 9592
+        case 9593
+        case 9594
+        case 9596
+        case 9620
+        case 9622
+        case 9623
+        case 9624
+        case 9625
+        case 9632
+        case 9633
+        case 9634
+        case 9640
+        case 9641
+        case 9642
+        case 9643
+        case 9644
+        case 9645
+        case 9646
+        case 9647
+        case 9648
+        case 9650
+        case 9651
+        case 9652
+        case 9653
+        case 9654
+        case 9655
+        case 9656
+        case 9657
+        case 9658
+        case 9659
+        case 9660
+        case 9661
+        case 9670
+        case 9671
+        case 9672
+        case 9673
+        case 9674
+        case 9675
+        case 9676
+        case 9677
+        case 9690
+        case 9691
+        case 9694
+        case 9695
+        case 9698
+        case 9699
+        case 9700
+        case 9701
+        case 9720
+        case 9721
+        case 9722
+        case 9723
+        case 9724
+        case 9725
+        case 9726
+        case 9727
+        case 9728
+        case 9729
+        case 9730
+        case 9731
+        case 9732
+        case 9733
+        case 9747
+        case 9748
+        case 9779
+        case 9780
+        case 9781
+        case 9782
+        case 9783
+        case 9784
+        case 9785
+        case 9786
+        case 9790
+        case 9791
+        case 9792
+        case 9793
+        case 9800
+        case 9801
+        case 9802
+        case 9803
+        case 9804
+        case 9805
+        case 9806
+        case 9807
+        case 9808
+        case 9809
+        case 9810
+        case 9811
+        case 9812
+        case 9813
+        case 9814
+        case 9815
+        case 9816
+        case 9817
+        case 9826
+        case 9827
+        case 9828
+        case 9829
+        case 9830
+        case 9831
+        case 9832
+        case 9833
+        case 9834
+        case 9835
+        case 9836
+        case 9837
+        case 9838
+        case 9839
+        case 9840
+        case 9841
+        case 9844
+        case 9845
+        case 9846
+        case 9847
+        case 9848
+        case 9849
+        case 9850
+        case 9851
+        case 9852
+        case 9853
+        case 9854
+        case 9855
+        case 9878
+        case 9879
+        case 9886
+        case 9893
+        case 9894
+        case 9895
+        case 9898
+        case 9899
+        case 9905
+        case 9907
+        case 9913
+        case 9915
+        case 9937
+        case 9938
+        case 9939
+        case 9941
+        case 9965
+        case 9966
+        case 9972
+        case 9973
+        case 9974
+        case 9975
+        case 9976
+        case 9977
+        case 9978
+        case 9979
+        case 9987
+        case 9988
+        case 9994
+        case 9995
+        case 9996
+        case 9997
+        case 9998
+        case A_SERUM_HANGER // 10110
+        case 10111
+        case 10112
+        case 10113
+        case 10114
+        case 10115
+        case 10138
+        case 10140
+        case 10145
+        case 10162
+        case 10163
+        case 10164
+        case 10165
+        case 10172
+        case 10173
+        case 10174
+        case 10175
+        case 10176
+        case 10177
+        case 10178
+        case 10179
+        case 10180
+        case 10181
+        case 10182
+        case 10183
+        case 10184
+        case 10185
+        case 10186
+        case 10187
+        case 10188
+        case 10189
+        case 10190
+        case 10191
+        case 10192
+        case 10193
+        case 10194
+        case 10195
+        case 10196
+        case 10197
+        case 10198
+        case 10238
+        case 10239
+        case 10240
+        case 10241
+        case 10259
+        case 10260
+        case 10261
+        case 10262
+        case 10272
+        case 10274
+        case 10275
+        case 10276
+        case 10277
+        case 10278
+        case 10279
+        case A_BIGASSFAN // 10280
+        case 10281
+        case 10296
+        case A_BIGASSFAN_BLOODY // 10304
+        case 10320
+        case 10331
+        case 10332
+        case 10333
+        case 10334
+        case 10335
+        case 10336
+        case 10337
+        case 10340
+        case 10341
+        case 10342
+        case 10343
+        case 10344
+        case 10345
+        case 10346
+        case 10347
+        case 10356
+        case 10358
+        case 10359
+        case 10360
+        case 10361
+        case 10368
+        case 10369
+        case 10370
+        case 10373
+        case 10374
+        case 10375
+        case 10388
+        case 10389
+        case 10390
+        case 10391
+        case 10392
+        case 10393
+        case 10394
+        case 10395
+        case 10400
+        case 10401
+        case 10402
+        case 10403
+        case 10404
+        case 10405
+        case 10406
+        case 10407
+        case 10408
+        case 10409
+        case 10410
+        case 10411
+        case 10412
+        case 10413
+        case 10414
+        case 10415
+        case 10416
+        case 10417
+        case 10418
+        case 10419
+        case 10420
+        case 10428
+        case 10429
+        case 10435
+        case 10436
+        case 10437
+        case 10438
+        case 10440
+        case 10441
+        case 10444
+        case 10445
+        case 10446
+        case 10447
+        case 10449
+        case 10490
+        case 10491
+        case 10492
+        case 10493
+        case 10494
+        case 10497
+        case 10498
+        case 10499
+        case 10509
+        case 10510
+        case 10511
+        case 10516
+        case 10517
+        case 10528
+        case 10529
+        case 10530
+        case 10531
+        case 10532
+        case 10533
+        case 10535
+        case 10676
+        case 10677
+        case 10678
+        case 10679
+        case 10680
+        case 10681
+        case 10682
+        case 10683
+        case 10684
+        case 10685
+        case 10687
+        case 10688
+        case 10690
+        case 10691
+        case 10692
+        case 10693
+        case 10694
+        case 10695
+        case 10696
+        case 10697
+        case 10698
+        case 10699
+        case 10700
+        case 10701
+        case 10702
+        case 10703
+        case 10704
+        case 10705
+        case 10706
+        case 10707
+        case 10708
+        case 10709
+        case 10710
+        case 10711
+        case 10712
+        case 10713
+        case 10714
+        case 10715
+        case 10716
+        case 10717
+        case 10718
+        case 10719
+        case 10720
+        case 10721
+        case 10722
+        case 10723
+        case 10724
+        case 10725
+        case 10730
+        case 10731
+        case 10732
+        case 10733
+        case 10734
+        case 10735
+        case 10753
+        case 10754
+        case 10755
+        case 10756
+        case 10757
+        case 10758
+        case 10759
+        case 10760
+        case 10761
+        case 10762
+        case 10763
+        case 10764
+        case 10765
+        case 10766
+        case 10767
+        case 10768
+        case 10769
+        case 10770
+        case 10771
+        case 10772
+        case 10773
+        case 10774
+        case 10775
+        case 10776
+        case 10780
+        case 10781
+        case 10782
+        case 10783
+        case 10784
+        case 10785
+        case 10786
+        case 10787
+        case 10788
+        case 10789
+        case 10790
+        case 10791
+        case 10792
+        case 10793
+        case 10794
+        case 10795
+        case 10796
+        case 10798
+        case 10799
+        case 10800
+        case 10801
+        case 10802
+        case 10803
+        case 10809
+        case 10810
+        case 10814
+        case 10815
+        case 10859
+        case 10860
+        case 10861
+        case 10862
+        case 10865
+        case 10866
+        case 10872
+        case 10873
+        case 10874
+        case 10875
+        case 10876
+        case 10877
+        case 10878
+        case 10881
+        case 10882
+        case 10887
+        case 10889
+        case 10891
+        case 10892
+        case 10893
+        case 10894
+        case 10895
+        case 10896
+        case 10899
+        case 10905
+        case 10909
+        case 10910
+        case 10913
+        case 10914
+        case 10916
+        case 10917
+        case 10921
+        case 10922
+        case 10923
+        case 10927
+        case 10928
+        case 10929
+        case 10930
+        case 10931
+        case 10932
+        case 10933
+        case 10934
+        case 10935
+        case 10936
+        case 10937
+        case 10938
+        case A_BARSTOOL // 10949
+        case 10950
+        case 10951
+        case A_BIGTHERMOS // 10952
+        case 10973
+        case 11054
+        case 11063
+        case 11068
+        case 11070
+        case 11078
+        case 11079
+        case 11081
+        case 11082
+        case 11083
+        case 11084
+        case 11085
+        case 11086
+        case 11089
+        case 11091
+        case 11092
+        case 11093
+        case 11094
+        case 11095
+        case 11104
+        case 11119
+        case 11120
+        case 11121
+        case 11129
+        case 11130
+        case 11131
+        case 11132
+        case 11133
+        case 11160
+        case 11162
+        case 11163
+        case 11164
+        case 11165
+        case 11166
+        case 11167
+        case 11168
+        case 11169
+        case 11170
+        case 11171
+        case 11172
+        case 11173
+        case 11174
+        case 11175
+        case 11176
+        case 11177
+        case 11180
+        case 11183
+        case 11184
+        case 11185
+        case 11186
+        case 11187
+        case 11190
+        case 11191
+        case A_BIGASSSAW // 11200
+        case A_BIGASSSAW_BLOODY // 11204
+        case 11218
+        case 11219
+        case 11236
+        case 11237
+        case 11238
+        case 11239
+        case 11240
+        case 11241
+        case 11242
+        case 11243
+        case 11245
+        case 11246
+        case 11260
+        case 11261
+        case 11263
+        case 11274
+        case 11275
+        case 11276
+        case 11277
+        case 11278
+        case 11279
+        case 11280
+        case 11281
+        case 11282
+        case 11283
+        case 11284
+        case 11285
+        case 11286
+        case 11287
+        case 11288
+        case 11291
+        case A_AUGMENTATION_PROP_1 // 11316
+        case A_AUGMENTATION_PROP_2 // 11321
+        case A_AUGMENTATION_PROP_3 // 11329
+        case A_AUGMENTATION_PROP_4 // 11337
+        case A_AUGMENTATION_PROP_5 // 11345
+        case A_AUGMENTATION_PROP_6 // 11353
+        case 12030
+        case 14000
+        case 14001
+        case 14002
+        case 14003
+        case 14004
+        case 14005
+        case 14006
+        case 14007
+        case 14008
+        case 14009
+        case 14010
+        case 14011
+        case 14012
+        case 14013
+        case 14014
+        case 14015
+        case 14016
+        case 14017
+        case 14020
+        case 14021
+        case 14022
+        case 14023
+        case 14024
+        case 14026
+        case 14027
+        case 14028
+        case 14029
+        case 14030
+        case 14031
+        case 14032
+        case 14033
+        case 14035
+        case 14038
+        case 14039
+        case 14044
+        case 14045
+        case 14046
+        case 14047
+        case 14048
+        case 14049
+        case 14050
+        case 14051
+        case 14058
+        case 14059
+        case 14060
+        case 14061
+        case 14062
+        case 14063
+        case 14064
+        case 14065
+        case 14066
+        case 14067
+        case A_MIKE // 14068
+        case 14077
+        case 14081
+        case 14082
+        case 14083
+        case 14084
+        case 14086
+        case 14087
+        case 14088
+        case 14089
+        case 14115
+        case 14116
+        case 14126
+        case 14127
+        case 14128
+        case 14129
+        case 14130
+        case 14132
+        case 14133
+        case 14134
+        case 14136
+        case 14137
+        case 14138
+        case 14139
+        case 14140
+        case 14141
+        case 14142
+        case 14143
+        case 14147
+        case 14148
+
+        // enemies
+        case A_TURRET_BOTTOM
+        case A_TURRET
+        case A_TURRETDEAD
+        case A_DIOPEDE_HEAD
+        case A_DIOPEDE_BUTT
+        case A_MECHBOSS_BOTTOM
+        case A_MECHBOSS_TOP
+        case A_BRUTE
+        case A_BRUTE_BOTTOM
+        case A_BRUTE_TOP
+        case A_ARCHANGEL
+
+            setarray pre_surface_type[temp] SURFACE_METAL
+            break
+        case 560
+        case T_VENDING_MACHINE2_VEND // 5335
+        case A_VENDBETWEEN2 // 5336
+        case 5337
+        case 5338
+        case 5339
+        case 5340
+        case 5341
+        case 5342
+        case 5343
+        case 5344
+        case 5345
+        case 5346
+        case 5347
+        case 5348
+        case 5349
+        case 5350
+        case 5351
+        case 5352
+        case 5353
+        case 5354
+        case T_VENDING_MACHINE2_DROP // 5355
+        case 5356
+        case 5357
+        case T_VENDING_MACHINE2_END // 5358
+        case T_VENDING_MACHINE_VEND // 5367
+        case A_VENDBETWEEN // 5368
+        case 5369
+        case 5370
+        case 5371
+        case 5372
+        case 5373
+        case 5374
+        case 5375
+        case 5376
+        case 5377
+        case 5378
+        case 5379
+        case 5380
+        case 5381
+        case 5382
+        case 5383
+        case 5384
+        case 5385
+        case 5386
+        case T_VENDING_MACHINE_DROP // 5387
+        case 5388
+        case 5389
+        case T_VENDING_MACHINE_END // 5390
+        case 5697
+        case 5726
+        case 5727
+        case 6110
+        case 6111
+        case 6112
+        case 6113
+        case A_GLASS_WINDOW_1 // 6223
+        case A_GLASS_WINDOW_2 // 6224
+        case A_CUBEGLASS_1 // 6395
+        case 6439
+        case 6451
+        case 6452
+        case 6453
+        case A_GLASS_PANEL // 6468
+        case 6501
+        case A_GLASS_WINDOW_3 // 6502
+        case A_COFFEEPOT // 6550
+        case A_BOTTLE_1 // 6551
+        case A_BOTTLE_2 // 6552
+        case A_WATERGLASS_EMPTY // 6558
+        case A_WATERGLASS_FULL // 6559
+        case A_SHAKER_EMPTY // 6560
+        case A_SHAKER_FULL_1 // 6561
+        case A_SHAKER_FULL_2 // 6562
+        case A_CLOCK // 6565
+        case A_CLOCKBROKE // 6566
+        case 7426
+        case 7450
+        case 7516
+        case 7517
+        case 7518
+        case 7519
+        case A_FRAMED_PIC_1 // 7537
+        case A_FRAMED_PIC_2 // 7538
+        case A_FRAMED_PIC_3 // 7591
+        case A_FRAMED_PIC_4 // 7594
+        case 7657
+        case 7903
+        case 7904
+        case 7905
+        case 7906
+        case A_BEAKER_1 // 7928
+        case A_BEAKER_3 // 7931
+        case A_BEAKER_2 // 7933
+        case A_BONG // 7935
+        case 7941
+        case 7942
+        case A_CUBEGLASS_2 // 7943
+        case 7971
+        case A_GLASS_DECO_1 // 8031
+        case A_GLASS_DECO_1_BROKE // 8032
+        case A_GLASS_DECO_2 // 8034
+        case A_GLASS_DECO_2_BROKE // 8035
+        case A_GLASS_DECO_3 // 8037
+        case A_GLASS_DECO_3_BROKE // 8038
+        case A_GLASS_DECO_4 // 8040
+        case A_GLASS_DECO_4_BROKE // 8041
+        case A_GLASS_DECO_5 // 8043
+        case A_GLASS_DECO_5_BROKE // 8044
+        case A_GLASS_DECO_6 // 8046
+        case A_GLASS_DECO_6_BROKE // 8047
+        case A_GLASS_DECO_7 // 8049
+        case A_GLASS_DECO_7_BROKE // 8050
+        case A_GLASS_DECO_8 // 8052
+        case A_GLASS_DECO_8_BROKE // 8053
+        case A_GLASS_DECO_9 // 8055
+        case A_GLASS_DECO_9_BROKE // 8056
+        case A_GLASS_DECO_10 // 8058
+        case A_GLASS_DECO_10_BROKE // 8059
+        case A_GLASS_DECO_11 // 8061
+        case A_GLASS_DECO_11_BROKE // 8062
+        case A_GLASS_DECO_12 // 8064
+        case A_GLASS_DECO_12_BROKE // 8065
+        case A_GLASS_DECO_13 // 8067
+        case A_GLASS_DECO_13_BROKE // 8068
+        case A_GLASS_DECO_14 // 8070
+        case A_GLASS_DECO_14_BROKE // 8071
+        case 8098
+        case 8099
+        case 8104
+        case 8105
+        case 8119
+        case 8120
+        case A_GLASS_DECO_15 // 8121
+        case A_GLASS_DECO_15_BROKE // 8122
+        case 8124
+        case 8126
+        case 8128
+        case A_GLASS_DECO_22_BROKE // 8130
+        case A_GLASS_DECO_23_BROKE // 8132
+        case A_GLASS_DECO_16 // 8134
+        case A_GLASS_DECO_16_BROKE // 8135
+        case A_GLASS_DECO_17 // 8137
+        case A_GLASS_DECO_17_BROKE // 8138
+        case A_GLASS_DECO_18 // 8140
+        case A_GLASS_DECO_18_BROKE // 8141
+        case A_GLASS_DECO_19 // 8143
+        case A_GLASS_DECO_19_BROKE // 8144
+        case A_GLASS_DECO_20 // 8146
+        case A_GLASS_DECO_20_BROKE // 8147
+        case A_GLASS_DECO_21 // 8148
+        case A_GLASS_DECO_21_BROKE // 8149
+        case 8151
+        case 8153
+        case 8155
+        case A_GLASS_DECO_21_NOBREAK // 8156
+        case A_GLASS_DECO_22 // 8207
+        case A_GLASS_DECO_23 // 8208
+        case 8657
+        case 8658
+        case 8659
+        case 8694
+        case 8696
+        case A_BOTTLE_2_EMPTY // 8826
+        case A_FRAMED_PIC_1_BROKE // 8861
+        case A_FRAMED_PIC_2_BROKE // 8863
+        case A_FRAMED_PIC_3_BROKE // 8865
+        case A_FRAMED_PIC_4_BROKE // 8867
+        case A_FRAMED_PIC_5 // 8868
+        case A_FRAMED_PIC_5_BROKE // 8869
+        case A_FRAMED_PIC_6 // 8870
+        case A_FRAMED_PIC_6_BROKE // 8871
+        case A_FRAMED_PIC_7 // 8872
+        case A_FRAMED_PIC_7_BROKE // 8873
+        case A_FRAMED_PIC_8 // 8874
+        case A_FRAMED_PIC_8_BROKE // 8875
+        case A_FRAMED_PIC_9 // 8876
+        case A_FRAMED_PIC_9_BROKE // 8877
+        case A_FRAMED_PIC_10 // 8878
+        case A_FRAMED_PIC_10_BROKE // 8879
+        case A_FRAMED_PIC_11 // 8880
+        case A_FRAMED_PIC_11_BROKE // 8881
+        case A_FRAMED_PIC_12 // 8882
+        case A_FRAMED_PIC_12_BROKE // 8883
+        case A_FRAMED_PIC_13 // 8884
+        case A_FRAMED_PIC_13_BROKE // 8885
+        case A_FRAMED_PIC_14 // 8886
+        case A_FRAMED_PIC_14_BROKE // 8887
+        case A_FRAMED_PIC_15 // 8888
+        case A_FRAMED_PIC_15_BROKE // 8889
+        case A_FRAMED_PIC_16 // 8890
+        case A_FRAMED_PIC_16_BROKE // 8891
+        case A_FRAMED_PIC_17 // 8892
+        case A_FRAMED_PIC_17_BROKE // 8893
+        case A_FRAMED_PIC_18 // 8894
+        case A_FRAMED_PIC_18_BROKE // 8895
+        case A_FRAMED_PIC_19 // 8896
+        case A_FRAMED_PIC_19_BROKE // 8897
+        case A_FRAMED_PIC_20 // 8898
+        case A_FRAMED_PIC_20_BROKE // 8899
+        case A_FRAMED_PIC_21 // 8940
+        case A_FRAMED_PIC_21_BROKE // 8941
+        case A_FRAMED_PIC_22 // 8942
+        case A_FRAMED_PIC_22_BROKE // 8943
+        case A_FRAMED_PIC_23 // 8944
+        case A_FRAMED_PIC_23_BROKE // 8945
+        case A_FRAMED_PIC_24 // 8946
+        case A_FRAMED_PIC_24_BROKE // 8947
+        case A_FRAMED_PIC_25 // 8948
+        case A_FRAMED_PIC_25_BROKE // 8949
+        case A_FRAMED_PIC_26 // 8950
+        case A_FRAMED_PIC_26_BROKE // 8951
+        case A_FRAMED_PIC_27 // 8952
+        case A_FRAMED_PIC_27_BROKE // 8953
+        case A_FRAMED_PIC_28 // 8954
+        case A_FRAMED_PIC_28_BROKE // 8955
+        case A_FRAMED_PIC_64 // 8956
+        case A_FRAMED_PIC_64_BROKE // 8957
+        case A_FRAMED_PIC_29 // 8958
+        case A_FRAMED_PIC_29_BROKE // 8959
+        case A_FRAMED_PIC_30 // 8960
+        case A_FRAMED_PIC_30_BROKE // 8961
+        case A_FRAMED_PIC_63 // 8962
+        case A_FRAMED_PIC_63_BROKE // 8963
+        case A_BOTTLESIDE_1 // 9082
+        case 9176
+        case 9177
+        case 9182
+        case 9183
+        case 9192
+        case 9193
+        case T_VENDING_MACHINE // 9254
+        case 9255
+        case T_VENDING_MACHINE2 // 9260
+        case 9261
+        case 9280
+        case 9281
+        case 9285
+        case 9286
+        case 9382
+        case 9383
+        case 9384
+        case 9385
+        case 9386
+        case 9480
+        case 9481
+        case 9482
+        case 9483
+        case 9484
+        case 9485
+        case 9486
+        case 9487
+        case 9492
+        case 9493
+        case 9494
+        case 9500
+        case 9501
+        case 9502
+        case 9503
+        case 9504
+        case 9505
+        case 9506
+        case 9507
+        case 9508
+        case 9509
+        case 9523
+        case 9524
+        case 9580
+        case 9581
+        case 9582
+        case 9583
+        case 9584
+        case 9585
+        case 9600
+        case 9601
+        case 9602
+        case 9603
+        case 9604
+        case 9605
+        case 9606
+        case 9680
+        case 9681
+        case 9692
+        case 9693
+        case 9696
+        case 9697
+        case 9787
+        case 9788
+        case 9818
+        case 9819
+        case 9822
+        case 9823
+        case 9842
+        case 9843
+        case A_GLASS_PANEL_2 // 9940
+        case A_GLASS_PANEL_3 // 9942
+        case A_MARTINIGLASS_EMPTY // 9943
+        case A_MARTINIGLASS_FULL // 9944
+        case A_CHAMPAGNEGLASS_EMPTY // 9945
+        case A_CHAMPAGNEGLASS_FULL // 9946
+        case A_WINEGLASS_EMPTY // 9947
+        case A_WINEGLASS_FULL // 9948
+        case A_BEERGLASS_EMPTY // 9949
+        case A_BEERGLASS_FULL // 9950
+        case 10137
+        case A_GLASS_PANEL_4 // 10139
+        case 10348
+        case 10349
+        case 10350
+        case 10351
+        case 10352
+        case 10355
+        case 10904
+        case A_FRAMED_PIC_31 // 10980
+        case A_FRAMED_PIC_31_BROKE // 10981
+        case A_FRAMED_PIC_32 // 10982
+        case A_FRAMED_PIC_32_BROKE // 10983
+        case A_FRAMED_PIC_33 // 10984
+        case A_FRAMED_PIC_33_BROKE // 10985
+        case A_FRAMED_PIC_34 // 10986
+        case A_FRAMED_PIC_34_BROKE // 10987
+        case A_FRAMED_PIC_35 // 10988
+        case A_FRAMED_PIC_35_BROKE // 10989
+        case A_FRAMED_PIC_36 // 10990
+        case A_FRAMED_PIC_36_BROKE // 10991
+        case A_FRAMED_PIC_37 // 10992
+        case A_FRAMED_PIC_37_BROKE // 10993
+        case A_FRAMED_PIC_38 // 10994
+        case A_FRAMED_PIC_38_BROKE // 10995
+        case A_FRAMED_PIC_39 // 10996
+        case A_FRAMED_PIC_39_BROKE // 10997
+        case A_FRAMED_PIC_40 // 10998
+        case A_FRAMED_PIC_40_BROKE // 10999
+        case A_FRAMED_PIC_41 // 11000
+        case A_FRAMED_PIC_41_BROKE // 11001
+        case A_FRAMED_PIC_42 // 11002
+        case A_FRAMED_PIC_42_BROKE // 11003
+        case A_FRAMED_PIC_43 // 11004
+        case A_FRAMED_PIC_43_BROKE // 11005
+        case A_FRAMED_PIC_44 // 11006
+        case A_FRAMED_PIC_44_BROKE // 11007
+        case A_FRAMED_PIC_45 // 11008
+        case A_FRAMED_PIC_45_BROKE // 11009
+        case A_FRAMED_PIC_46 // 11010
+        case A_FRAMED_PIC_46_BROKE // 11011
+        case A_FRAMED_PIC_47 // 11012
+        case A_FRAMED_PIC_47_BROKE // 11013
+        case A_FRAMED_PIC_48 // 11014
+        case A_FRAMED_PIC_48_BROKE // 11015
+        case A_FRAMED_PIC_49 // 11016
+        case A_FRAMED_PIC_49_BROKE // 11017
+        case A_FRAMED_PIC_50 // 11018
+        case A_FRAMED_PIC_50_BROKE // 11019
+        case A_FRAMED_PIC_51 // 11020
+        case A_FRAMED_PIC_51_BROKE // 11021
+        case A_FRAMED_PIC_52 // 11022
+        case A_FRAMED_PIC_52_BROKE // 11023
+        case A_FRAMED_PIC_53 // 11024
+        case A_FRAMED_PIC_53_BROKE // 11025
+        case A_FRAMED_PIC_54 // 11026
+        case A_FRAMED_PIC_54_BROKE // 11027
+        case A_FRAMED_PIC_55 // 11028
+        case A_FRAMED_PIC_55_BROKE // 11029
+        case A_FRAMED_PIC_56 // 11030
+        case A_FRAMED_PIC_56_BROKE // 11031
+        case A_FRAMED_PIC_57 // 11032
+        case A_FRAMED_PIC_57_BROKE // 11033
+        case A_FRAMED_PIC_58 // 11034
+        case A_FRAMED_PIC_58_BROKE // 11035
+        case A_FRAMED_PIC_59 // 11036
+        case A_FRAMED_PIC_59_BROKE // 11037
+        case A_FRAMED_PIC_60 // 11038
+        case A_FRAMED_PIC_60_BROKE // 11039
+        case A_FRAMED_PIC_61 // 11040
+        case A_FRAMED_PIC_61_BROKE // 11041
+        case A_FRAMED_PIC_62 // 11042
+        case A_FRAMED_PIC_62_BROKE // 11043
+        case 11074
+            setarray pre_surface_type[temp] SURFACE_GLASS
+            break
+        case 70
+        case 72
+        case 5642
+        case 5643
+        case 5649
+        case 5650
+        case 5651
+        case 5652
+        case A_RAKE // 5703
+        case 6151
+        case 6153
+        case 6191
+        case 6192
+        case 6193
+        case 6194
+        case 6195
+        case 6226
+        case 6227
+        case 6321
+        case 6324
+        case 6325
+        case 6330
+        case 6385
+        case 6401
+        case 6403
+        case 6404
+        case 6516
+        case 6529
+        case A_BROOM_1 // 6557
+        case 6570
+        case 6571
+        case 6572
+        case 6575
+        case 6579
+        case A_MOP_1 // 6582
+        case 6606
+        case 6607
+        case 6628
+        case 6640
+        case 6643
+        case 7433
+        case 7434
+        case 7435
+        case 7436
+        case 7437
+        case 7484
+        case 7532
+        case 7561
+        case 7602
+        case 7603
+        case 7612
+        case 7618
+        case 7619
+        case 7620
+        case 7621
+        case 7633
+        case 7634
+        case 7676
+        case 7678
+        case 7679
+        case 8060
+        case 8063
+        case 8164
+        case 8182
+        case 8183
+        case 8184
+        case 8185
+        case 8186
+        case 8193
+        case 8194
+        case 8195
+        case 8196
+        case 8197
+        case 8198
+        case 8199
+        case 8204
+        case 8205
+        case 8206
+        case 8269
+        case 8270
+        case 8275
+        case 8276
+        case 8277
+        case T_LADDER_2 // 8281
+        case T_LADDER_5 // 8317
+        case 8701
+        case 8916
+        case 8917
+        case 8918
+        case 8919
+        case 8920
+        case 8921
+        case 8922
+        case 8923
+        case 8924
+        case 8925
+        case 8926
+        case 8927
+        case 8928
+        case 8929
+        case 9096
+        case 9098
+        case 9951
+        case 9952
+        case 10120
+        case 10141
+        case 10142
+        case 10169
+        case 10170
+        case 10171
+        case 10371
+        case 10372
+        case 10386
+        case 10387
+        case 10422
+        case 10423
+        case 10424
+        case 10425
+        case 10426
+        case 10430
+        case 10432
+        case 10433
+        case 10518
+        case 10519
+        case 10520
+        case 10521
+        case 10522
+        case 10523
+        case 10524
+        case 10525
+        case 10740
+        case 10741
+        case 10742
+        case 10743
+        case 10744
+        case 10745
+        case 10746
+        case 10747
+        case 10748
+        case 10835
+        case 10836
+        case 10837
+        case 10838
+        case 10857
+        case 10858
+        case 10863
+        case 10880
+        case 10883
+        case 10906
+        case 10915
+        case 10919
+        case 10920
+        case 10924
+        case 10939
+        case 10942
+        case 10943
+        case A_STOOL // 10948
+        case 10966
+        case 10967
+        case T_DARTBOARD_SWITCH // 10975
+        case 11103
+        case 11122
+        case 11123
+        case 11196
+        case 11198
+        case 11257
+        case 14085
+            setarray pre_surface_type[temp] SURFACE_WOOD
+            break
+        case 6183
+        case 6382
+        case 6384
+        case 7453
+        case 7635
+        case 7636
+        case 7649
+        case 7650
+        case 8237
+        case 8620
+        case 9916
+        case 9917
+        case 9919
+        case 9920
+        case 9921
+        case 9922
+        case 9923
+        case 9924
+        case 9925
+        case 9926
+        case 9927
+        case A_FRENCHFRIES // 10957
+            setarray pre_surface_type[temp] SURFACE_DIRT
+            break
+        case 5638
+        case 5639
+        case 5640
+        case 5641
+        case 5644
+        case 5645
+        case 5646
+        case 5647
+        case 5648
+        case 6148
+        case 6177
+        case 6313
+        case 6374
+        case 6375
+        case 6376
+        case 6430
+        case 6431
+        case 6432
+        case 6433
+        case 7913
+        case A_POTPLANT_1 // 7932
+        case 7945
+        case 7949
+        case 7950
+        case 7989
+        case 8172
+        case 8174
+        case 8176
+        case 8178
+        case 8180
+        case 8189
+        case 8190
+        case 8191
+        case 8597
+        case 8598
+        case 8635
+        case 8638
+        case 8639
+        case A_POTPLANT_2 // 10660
+        case A_POTPLANT_3 // 10661
+        case A_POTPLANT_4 // 10662
+        case A_POTPLANT_5 // 10663
+        case 10820
+        case 10821
+        case 11050
+        case 11254
+        case 11255
+        case 11289
+            setarray pre_surface_type[temp] SURFACE_GRASS
+            break
+        case 6240
+        case 6255
+        case 6288
+        case 6303
+        case 11220
+        case 11235
+            setarray pre_surface_type[temp] SURFACE_WATER
+            break
+        case 6256
+        case 6271
+        case T_SLIME // 6272
+        case 6287
+            setarray pre_surface_type[temp] SURFACE_SLIME
+            break
+        case 5637
+        case A_MONITOR_STATIC_LG // 5729
+        case A_MONITOR_HESKEL_R_LG // 5733
+        case A_MONITOR_HESKEL_LG // 5734
+        case A_MONITOR_3_LG // 5743
+        case A_MONITOR_2_3_BROKE_LG // 5744
+        case A_MONITOR_17_LG // 5745
+        case A_MONITOR_2_LG // 5753
+        case 5762
+        case 5763
+        case 6470
+        case 6471
+        case A_KEYBOARD_2 // 6480
+        case 6481
+        case A_MONITOR_1 // 6482
+        case A_MONITOR_1_BROKE // 6483
+        case A_MONITOR_2 // 6506
+        case A_MONITOR_2_3_BROKE // 6514
+        case A_MONITOR_3 // 6515
+        case A_MONITOR_1_BROKE_2 // 7522
+        case A_MONITOR_15 // 7578
+        case A_MONITOR_16 // 7579
+        case A_MONITOR_4 // 7907
+        case A_MONITOR_5 // 7914
+        case A_MONITOR_6 // 7915
+        case A_MONITOR_7 // 7916
+        case A_MONITOR_8 // 7917
+        case A_MONITOR_9 // 7922
+        case A_MONITOR_10 // 7923
+        case A_MONITOR_11 // 7924
+        case A_MONITOR_12 // 7925
+        case A_MONITOR_13 // 7926
+        case A_MONITOR_14 // 7927
+        case 8294
+        case 8295
+        case 8296
+        case 8297
+        case 8298
+        case 8299
+        case 8645
+        case 8702
+        case 8703
+        case 8704
+        case 8705
+        case 8706
+        case 8707
+        case 8708
+        case 8709
+        case 8710
+        case 8711
+        case 8712
+        case 8713
+        case 8714
+        case 8715
+        case 8716
+        case 8717
+        case 8718
+        case 8719
+        case 8720
+        case 8721
+        case 8722
+        case 8723
+        case 8724
+        case 8725
+        case 8726
+        case 8727
+        case 8728
+        case 8730
+        case 8731
+        case 8732
+        case 8733
+        case 8734
+        case 8735
+        case 8736
+        case 8737
+        case 8738
+        case A_CEILING_LAMP_OFF // 8739
+        case A_CEILING_LAMP_ON // 8740
+        case A_LAMP_OFF // 8741
+        case A_LAMP // 8748
+        case A_LAMP_FLOOR_OFF // 8755
+        case A_LAMP_FLOOR // 8756
+        case A_TRAFFIC_1 // 8771
+        case A_TRAFFIC_2 // 8772
+        case A_TRAFFIC_3 // 8773
+        case A_TRAFFIC_4 // 8774
+        case A_TRAFFIC_BROKE // 8775
+        case 8777
+        case 8778
+        case 8779
+        case 8800
+        case 8804
+        case 8978
+        case 8979
+        case 8980
+        case A_STREET_LAMP_7_OFF // 8982
+        case A_STREET_LAMP_7 // 8983
+        case A_STREET_LAMP_7_BROKE // 8984
+        case A_STREETLAMP_5_OFF // 8986
+        case A_STREETLAMP_5 // 8991
+        case A_STREETLAMP_5_BROKE // 8996
+        case 9264
+        case 9265
+        case 9277
+        case 9556
+        case 9557
+        case 9558
+        case 9610
+        case 9611
+        case 9612
+        case 9613
+        case 9614
+        case 9615
+        case 9616
+        case 9617
+        case 9618
+        case 9619
+        case 9710
+        case 9711
+        case 9712
+        case 9713
+        case 9714
+        case 9715
+        case 9716
+        case 9717
+        case 9718
+        case 9824
+        case 9825
+        case 9888
+        case 9914
+        case 9958
+        case 9959
+        case 9964
+        case 9967
+        case 9968
+        case 9999
+        case 10000
+        case 10007
+        case 10008
+        case 10009
+        case 10010
+        case 10011
+        case 10012
+        case 10015
+        case 10020
+        case 10021
+        case 10022
+        case 10023
+        case 10024
+        case 10025
+        case 10026
+        case 10027
+        case 10028
+        case 10029
+        case 10030
+        case 10031
+        case 10032
+        case 10033
+        case 10034
+        case 10035
+        case 10036
+        case 10037
+        case 10038
+        case 10039
+        case 10040
+        case 10041
+        case 10042
+        case 10043
+        case 10044
+        case 10045
+        case 10046
+        case 10047
+        case 10048
+        case 10049
+        case 10050
+        case 10051
+        case 10052
+        case 10053
+        case 10054
+        case 10055
+        case 10056
+        case 10057
+        case 10058
+        case 10059
+        case 10060
+        case 10061
+        case 10062
+        case 10063
+        case 10064
+        case 10065
+        case 10066
+        case 10067
+        case 10068
+        case 10069
+        case 10070
+        case 10071
+        case 10072
+        case 10073
+        case 10074
+        case 10075
+        case 10076
+        case 10077
+        case 10078
+        case 10079
+        case 10080
+        case 10081
+        case 10082
+        case 10083
+        case 10084
+        case 10085
+        case 10086
+        case 10087
+        case 10088
+        case 10089
+        case 10090
+        case 10091
+        case 10092
+        case 10093
+        case 10094
+        case 10095
+        case 10096
+        case 10097
+        case 10098
+        case 10099
+        case 10100
+        case 10101
+        case 10102
+        case 10103
+        case 10104
+        case 10105
+        case 10106
+        case 10107
+        case 10109
+        case A_HEALTH_MONITOR_OFF // 10126
+        case A_HEALTH_MONITOR // 10127
+        case A_HEALTH_MONITOR_BRK // 10132
+        case A_SHOCKCANISTER // 10147
+        case A_SHOCKCANISTER_DMG // 10153
+        case A_SHOCKCANISTER_BROKE // 10159
+        case 10242
+        case 10243
+        case 10244
+        case 10245
+        case 10246
+        case 10247
+        case 10263
+        case 10265
+        case 10450
+        case 10451
+        case 10452
+        case 10453
+        case 10454
+        case 10455
+        case 10456
+        case 10457
+        case 10458
+        case 10459
+        case 10460
+        case 10461
+        case 10462
+        case 10463
+        case 10464
+        case 10465
+        case 10466
+        case 10467
+        case 10468
+        case 10469
+        case 10470
+        case 10471
+        case 10472
+        case 10473
+        case 10474
+        case 10475
+        case 10476
+        case 10477
+        case 10478
+        case 10479
+        case 10480
+        case 10481
+        case 10482
+        case 10483
+        case 10484
+        case 10485
+        case 10486
+        case 10505
+        case 10512
+        case 10534
+        case 11071
+        case 11072
+        case 11073
+        case 11076
+        case 11096
+        case 11097
+        case 11098
+        case 11099
+        case 11100
+        case 11101
+        case 11102
+        case 11125
+        case 11126
+        case 11127
+        case 11128
+        case 11134
+        case 11135
+        case 11136
+        case A_MONITOR_17 // 11137
+        case A_MONITOR_HESKEL // 11145
+        case A_MONITOR_HESKEL_R // 11161
+        case A_CAGELIGHT_1_ON // 11268
+        case A_CAGELIGHT_1_OFF // 11269
+        case A_CAGELIGHT_2_ON // 11270
+        case A_CAGELIGHT_2_OFF // 11271
+        case A_CAGELIGHT_3_ON // 11272
+        case A_CAGELIGHT_3_OFF // 11273
+        case A_MONITOR_STATIC // 11405
+        case A_MONITOR_19 // 14040
+        case A_MONITOR_19_BRK // 14041
+        case A_MONITOR_18 // 14042
+        case A_MONITOR_20_BRK // 14043
+        case 14079
+        case 14080
+            setarray pre_surface_type[temp] SURFACE_LIGHT
+            break
+        case 162
+        case A_CAMERA // 621
+        case A_CAMERA_2 // 629
+        case 3576
+        case A_ISOLATORSWITCH_BRK // 3577
+        case A_LEVERSWITCH_BRK // 3578
+        case A_ROTARYSWITCH_BRK // 3579
+        case A_DIPSWITCH_BRK // 3580
+        case A_PUSHBUTTONSWITCH_BRK // 3581
+        case A_BREAKERSWITCH2_BRK // 3582
+        case A_ELEVATOR_SWITCH_BRK // 3583
+        case A_LIGHTSWITCH_BRK // 3584
+        case A_LIGHTSWITCH_ON // 3585
+        case A_LIGHTSWITCH_OFF // 3587
+        case A_ELEVATOR_DN_SWITCH_OFF // 3588
+        case A_ELEVATOR_DN_SWITCH_ON // 3590
+        case A_ELEVATOR_UP_SWITCH_OFF // 3591
+        case A_ELEVATOR_UP_SWITCH_ON // 3593
+        case A_DIPSWITCH_OFF // 3594
+        case A_DIPSWITCH_ON // 3596
+        case A_ROTARYSWITCH_OFF // 3597
+        case A_ROTARYSWITCH_ON // 3599
+        case A_LEVERSWITCH_OFF // 3600
+        case A_LEVERSWITCH_ON // 3604
+        case A_ISOLATORSWITCH_OFF // 3605
+        case A_ISOLATORSWITCH_ON // 3607
+        case A_BREAKERSWITCH_OFF // 3608
+        case A_BREAKERSWITCH_ON // 3614
+        case A_DIPSWITCH2_OFF // 3615
+        case A_DIPSWITCH2_ON // 3617
+        case A_PUSHBUTTONSWITCH_OFF // 3618
+        case A_PUSHBUTTONSWITCH_ON // 3620
+        case A_ROTARYSWITCH2_OFF // 3621
+        case A_ROTARYSWITCH2_ON // 3623
+        case A_LEVERSWITCH2_OFF // 3624
+        case A_LEVERSWITCH2_ON // 3628
+        case A_BREAKERSWITCH2_OFF // 3629
+        case A_BREAKERSWITCH2_ON // 3635
+        case A_LEVERSWITCH3_OFF // 3636
+        case A_LEVERSWITCH3_ON // 3642
+        case A_ELEVATOR_OFF // 3669
+        case A_ELEVATOR_HALT // 3670
+        case A_ELEVATOR_G // 3671
+        case A_ELEVATOR_O // 3672
+        case A_ELEVATOR_L // 3673
+        case A_ELEVATOR_H // 3674
+        case 3678
+        case A_ELEVATOR_UP // 3686
+        case 5664
+        case 5665
+        case 5666
+        case 5667
+        case 6351
+        case 6391
+        case 6392
+        case 6446
+        case 6447
+        case 6469
+        case 6476
+        case 6477
+        case A_KEYBOARD_1 // 6478
+        case 6479
+        case A_CASEPANEL_1 // 6484
+        case 6485
+        case A_MONITOR_1_SIDE // 6488
+        case 6489
+        case T_PLUG // 6503
+        case 6523
+        case 6548
+        case 6549
+        case A_SERVERSTACK_1 // 6630
+        case 6631
+        case A_CASEPANEL_2 // 7415
+        case 7416
+        case A_CASEPANEL_3 // 7417
+        case 7418
+        case A_CASEPANEL_4 // 7419
+        case 7420
+        case A_CASEPANEL_5 // 7421
+        case 7422
+        case 7473
+        case A_TECHPANEL_1 // 7485
+        case 7486
+        case A_TECHPANEL_2 // 7520
+        case 7521
+        case A_ACCESSCARDSWITCH_SPAWN // 7539
+        case A_ACCESSCARDSWITCH_ON // 7540
+        case 7541
+        case 7542
+        case 7543
+        case 7544
+        case 7545
+        case 7546
+        case 7547
+        case 7548
+        case 7551
+        case A_TECHPANEL_3 // 7559
+        case 7560
+        case 7575
+        case 7598
+        case 7984
+        case 7985
+        case 7986
+        case 7987
+        case 7988
+        case 7993
+        case 7994
+        case 8214
+        case 8215
+        case 8216
+        case 8217
+        case 8227
+        case 8229
+        case 8230
+        case 8231
+        case 8232
+        case 8233
+        case 8234
+        case 8249
+        case 9001
+        case A_PAYPHONE // 9166
+        case 9167
+        case 9168
+        case A_ACCESSCARDSWITCH2_OFF // 10208
+        case A_ACCESSCARDSWITCH2_ON // 10214
+        case A_BATONSWITCH_TIMED // 10215
+        case 10216
+        case 10222
+        case 10228
+        case A_BATONSWITCH_OFF // 10231
+        case A_BATONSWITCH_ON // 10232
+        case 10270
+        case 10271
+        case 10273
+        case 10439
+        case 10600
+        case T_FORCEFIELD // 10601
+        case 10635
+        case 10832
+        case 10833
+        case 10940
+        case 10971
+        case 10972
+        case 11064
+        case 11066
+        case 11077
+        case 11247
+        case 11248
+        case 11249
+        case 11250
+        case 11251
+        case 11252
+        case 11253
+        case 11421
+        case 11424
+        case 11429
+        case 14018
+        case 14019
+        case 14025
+		case AM_EXODUDE_SHIELD
+            setarray pre_surface_type[temp] SURFACE_ELECTRICAL
+            break
+        case 5698
+        case 5699
+        case 5700
+        case 5701
+        case 5711
+        case 6309
+        case 6310
+        case 6311
+        case 6314
+        case 6335
+        case 6336
+        case 6443
+        case 6444
+        case 6445
+        case A_PAPERTOWEL // 6564
+        case A_TOILETPAPER // 6612
+        case 7514
+        case 7515
+        case 7523
+        case 7524
+        case 7527
+        case 7528
+        case 7530
+        case 7531
+        case 7580
+        case 7581
+        case 7589
+        case 7592
+        case 7596
+        case 8248
+        case 8273
+        case 8274
+        case 8646
+        case 8820
+        case 8821
+        case 8822
+        case 8823
+        case 8824
+        case 8825
+        case 8827
+        case 8828
+        case 8844
+        case 8845
+        case 8846
+        case 8847
+        case 8848
+        case 8849
+        case 8850
+        case 8851
+        case 8852
+        case 8853
+        case 8854
+        case 8855
+        case 8856
+        case 8857
+        case 8858
+        case 8859
+        case 9100
+        case A_PAPER_TOWEL_SCRAP // 9296
+        case A_TOILET_PAPER_SCRAP // 9299
+        case 9856
+        case 9857
+        case 9860
+        case 9861
+        case 9862
+        case 9863
+        case 9864
+        case 9865
+        case 9866
+        case 9867
+        case 9868
+        case 9869
+        case 9870
+        case 9871
+        case 9872
+        case 9873
+        case 9874
+        case 9875
+        case 9876
+        case 9877
+        case 9880
+        case 9881
+        case 9882
+        case 9883
+        case 9884
+        case 9885
+        case A_PIZZA_LID // 9928
+        case 9929
+        case 10328
+        case 10329
+        case 10330
+        case 10338
+        case 10339
+        case 10353
+        case 10421
+        case A_NAPKIN_PAPER // 10959
+        case 10960
+        case 10961
+        case 11060
+        case 11061
+        case 11075
+        case 11292
+        case 11293
+        case 11294
+        case 11295
+        case 11296
+        case 11297
+        case 11298
+        case 11299
+        case A_PRACTICE_TARGET // 11425
+        case 11427
+        case 14076
+            setarray pre_surface_type[temp] SURFACE_PAPER
+            break
+        case 5662
+        case 5663
+        case 6474
+        case 6475
+        case A_GARBAGE // 6543
+        case A_GARBAGE_DMG_1 // 6544
+        case A_GARBAGE_DMG_2 // 6545
+        case A_GLASSCLEANER // 6583
+        case A_DETERGENT // 6584
+        case A_HANDSOAP // 6585
+        case 7533
+        case 7617
+        case A_CHAIR_2 // 7805
+        case A_CHAIR_2_DMG // 7812
+        case 7897
+        case 7898
+        case 7900
+        case 7901
+        case A_JUG_1 // 7929
+        case A_JUG_2 // 7930
+        case 7940
+        case A_HAND_DRYER // 8020
+        case 8021
+        case A_BLIND_1_BROKE // 8254
+        case A_BLIND_1_CLOSED // 8255
+        case 8256
+        case A_BLIND_1_OPENED // 8257
+        case 8278
+        case 8279
+        case 8621
+        case 8624
+        case 8637
+        case A_CHAIR_BOTTOM // 9223
+        case A_CHAIR_BOTTOM_2 // 9230
+        case 9290
+        case 9292
+        case 9293
+        case 9294
+        case 9295
+        case 9390
+        case 9400
+        case 9402
+        case 9404
+        case 9405
+        case 9902
+        case 9903
+        case 9904
+        case 9910
+        case 9911
+        case A_TRASHBIN // 9918
+        case 9957
+        case A_UNBREAKABLE // 9983
+        case 9984
+        case 9985
+        case 10199
+        case 10200
+        case 10201
+        case 10202
+        case 10203
+        case 10204
+        case 10205
+        case 10206
+        case 10207
+        case A_BLIND_2_BROKE // 10248
+        case A_BLIND_2_CLOSED // 10249
+        case 10250
+        case A_BLIND_2_OPENED // 10251
+        case A_BLIND_3_BROKE // 10252
+        case A_BLIND_3_CLOSED // 10253
+        case 10254
+        case A_BLIND_3_OPENED // 10255
+        case 10354
+        case 10442
+        case 10443
+        case 10500
+        case 10501
+        case 10502
+        case 10503
+        case 10504
+        case A_TOGOCOCK // 10953
+        case A_TOGOCOFFEE // 10954
+        case A_BLUESAUCE // 10955
+        case A_DARKSAUCE // 10963
+        case A_LIGHTSAUCE // 10964
+        case A_FLATTRAY // 10969
+        case A_FLATTRAYPIC // 10970
+        case A_DART // 10976
+        case 11051
+        case 11052
+        case 11062
+        case 11430
+        case A_ARCADE_BUTTON // 14052
+        case A_ARCADE_STICK_BASE // 14054
+        case A_ARCADE_STICK // 14056
+        case T_BALLOON // 14111
+            setarray pre_surface_type[temp] SURFACE_PLASTIC
+            break
+        case A_CORDSWITCH_OFF // 3663
+        case A_CORDSWITCH_ON // 3668
+        case 6230
+        case 6305
+        case 6307
+        case 7501
+        case 7502
+        case 7503
+        case 7534
+        case 7535
+        case 7536
+        case 7585
+        case 7586
+        case A_CHAIR_1 // 7791
+        case A_CHAIR_1_DMG // 7798
+        case 8250
+        case 8251
+        case 8252
+        case 8253
+        case 8628
+        case 8633
+        case 9896
+        case 9897
+        case 9900
+        case 9901
+        case 9906
+        case 9953
+        case 9954
+        case 9955
+        case 9956
+        case 10362
+        case 10363
+        case 10364
+        case 10365
+        case 10366
+        case 10367
+        case 11080
+        case A_RIBBON // 11409
+        case A_RIBBON_BLOW // 11413
+        case 11428
+        case 14112
+        case 14113
+        case 14114
+        case 14135
+            setarray pre_surface_type[temp] SURFACE_FABRIC
+            break
+        case 6236
+        case 6306
+        case 6352
+        case 6353
+        case 6354
+        case 6589
+        case 6590
+        case 6591
+        case 6592
+        case 7957
+        case 7958
+            setarray pre_surface_type[temp] SURFACE_CARPET
+            break
+        case A_BULLETHOLE // 6710
+        case A_BULLETHOLE_GLASS // 7064
+        case A_BULLETHOLE_METAL // 7065
+        case A_BULLETHOLE_TILE // 7066
+        case A_BULLETHOLE_WOOD // 7067
+        case A_BULLETHOLE_STONE // 7068
+        case 7069
+        case A_BULLETHOLE_FABRIC // 7162
+        case 7163
+        case 7164
+            setarray pre_surface_type[temp] SURFACE_BULLETHOLE
+            break
+        // food
+        case I_PIZZA_6 // 9930
+        case I_PIZZA_5 // 9931
+        case I_PIZZA_4 // 9932
+        case I_PIZZA_3 // 9933
+        case I_PIZZA_2 // 9934
+        case I_PIZZA_1 // 9935
+        case A_ROACH // 9981
+        case A_HOTDOG // 10956
+        case A_BURGER // 10958
+        case A_TOGOCHINESE // 10962
+        case A_MCMONSTER // 10965
+        case A_MEATGIB // 10977
+        case A_SAUSAGE // 10978
+        case A_TACO // 10979
+        case A_BURGERPATTY // 11290
+
+        // gibs
+        case A_STRINGY_GUTS
+        case A_STRINGY_GUTS2
+        case P_GIB_SPINE
+        case P_GIB_SKULL
+        case P_GIB_SKULL_LS
+        case P_GIB_SKULL_GR
+        case P_GIB_CHUNK1
+        case P_GIB_INTESTINE
+        case P_GIB_MEAT
+        case P_GIB_LUNG
+        case P_GIB_LIVER
+        case P_GIB_CHUNK2
+        case P_GIB_HEART
+        case P_GIB_EYE
+        case P_GIB_ARM
+        case P_GIB_LEG_LS
+        case P_GIB_LEG_GR
+        case P_GIB_LEG_SECT
+        case A_GENERIC_GIB_BODY
+        case 12010
+        case 12078
+        case 12079
+        case 12080
+        case 12081
+        case 12082
+
+        // characters
+        case APLAYER // 1405
+        case 1581
+        case A_GDF_BODY_1 // 11367
+        case A_GDF_BODY_2 // 11368
+        case A_GDF_BODY_3 // 11369
+        case A_GDF_BODY_4 // 11370
+        case A_GDF_BODY_5 // 11371
+        case A_GDF_BODY_6 // 11372
+        case A_GDF_BODY_7 // 11373
+        case A_GDF_BODY_8 // 11374
+        case A_GDF_BODY_9 // 11375
+        case A_GDF_BODY_10 // 11376
+        case A_GDF_BODY_11 // 11377
+        case A_CIV_BODY_1 // 11378
+        case A_CIV_BODY_2 // 11379
+        case A_CIV_BODY_3 // 11380
+        case A_CIV_BODY_4 // 11381
+        case A_CIV_BODY_5 // 11382
+        case A_CIV_BODY_6 // 11383
+        case A_CIV_BODY_7 // 11384
+        case A_CIV_BODY_8 // 11385
+        case A_CIV_BODY_9 // 11386
+        case A_CIV_BODY_10 // 11387
+        case A_CIV_BODY_11 // 11388
+        case A_CIV_BODY_12 // 11389
+        case A_CIV_BODY_13 // 11390
+        case A_CIV_BODY_14 // 11391
+        case A_CIV_BODY_15 // 11431
+        case A_CIV_BODY_16 // 11432
+        case A_CIV_BODY_17 // 11433
+        case A_CIV_BODY_18 // 11434
+        case A_CIV_BODY_19 // 11435
+        case A_CIV_BODY_20 // 11436
+        case A_CIV_BODY_21 // 11437
+        case A_CIV_BODY_22 // 11438
+        case A_CIV_BODY_23 // 11439
+        case A_CIV_BODY_24 // 11440
+        case A_CIV_BODY_25 // 11441
+        case A_CIV_BODY_26 // 11442
+        case A_CIV_BODY_27 // 11443
+        case A_CIV_BODY_28 // 11444
+        case A_DAVE // 12032
+
+        // enemies
+        case A_MECHSECT
+        case A_MECHSECT_DEAD1
+        case A_MECHSECT_DEAD2
+        case A_DEACON
+        case A_DEACON_DEAD
+        case A_DRONE
+        case A_SHOTGUNNER
+        case A_SHOTGUNNER_STAYPUT
+        case A_SHOTGUNNER_CROUCH
+        case A_SHOTGUNNER_DEADHEAD
+        case A_SHOTGUNNER_DEAD
+        case A_SHOTGUNNER_GIBBED
+        case A_CULTIST
+        case A_CULTIST_STAYPUT
+        case A_CULTIST_CROUCH
+        case A_CULTIST_DEAD
+        case A_CULTIST_GIBBED
+        case A_CULTIST_DEADHEAD
+        case A_GREATER
+        case A_GREATER_STAYPUT
+        case A_GREATER_DEAD1
+        case A_GREATER_DEAD2
+        case A_GREATER_GIBBED
+        case 12467
+        case A_WENTEKO
+        case A_WENTEKO_DEAD2
+        case A_WENTEKO_DEAD1
+        case A_NUKEMUTANT
+        case A_NUKEMUTANT_RISE
+        case A_NUKEMUTANT_DEAD
+        case A_NUKEMUTANT_GIBBED
+        case A_NUKEMUTANT_GDF
+        case A_NUKEMUTANT_GDF_RISE
+        case A_NUKEMUTANT_GDF_DEAD
+        case A_NUKEMUTANT_GDF_GIBBED
+        case A_HESKEL_BOT
+        case A_BRUTE_TOP_DEAD
+		case AM_EXODUDE
+		case AM_EXODUDE_STAYPUT
+		case AM_EXODUDE_DEAD
+		case DAMAGETESTER
+            setarray pre_surface_type[temp] SURFACE_FLESH
+            break
+        default
+            setarray pre_surface_type[temp] 0
+            break
+    endswitch
+ends
+
+defstate get_surface_type
+    state check_vent
+
+    // unfortunately maps can have invalid picnums
+    clamp surface_type 0 30720 // MAXTILES
+    set surface_type pre_surface_type[surface_type]
+ends
+
+var bis_temp
+var bis_last
+var bis_max
+defstate bullet_impact_sound
+    ifg bis_max 5
+        break
+    rand bis_temp 2
+    ife bis_last bis_temp
+    {
+        add bis_temp 1
+        mod bis_temp 3
+    }
+    set bis_last bis_temp
+    switch surface_type
+        case SURFACE_METAL
+            add bis_temp S_BULLET_METAL1
+            break
+        case SURFACE_GLASS
+        case SURFACE_LIGHT
+            add bis_temp S_BULLET_GLASS1
+            break
+        case SURFACE_WOOD
+            add bis_temp S_BULLET_WOOD1
+            break
+        case SURFACE_DIRT
+            add bis_temp S_BULLET_DIRT1
+            break
+        case SURFACE_GRASS
+            add bis_temp S_BULLET_GRASS1
+            break
+        case SURFACE_WATER
+        case SURFACE_SLIME
+            add bis_temp S_BULLET_WATER1
+            break
+        case SURFACE_FABRIC
+        case SURFACE_CARPET
+        case SURFACE_PAPER
+            add bis_temp S_BULLET_FABRIC1
+            break
+        case SURFACE_FLESH
+            add bis_temp S_BULLET_FLESH1
+            break
+        default
+            add bis_temp S_BULLET_STONE1
+            break
+    endswitch
+    ifpdistl 9216
+        soundvar bis_temp
+    add bis_max 1
+    switch surface_type
+        case SURFACE_LIGHT
+        case SURFACE_ELECTRICAL
+            setp[].sound_pitch 512
+            rand bis_temp 2
+            add bis_temp S_ENV_ZAP1
+            ifpdistl 9216
+                soundvar bis_temp
+            setp[].sound_pitch 0
+            break
+    endswitch
+    ifrnd 8
+    {
+        rand bis_temp 4
+        add bis_temp S_BULLET_RICOCHET1
+        ifpdistl 9216
+            soundvar bis_temp
+    }
+ends
+
+// cstat overrides for certain static sprites
+appendevent EVENT_SPAWN
+    switch sprite[].picnum
+        case 6503
+        case 7473
+            cstator 256
+            break
+    endswitch
+endevent
+
+var p_xvel
+var p_zvel
+var p_steptype
+var step_temp
+var step_temp2
+
+defstate steptype0
+    switch surface_type
+    {
+        case SURFACE_STONE
+            add step_temp S_STEP_STONE_WALK1
+            break
+        case SURFACE_TILE
+        case SURFACE_PLASTIC
+            add step_temp S_STEP_TILE_WALK1
+            break
+        case SURFACE_METAL
+            add step_temp S_STEP_METAL_WALK1
+            break
+        case SURFACE_GLASS
+            add step_temp S_STEP_GLASS_WALK1
+            break
+        case SURFACE_WOOD
+            add step_temp S_STEP_WOOD_WALK1
+            break
+        case SURFACE_DIRT
+            add step_temp S_STEP_DIRT_WALK1
+            break
+        case SURFACE_GRASS
+            add step_temp S_STEP_GRASS_WALK1
+            break
+        case SURFACE_WATER
+        case SURFACE_SLIME
+            ife sector[].lotag 1
+                add step_temp S_STEP_WATERD_WALK1
+            else ife surface_type SURFACE_SLIME
+                add step_temp S_STEP_SLIME_WALK1
+            else
+                add step_temp S_STEP_WATER_WALK1
+            set p_steptype -1
+            break
+        case SURFACE_FABRIC
+        case SURFACE_CARPET
+            add step_temp S_STEP_FABRIC_WALK1
+            break
+        default
+            add step_temp S_STEP_STONE_WALK1
+            break
+    }
+    endswitch
+ends
+
+defstate steptype1
+    switch surface_type
+    {
+        case SURFACE_STONE
+            add step_temp S_STEP_STONE_RUN1
+            break
+        case SURFACE_TILE
+        case SURFACE_PLASTIC
+            add step_temp S_STEP_TILE_RUN1
+            break
+        case SURFACE_METAL
+            add step_temp S_STEP_METAL_RUN1
+            break
+        case SURFACE_GLASS
+            add step_temp S_STEP_GLASS_RUN1
+            break
+        case SURFACE_WOOD
+            add step_temp S_STEP_WOOD_RUN1
+            break
+        case SURFACE_DIRT
+            add step_temp S_STEP_DIRT_RUN1
+            break
+        case SURFACE_GRASS
+            add step_temp S_STEP_GRASS_RUN1
+            break
+        case SURFACE_WATER
+        case SURFACE_SLIME
+            ife sector[].lotag 1
+                add step_temp S_STEP_WATERD_RUN1
+            else ife surface_type SURFACE_SLIME
+                add step_temp S_STEP_SLIME_RUN1
+            else
+                add step_temp S_STEP_WATER_RUN1
+            set p_steptype -1
+            break
+        case SURFACE_FABRIC
+        case SURFACE_CARPET
+            add step_temp S_STEP_FABRIC_RUN1
+            break
+        default
+            add step_temp S_STEP_STONE_RUN1
+            break
+    }
+    endswitch
+ends
+
+defstate steptype2
+    switch surface_type
+    {
+        case SURFACE_STONE
+            add step_temp S_STEP_STONE_JUMP1
+            break
+        case SURFACE_TILE
+        case SURFACE_PLASTIC
+            add step_temp S_STEP_TILE_JUMP1
+            break
+        case SURFACE_METAL
+            add step_temp S_STEP_METAL_JUMP1
+            break
+        case SURFACE_GLASS
+            add step_temp S_STEP_GLASS_JUMP1
+            break
+        case SURFACE_WOOD
+            add step_temp S_STEP_WOOD_JUMP1
+            break
+        case SURFACE_DIRT
+            add step_temp S_STEP_DIRT_JUMP1
+            break
+        case SURFACE_GRASS
+            add step_temp S_STEP_GRASS_JUMP1
+            break
+        case SURFACE_WATER
+        case SURFACE_SLIME
+            ife sector[].lotag 1
+                add step_temp S_STEP_WATERD_JUMP1
+            else ife surface_type SURFACE_SLIME
+                add step_temp S_STEP_SLIME_JUMP1
+            else
+                add step_temp S_STEP_WATER_JUMP1
+            set p_steptype -1
+            break
+        case SURFACE_FABRIC
+        case SURFACE_CARPET
+            add step_temp S_STEP_FABRIC_JUMP1
+            break
+        default
+            add step_temp S_STEP_STONE_JUMP1
+            break
+    }
+    endswitch
+ends
+
+defstate steptype3
+    switch surface_type
+    {
+        case SURFACE_STONE
+            add step_temp S_STEP_STONE_LAND1
+            break
+        case SURFACE_TILE
+        case SURFACE_PLASTIC
+            add step_temp S_STEP_TILE_LAND1
+            break
+        case SURFACE_METAL
+            add step_temp S_STEP_METAL_LAND1
+            break
+        case SURFACE_GLASS
+            add step_temp S_STEP_GLASS_LAND1
+            break
+        case SURFACE_WOOD
+            add step_temp S_STEP_WOOD_LAND1
+            break
+        case SURFACE_DIRT
+            add step_temp S_STEP_DIRT_LAND1
+            break
+        case SURFACE_GRASS
+            add step_temp S_STEP_GRASS_LAND1
+            break
+        case SURFACE_WATER
+        case SURFACE_SLIME
+            ife sector[].lotag 1
+                add step_temp S_STEP_WATERD_LAND1
+            else ife surface_type SURFACE_SLIME
+                add step_temp S_STEP_SLIME_LAND1
+            else
+                add step_temp S_STEP_WATER_LAND1
+            ifactor APLAYER
+            {
+                ifn sector[].lotag 1
+                    setp[].footprintcount 3
+                else
+                    setp[].footprintcount 5
+                ife sector[].floorpal 0
+                {
+                    ife surface_type SURFACE_WATER
+                        set p_footpal 7
+                    else
+                        set p_footpal 5
+                }
+                else
+                    set p_footpal sector[].floorpal
+            }
+            set p_steptype -1
+            break
+        case SURFACE_FABRIC
+        case SURFACE_CARPET
+            add step_temp S_STEP_FABRIC_LAND1
+            break
+        default
+            add step_temp S_STEP_STONE_LAND1
+            break
+    }
+    endswitch
+ends
+
+defstate player_footstep
+    state get_surface_type
+    rand step_temp 3
+    mod step_temp 3
+
+    ifn sector[].lotag 2
+    {
+        switch p_steptype
+        {
+            case 0
+                state steptype0
+                break
+            case 1
+                state steptype1
+                break
+            case 2
+                state steptype2
+                break
+            case 3
+                state steptype3
+                break
+        }
+        endswitch
+
+        ifn p_steptype -1
+        {
+            findnearsprite A_GENERIC_BLOODSPLATTER 512 step_temp2
+            ifn step_temp2 -1
+            {
+                ife sprite[].sectnum sprite[step_temp2].sectnum
+                {
+                    ifand sprite[step_temp2].cstat 32
+                    {
+                        ifg sprite[step_temp2].xrepeat 4
+                        {
+                            ifactor APLAYER
+                            {
+                                switch sprite[step_temp2].pal
+                                    case 0
+                                    case 63
+                                        set p_footpal 0
+                                        break
+                                    default
+                                        set p_footpal sprite[step_temp2].pal
+                                        break
+                                endswitch
+                                geta[step_temp2].xrepeat step_temp2
+                                shiftr step_temp2 2
+                                ifn p_footpal 0
+                                    shiftr step_temp2 2
+                                setp[].footprintcount step_temp2
+
+
+                            }
+                            rand step_temp2 3
+                            mod step_temp2 3
+                            switch p_steptype
+                            {
+                                case 0
+                                    add step_temp2 S_STEP_WATER_WALK1
+                                    break
+                                case 1
+                                    add step_temp2 S_STEP_WATER_RUN1
+                                    break
+                                case 2
+                                    add step_temp2 S_STEP_WATER_JUMP1
+                                    break
+                                case 3
+                                    add step_temp2 S_STEP_WATER_LAND1
+                                    break
+                            }
+                            endswitch
+                            soundvar step_temp2
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else ife sector[].lotag 2
+        add step_temp S_STEP_WATER_SWIM1
+
+    soundvar step_temp
+    ife THISACTOR player.i
+    {
+        ifn sector.lotag 1
+            ifn sector.lotag 2
+            {
+                ifg p_pup_jump_time 0
+                {
+                    ifp ponground
+                        sound S_BOOTS_STEP
+                }
+            }
+    }
+    setp[].sound_pitch 0
+    set p_xvel 0
+    set p_zvel 0
+    set p_steptype 0
+ends
+
+defstate mechsect_footstep
+    gets[].floorpicnum surface_type
+    state get_surface_type
+    rand step_temp 1
+    switch surface_type
+        case SURFACE_METAL
+            add step_temp S_STEP_MSET_METAL1
+            break
+        case SURFACE_WOOD
+            add step_temp S_STEP_MSET_WOOD1
+            break
+        case SURFACE_CARPET
+        case SURFACE_FABRIC
+        case SURFACE_GRASS
+            add step_temp S_STEP_FABRIC_JUMP1
+            break
+        case SURFACE_WATER
+        case SURFACE_SLIME
+            add step_temp S_STEP_WATER_WALK2
+            break
+        default
+            add step_temp S_STEP_MSET_HARD1
+            break
+    endswitch
+    ifpdistl 8192
+        soundvar step_temp
+ends
+
+defstate propogate_damage_surfaces
+    set temp2 temp
+    switch temp
+        case 6478
+        case 6480
+        case 6482
+        case 6484
+        case 6488
+        case 6630
+        case 7415
+        case 7417
+        case 7419
+        case 7421
+        case 7485
+        case 7520
+        case 7559
+        case 8031
+        case 8034
+        case 8037
+        case 8040
+        case 8043
+        case 8046
+        case 8049
+        case 8052
+        case 8055
+        case 8058
+        case 8061
+        case 8064
+        case 8067
+        case 8070
+        case 8076
+        case 8085
+        case 8087
+        case 8089
+        case 8091
+        case 8094
+        case 8096
+        case 8098
+        case 8100
+        case 8102
+        case 8106
+        case 8108
+        case 8110
+        case 8112
+        case 8114
+        case 8116
+        case 8121
+        case 8134
+        case 8137
+        case 8140
+        case 8143
+        case 8146
+        case 8148
+        case 8787
+        case 8789
+        case 8791
+        case 8793
+        case 8796
+        case 8798
+        case 9254
+        case 9260
+        case 9264
+        case 9273
+        case 9412
+        case 9414
+        case 9420
+        case 9422
+        case 9424
+        case 9426
+        case 9428
+        case 9430
+        case 9432
+        case 9434
+        case 9441
+        case 9444
+        case 9447
+        case 9450
+        case 9453
+        case 9456
+        case 9459
+        case 9462
+        case 9465
+        case 9468
+        case 9480
+        case 9482
+        case 9484
+        case 9486
+        case 9490
+        case 9493
+        case 9500
+        case 9502
+        case 9504
+        case 9506
+        case 9508
+        case 9523
+        case 9540
+        case 9542
+        case 9551
+        case 9554
+        case 9557
+        case 9560
+        case 9568
+        case 9570
+        case 9572
+        case 9581
+        case 9584
+        case 9590
+        case 9592
+        case 9610
+        case 9633
+        case 9640
+        case 9642
+        case 9644
+        case 9646
+        case 9651
+        case 9654
+        case 9657
+        case 9660
+        case 9670
+        case 9672
+        case 9674
+        case 9676
+        case 9680
+        case 9690
+        case 9692
+        case 9694
+        case 9696
+        case 9698
+        case 9700
+        case 9787
+        case 9790
+        case 9792
+        case 9800
+        case 9802
+        case 9804
+        case 9807
+        case 9810
+        case 9813
+        case 9816
+        case 9818
+        case 9822
+        case 9824
+        case 9828
+        case 9831
+        case 9834
+        case 9837
+        case 9840
+        case 9842
+        case 9844
+        case 9846
+        case 9848
+        case 9850
+        case 9852
+		case A_MONITOR_19
+		case A_MONITOR_20
+            add temp2 1
+            break
+        case 8702
+        case 8705
+        case 8708
+        case 8711
+        case 8714
+        case 8717
+        case 8720
+        case 8723
+        case 8726
+        case 8730
+        case 8733
+        case 8736
+        case 8777
+        case 8795
+        case 9440
+        case 9443
+        case 9446
+        case 9449
+        case 9452
+        case 9455
+        case 9458
+        case 9461
+        case 9464
+        case 9467
+        case 9492
+        case 9550
+        case 9553
+        case 9556
+        case 9559
+        case 9580
+        case 9583
+        case 9650
+        case 9653
+        case 9656
+        case 9659
+        case 9806
+        case 9809
+        case 9812
+        case 9815
+        case 9827
+        case 9830
+        case 9833
+        case 9836
+        case 9839
+            add temp2 2
+            break
+        case 5367
+        case 5368
+        case 5369
+        case 5370
+        case 5371
+        case 5372
+        case 5373
+        case 5374
+        case 5375
+        case 5376
+        case 5377
+        case 5378
+        case 5379
+        case 5380
+        case 5381
+        case 5382
+        case 5383
+        case 5384
+        case 5385
+        case 5386
+        case 5387
+        case 5388
+        case 5389
+        case 5390
+            sub temp2 9255
+            inv temp2
+            add temp2 temp
+            break
+        case 5335
+        case 5336
+        case 5337
+        case 5338
+        case 5339
+        case 5340
+        case 5341
+        case 5342
+        case 5343
+        case 5344
+        case 5345
+        case 5346
+        case 5347
+        case 5348
+        case 5349
+        case 5350
+        case 5351
+        case 5352
+        case 5353
+        case 5354
+        case 5355
+        case 5356
+        case 5357
+        case 5358
+            sub temp2 9261
+            inv temp2
+            add temp2 temp
+            break
+        case A_MONITOR_2        
+        case A_MONITOR_3
+        case A_MONITOR_5
+        case A_MONITOR_6
+        case A_MONITOR_7
+        case A_MONITOR_9
+        case A_MONITOR_10
+        case A_MONITOR_11
+        case A_MONITOR_12
+        case A_MONITOR_13
+        case A_MONITOR_14
+        case A_MONITOR_17
+        case A_MONITOR_HESKEL
+        case A_MONITOR_HESKEL_R
+            // case A_MONITOR_2_3_BROKE              6514
+            sub temp2 A_MONITOR_2_3_BROKE
+            inv temp2
+            add temp2 temp
+            break
+        case A_MONITOR_STATIC
+        case A_MONITOR_HESKEL_LG
+        case A_MONITOR_HESKEL_R_LG
+        case A_MONITOR_STATIC_LG
+        case A_MONITOR_2_LG
+        case A_MONITOR_3_LG
+        case A_MONITOR_17_LG
+            // case A_MONITOR_2_3_BROKE_LG
+            sub temp2 A_MONITOR_2_3_BROKE_LG
+            inv temp2
+            add temp2 temp
+            break
+        default
+            set temp2 0
+            break
+    endswitch
+    setarray pre_surface_damage[temp] temp2
+ends
+
+appendevent EVENT_ENTERLEVEL
+    set temp pre_surface_type[30720]
+    set temp2 pre_surface_damage[30720]
+    add temp temp2
+    ifl temp 2
+    {
+        for temp range 30720 // MAXTILES
+        {
+            state propogate_surfaces
+            state propogate_damage_surfaces
+        }
+        setarray pre_surface_type[30720] 1
+        setarray pre_surface_damage[30720] 1
+    }
+endevent
+
+appendevent EVENT_DAMAGEWALL
+    ifn wall[RETURN].picnum 9250 ifg wall[RETURN].picnum 0
+    {
+        switch sprite[THISACTOR].picnum
+            case BULLET
+            case EXPLOSION
+                getw[RETURN].picnum dwall_temp
+                set dwall_temp pre_surface_damage[dwall_temp]
+                ifg dwall_temp 0
+                    setw[RETURN].picnum dwall_temp
+                break
+            default
+                ifg sprite[THISACTOR].extra 0
+                {
+                    getw[RETURN].picnum dwall_temp
+                    set dwall_temp pre_surface_damage[dwall_temp]
+                    ifg dwall_temp 0
+                        setw[RETURN].picnum dwall_temp
+                }
+                break
+        endswitch
+    }
+endevent
+
+appendevent EVENT_DAMAGEFLOOR
+    ifn sector[RETURN].floorpicnum 9250 ifg sector[RETURN].floorpicnum 0
+    {
+        switch sprite[THISACTOR].picnum
+            case BULLET
+            case EXPLOSION
+                gets[RETURN].floorpicnum dwall_temp
+                set dwall_temp pre_surface_damage[dwall_temp]
+                ifg dwall_temp 0
+                    sets[RETURN].floorpicnum dwall_temp
+                break
+            default
+                ifg sprite[THISACTOR].extra 0
+                {
+                    gets[RETURN].floorpicnum dwall_temp
+                    set dwall_temp pre_surface_damage[dwall_temp]
+                    ifg dwall_temp 0
+                        sets[RETURN].floorpicnum dwall_temp
+                }
+                break
+        endswitch
+    }
+endevent
+
+appendevent EVENT_DAMAGECEILING
+    ifn sector[RETURN].ceilingpicnum 9250 ifg sector[RETURN].ceilingpicnum 0
+    {
+        switch sprite[THISACTOR].picnum
+            case BULLET
+            case EXPLOSION
+                gets[RETURN].ceilingpicnum dwall_temp
+                set dwall_temp pre_surface_damage[dwall_temp]
+                ifg dwall_temp 0
+                    sets[RETURN].ceilingpicnum dwall_temp
+                break
+            default
+                ifg sprite[THISACTOR].extra 0
+                {
+                    gets[RETURN].ceilingpicnum dwall_temp
+                    set dwall_temp pre_surface_damage[dwall_temp]
+                    ifg dwall_temp 0
+                        sets[RETURN].ceilingpicnum dwall_temp
+                }
+                break
+        endswitch
+    }
+endevent
+
+appendevent EVENT_DAMAGESPRITE
+    switch sprite[RETURN].picnum
+        case A_SODA_DISPENSER
+            break
+        default
+            set dwall_temp 0
+            ife sprite[RETURN].statnum STAT_DEFAULT
+            {
+                geta[RETURN].picnum dwall_temp
+                set dwall_temp pre_surface_damage[dwall_temp]
+                ifg dwall_temp 0
+                    seta[RETURN].picnum dwall_temp
+            }
+            break
+    endswitch
+endevent
+
+damageeventtile 5335
+damageeventtile 5336
+damageeventtile 5337
+damageeventtile 5338
+damageeventtile 5339
+damageeventtile 5340
+damageeventtile 5341
+damageeventtile 5342
+damageeventtile 5343
+damageeventtile 5344
+damageeventtile 5345
+damageeventtile 5346
+damageeventtile 5347
+damageeventtile 5348
+damageeventtile 5349
+damageeventtile 5350
+damageeventtile 5351
+damageeventtile 5352
+damageeventtile 5353
+damageeventtile 5354
+damageeventtile 5355
+damageeventtile 5356
+damageeventtile 5357
+damageeventtile 5358
+damageeventtile 5367
+damageeventtile 5368
+damageeventtile 5369
+damageeventtile 5370
+damageeventtile 5371
+damageeventtile 5372
+damageeventtile 5373
+damageeventtile 5374
+damageeventtile 5375
+damageeventtile 5376
+damageeventtile 5377
+damageeventtile 5378
+damageeventtile 5379
+damageeventtile 5370
+damageeventtile 5381
+damageeventtile 5382
+damageeventtile 5383
+damageeventtile 5384
+damageeventtile 5385
+damageeventtile 5386
+damageeventtile 5387
+damageeventtile 5388
+damageeventtile 5389
+damageeventtile 5390
+damageeventtile 6478
+damageeventtile 6480
+damageeventtile 6482
+damageeventtile 6484
+damageeventtile 6488
+damageeventtile 6630
+damageeventtile 7415
+damageeventtile 7417
+damageeventtile 7419
+damageeventtile 7421
+damageeventtile 7485
+damageeventtile 7520
+damageeventtile 7559
+damageeventtile 8031
+damageeventtile 8034
+damageeventtile 8037
+damageeventtile 8040
+damageeventtile 8043
+damageeventtile 8046
+damageeventtile 8049
+damageeventtile 8052
+damageeventtile 8055
+damageeventtile 8058
+damageeventtile 8061
+damageeventtile 8064
+damageeventtile 8067
+damageeventtile 8070
+damageeventtile 8076
+damageeventtile 8085
+damageeventtile 8087
+damageeventtile 8089
+damageeventtile 8091
+damageeventtile 8094
+damageeventtile 8096
+damageeventtile 8098
+damageeventtile 8100
+damageeventtile 8102
+damageeventtile 8106
+damageeventtile 8108
+damageeventtile 8110
+damageeventtile 8112
+damageeventtile 8114
+damageeventtile 8116
+damageeventtile 8110
+damageeventtile 8121
+damageeventtile 8134
+damageeventtile 8137
+damageeventtile 8140
+damageeventtile 8143
+damageeventtile 8146
+damageeventtile 8148
+damageeventtile 8787
+damageeventtile 8789
+damageeventtile 8791
+damageeventtile 8793
+damageeventtile 8796
+damageeventtile 8798
+damageeventtile 9254
+damageeventtile 9260
+damageeventtile 9264
+damageeventtile 9273
+damageeventtile 9412
+damageeventtile 9414
+damageeventtile 9420
+damageeventtile 9422
+damageeventtile 9424
+damageeventtile 9426
+damageeventtile 9428
+damageeventtile 9430
+damageeventtile 9432
+damageeventtile 9434
+damageeventtile 9441
+damageeventtile 9444
+damageeventtile 9447
+damageeventtile 9450
+damageeventtile 9453
+damageeventtile 9456
+damageeventtile 9459
+damageeventtile 9462
+damageeventtile 9465
+damageeventtile 9468
+damageeventtile 9480
+damageeventtile 9482
+damageeventtile 9484
+damageeventtile 9486
+damageeventtile 9490
+damageeventtile 9493
+damageeventtile 9500
+damageeventtile 9502
+damageeventtile 9504
+damageeventtile 9506
+damageeventtile 9508
+damageeventtile 9523
+damageeventtile 9540
+damageeventtile 9542
+damageeventtile 9551
+damageeventtile 9554
+damageeventtile 9557
+damageeventtile 9560
+damageeventtile 9568
+damageeventtile 9570
+damageeventtile 9572
+damageeventtile 9581
+damageeventtile 9584
+damageeventtile 9590
+damageeventtile 9592
+damageeventtile 9610
+damageeventtile 9633
+damageeventtile 9640
+damageeventtile 9642
+damageeventtile 9644
+damageeventtile 9646
+damageeventtile 9651
+damageeventtile 9654
+damageeventtile 9657
+damageeventtile 9660
+damageeventtile 9670
+damageeventtile 9672
+damageeventtile 9674
+damageeventtile 9676
+damageeventtile 9680
+damageeventtile 9690
+damageeventtile 9692
+damageeventtile 9694
+damageeventtile 9696
+damageeventtile 9698
+damageeventtile 9700
+damageeventtile 9787
+damageeventtile 9790
+damageeventtile 9792
+damageeventtile 9800
+damageeventtile 9802
+damageeventtile 9804
+damageeventtile 9807
+damageeventtile 9810
+damageeventtile 9813
+damageeventtile 9816
+damageeventtile 9818
+damageeventtile 9822
+damageeventtile 9824
+damageeventtile 9828
+damageeventtile 9831
+damageeventtile 9834
+damageeventtile 9837
+damageeventtile 9840
+damageeventtile 9842
+damageeventtile 9844
+damageeventtile 9846
+damageeventtile 9848
+damageeventtile 9840
+damageeventtile 9852
+damageeventtile 8702
+damageeventtile 8705
+damageeventtile 8708
+damageeventtile 8711
+damageeventtile 8714
+damageeventtile 8717
+damageeventtile 8720
+damageeventtile 8723
+damageeventtile 8726
+damageeventtile 8730
+damageeventtile 8733
+damageeventtile 8736
+damageeventtile 8777
+damageeventtile 8795
+damageeventtile 9440
+damageeventtile 9443
+damageeventtile 9446
+damageeventtile 9449
+damageeventtile 9452
+damageeventtile 9455
+damageeventtile 9458
+damageeventtile 9461
+damageeventtile 9464
+damageeventtile 9467
+damageeventtile 9492
+damageeventtile 9550
+damageeventtile 9553
+damageeventtile 9556
+damageeventtile 9559
+damageeventtile 9580
+damageeventtile 9583
+damageeventtile 9650
+damageeventtile 9653
+damageeventtile 9656
+damageeventtile 9659
+damageeventtile 9806
+damageeventtile 9809
+damageeventtile 9812
+damageeventtile 9815
+damageeventtile 9827
+damageeventtile 9830
+damageeventtile 9833
+damageeventtile 9836
+damageeventtile 9839
+
+
+damageeventtile A_MONITOR_2
+// damageeventtile A_MONITOR_2_3_BROKE              6514
+damageeventtile A_MONITOR_3
+damageeventtile A_MONITOR_5
+damageeventtile A_MONITOR_6
+damageeventtile A_MONITOR_7
+damageeventtile A_MONITOR_9
+damageeventtile A_MONITOR_10
+damageeventtile A_MONITOR_11
+damageeventtile A_MONITOR_12
+damageeventtile A_MONITOR_13
+damageeventtile A_MONITOR_14
+damageeventtile A_MONITOR_17
+damageeventtile A_MONITOR_HESKEL
+damageeventtile A_MONITOR_HESKEL_R
+damageeventtile A_MONITOR_HESKEL_LG
+damageeventtile A_MONITOR_HESKEL_R_LG
+damageeventtile A_MONITOR_STATIC
+damageeventtile A_MONITOR_STATIC_LG
+// damageeventtile A_MONITOR_2_3_BROKE_LG
+damageeventtile A_MONITOR_2_LG
+damageeventtile A_MONITOR_3_LG
+damageeventtile A_MONITOR_17_LG
+damageeventtile A_MONITOR_19
+damageeventtile A_MONITOR_20

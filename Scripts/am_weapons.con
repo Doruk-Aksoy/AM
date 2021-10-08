@@ -1,0 +1,108 @@
+appendevent EVENT_ANIMATESPRITES
+	ifactor AM_FLAME {
+		settspr .tsprcstat 2
+		settspr .tsprshade 3
+		settspr .tsprblend 255
+	}
+endevent
+
+spritenoshade AM_FLAME
+
+// requires its zvel to be set
+action AC_AMFLAME 0 15 1 1 4
+action AC_AMFLAME_FAST 0 15 1 1 2
+useractor notenemy AM_FLAME 0
+	cstat 130
+    geta .htcgg temp
+    add temp 1
+    mod temp 3
+    seta .htcgg temp
+	ifaction 0 {
+		sizeat 20 20
+		action AC_AMFLAME
+		set counter2 AM_FLAME_SPEED
+		set counter 0
+		
+		ifrnd 128
+			cstator 4
+		ifrnd 128
+			cstator 8
+	}
+	else ife counter 0 {
+		ifand sprite.htg_t 0 3 {
+			sub counter2 2
+			geta .xrepeat temp
+			sub temp 1
+			seta .xrepeat temp
+			geta .yrepeat temp
+			sub temp 1
+			seta .yrepeat temp
+		}
+		ifand sprite.htg_t 0 1 {
+			ifspawnedby APLAYER {
+				for itervar range num_flag32 {
+					// the array of bad guys!
+					set temp gameflag32[itervar]
+					ifg sprite[temp].extra 0 {
+						ldist am_dist THISACTOR temp
+						set temp2 sprite.xrepeat
+						shiftl temp2 4
+						sub am_dist temp2
+						ifl am_dist 1024 {
+							set cansee_target temp
+							state cansee_simple
+							ife cansee_return 1 {			
+								rand am_tmp 2
+								add am_tmp 6
+								seta[temp].htextra am_tmp
+								seta[temp].htpicnum AM_FLAME
+							}
+						}
+					}
+				}
+			}
+			else {
+				ldist am_dist THISACTOR player.i
+				set temp2 sprite.xrepeat
+				shiftl temp2 4
+				sub am_dist temp2
+				ifl am_dist 1024
+					addphealth -1
+			}
+		}
+		
+		set move_v counter2
+		state move_actor
+		movesprite THISACTOR move_xv move_yv sprite.zvel 1 temp
+		
+		// stop moving
+		ife counter 0 ifge temp 16384 ifle temp 32768 {
+			set counter 1
+			hitradius 1024 6 9 12 15
+			geta .htg_t 3 counter2
+			action AC_AMFLAME_FAST
+			seta .htg_t 3 counter2
+		}
+	}
+	else {
+		// stop routine
+		geta .xrepeat temp
+		sub temp 2
+		clamp temp 0 20
+		seta .xrepeat temp
+		geta .yrepeat temp
+		sub temp 2
+		clamp temp 0 20
+		seta .yrepeat temp
+		hitradius 1576 2 4 6 8
+	}
+	
+	ife sprite.xrepeat 0
+		killit
+	
+	ifinwater
+		killit
+	
+	ifactioncount 15
+		killit 
+enda

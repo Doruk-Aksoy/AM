@@ -1,0 +1,178 @@
+/*
+THIS IS THE DEFINITIONS FILE OF ANGER MANAGEMENT
+*/
+
+include scripts/am_sounds.con
+
+// ACTOR DEFS
+define I_AMMOBOOST 				100
+define I_DEFLECTOR				101
+define I_BUDDY					102
+
+define AM_BUDDY					638
+define AM_BUDDY_PROJ			653
+define AM_BUDDY_PROJTRAIL		654
+define AM_BUDDY_PROJHIT			655
+
+define AM_EXSHELL				660
+define AM_EXSHELL_HIT			661
+
+define DAMAGETESTER				673
+
+define AM_FLAME					674
+
+define AM_FRAMEEFFECT			1246
+
+define AM_HITMARKER				12891
+
+// ENEMY DEFS
+define AM_P_SEEKERDRONE_MISSILE		11744
+define AM_T_SEEKERDRONE_MTRAIL		11787
+define AM_SEEKERDRONE_MISSILEHIT 	11754
+define AM_SEEKERDRONE				11760
+define AM_SEEKERDRONE_HEALTH		20
+
+define AM_DEFLECTOR_FX				11791
+
+define AM_EXODUDE					12843
+define AM_EXODUDE_STAYPUT			12844
+define AM_EXODUDE_DEAD				12889
+define AM_EXODUDE_SHIELD			12890
+define AM_EXODUDE_FLAMEDIST			7200
+define AM_FLAME_SPEED				416
+define AM_P_EXORAILTRAIL			5950
+define AM_P_EXORAIL					5951
+define AM_P_EXORAILHIT				5952
+define AM_P_EXORAILTRAIL_FAKE		5953
+define AM_EXODUDE_HEALTH			250
+
+// QUOTE DEFS
+definequote 1000      ^15AMMO BOOSTER! ^92Ammo capacities increased by 10%.
+definequote 1001      ^15STAMINA BOOST! ^92Health capacity increased by 5.
+definequote 1002	  ^15DEFLECTOR! ^92Send attacks back at them!
+definequote 1003	  ^15BUDDY! ^92A girl could always use extra protection!
+definequote 1004	  explosive shells!
+
+// CONSTANTS
+define AM_PAL_EXPLOSIVESHELL			145
+define AM_MAX_EXPLOSIVESHELLS			24
+define AM_EXSHELL_SHOTSPERBURST			8
+define AM_EXPLOSIVESHELL_AMMOCOUNT		6
+define AM_EXPLOSIVESHELL_SPAWNCHANCE	48
+
+define AM_MAX_AMMOBONUS_CAP		10
+define AM_AMMOBONUS_FACTOR 		10
+define AM_AMMOBONUS_SPAWNCHANCE 86
+
+define AM_MAX_DEFLECTORS		3
+define AM_DEFLECTOR_TIME		450 // 15 seconds
+define AM_DEFLECTOR_LOOPSTART	420
+define AM_DEFLECTOR_FADE		60
+define AM_DEFLECTOR_HUDX		54
+define AM_DEFLECTOR_TEXTHUDX	64
+define AM_DEFLECTOR_SPAWNCHANCE 64
+
+define AM_BUDDY_TIME			600 // 20 seconds
+define AM_MAX_BUDDIES			5
+define AM_BUDDY_SPAWNCHANCE		64
+
+define AM_STAMINA_BOOST			5
+define AM_MAX_STAMINA_BOOST   	300
+define AM_STAMINA_SPAWNCHANCE	52 // around 20%
+
+define AM_DEFAULT_WEIGHTMAX					999 // -1 of 1000, because we map rand range of 0 - 999 to 1 - 1000
+define AM_REGULARCULTIST_WEIGHT				600
+
+define PAL_FIRECULTIST 						16
+define AM_FIRECULTIST_WEIGHT 				300
+define AM_FIRECULTIST_SHOTPAL				15
+define AM_FIRECULTIST_SHOTDMG				3
+define AM_FIRECULTIST_SHOTRAND				2
+
+define PAL_AUTOCULTIST						78
+define AM_AUTOCULTIST_WEIGHT				100
+define AM_AUTOCULTIST_HEALTH 				60
+
+define AM_CULTIST_TYPES						3 // regular, fire, auto
+
+define PAL_DIOPEDE_YELLOW					137
+define AM_DIOPEDE_YELLOW_HEALTH				125
+define AM_DIOPEDE_YELLOW_BUTT_HEALTH		30
+define AM_DIOPEDE_YELLOW_DIST				160
+
+define AM_A_GENERICMUZZLE					5994
+define AM_BRUTE_MUZZLEFLASH					6003
+
+define AM_FIRECYCLONE_PULLDIST				8192
+
+// are also used like bits in player ammo display code
+define AM_AMMOTYPE_NORMALSHELL				0
+define AM_AMMOTYPE_GRENADE					1
+define AM_AMMOTYPE_EXPLOSIVESHELL			2
+definequote 1005							^9Regular shells
+definequote 1006							^5Grenades
+definequote 1007							^11Explosive shells
+definequote 1008							RESERVED
+
+// REPLACED CONSTANTS FROM IF
+define HUD_KEYS_X_AM						91
+
+// VARIABLES
+var i
+var am_tmp
+var am_tmp2
+var am_weight // the result of weight roll for mutator
+var am_weight_comp // comparison of weight
+var am_rolled // class roll done
+var am_resetpicnum
+var am_hitang
+var am_ztarget
+var am_proj
+var am_angtemp
+var am_dist
+var am_iter
+var am_p_tmp 0 1 // used mainly for custom ammo hack
+var am_p_tmp2 0 1 // used for weapon hud stuff
+var am_p_savesleft 1 1
+var am_x
+var am_y
+var am_z
+var am_x2
+var am_y2
+var am_z2
+var am_ang
+var am_vel
+var am_frame_counter // used to determine lifetime of frame effect
+var am_frame_settings // flags
+var am_blendswitch 0 2
+var am_estate 0 2
+// hold amount of ammo bonus pickups player has
+var p_ammocap_bonus 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+// do we need to update the ammo cap?
+var p_update_ammocap 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+// hold how many stamina boosts the player picked up
+var p_stamina_boosts 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_smg_randang1 0 1
+var p_smg_randhoriz1 0 1
+var p_crouching 0 1
+var p_deflectors 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE // holds amount of deflectors available
+var p_deflector_timer 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET
+var p_buddies 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE // holds amount of buddies available
+var p_buddy_timer 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET
+
+// extra ammo types for shotgun
+var p_explosiveshells 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_explosiveshell_clip 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_max_explosiveshells AM_MAX_EXPLOSIVESHELLS GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+
+var p_grenades 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_grenade_clip 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_max_grenades GRENADE_MAXAMMO GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+
+var p_usedammotype 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_prevammotype 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_extra_ammo_menu_on 0 1
+var p_prev_input 0 1
+var p_changeprevammo 0 1
+var p_forcedammoswitch 0 1
+var p_ammohack 0 1

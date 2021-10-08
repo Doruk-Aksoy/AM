@@ -1,0 +1,98 @@
+/*
+THIS FILE CONTAINS HELPER SUBROUTINES FOR AM
+*/
+defstate update_p_maxhp
+	ife p_stamina_boosts 0
+		setp .max_player_health MAXPLAYERHEALTH
+	else {
+		set am_tmp p_stamina_boosts
+		mul am_tmp AM_STAMINA_BOOST
+		add am_tmp MAXPLAYERHEALTH
+		setp .max_player_health am_tmp
+	}
+ends
+
+/*
+INPUT:  cansee_target
+		cansee_height
+OUTPUT: cansee_return
+*/
+defstate cansee_simple
+	geta[cansee_target].z cansee_temp
+	sub cansee_temp 6144
+	seta[cansee_target].z cansee_temp
+	geta .z cansee_temp2
+	sub cansee_temp2 6144
+	seta .z cansee_temp2
+	canseespr THISACTOR cansee_target cansee_return
+	add cansee_temp 6144
+	add cansee_temp2 6144
+	seta[cansee_target].z cansee_temp
+	seta .z cansee_temp2
+ends
+
+defstate resetlookangle
+	getactor[THISACTOR].htpicnum am_resetpicnum
+	getactor[THISACTOR].ang am_hitang
+	whilen am_resetpicnum -1 {
+		setactor[THISACTOR].ang am_angtemp
+		setactor[THISACTOR].htpicnum -1
+		set am_resetpicnum -1
+	}
+	ife am_resetpicnum -1
+		set am_angtemp am_hitang
+ends
+
+// INPUT: am_ztarget
+//		  am_proj
+// OUTPUT: h_zvel
+// uses am_tmp
+defstate am_calc_zvel
+	ldist am_dist THISACTOR am_ztarget
+	getprojectile[am_proj].vel am_vel
+	ifn am_vel 0
+		div am_dist am_vel
+	geta[am_ztarget].z h_zvel
+	sub h_zvel sprite.z
+	add h_zvel 1024
+	ife am_ztarget player.i {
+		getpv .p_crouching am_tmp
+		ife am_tmp 1
+			sub h_zvel 2048
+	}
+	ifn am_dist 0
+		div h_zvel am_dist
+	shiftl h_zvel 1
+	div h_zvel 5
+    geta .z am_tmp
+    sub am_tmp sprite[am_ztarget].z
+    abs am_tmp
+    ifg am_tmp 12288
+        clamp h_zvel -4096 8192 // prevent overflow
+    else
+        clamp h_zvel -2048 8192 // prevent overflow
+ends
+
+// INPUT: am_ztarget
+//		  am_proj
+// OUTPUT: h_zvel
+// uses am_tmp
+defstate am_calc_zvel_other
+	ldist am_dist THISACTOR am_ztarget
+	getprojectile[am_proj].vel am_vel
+	ifn am_vel 0
+		div am_dist am_vel
+	geta[am_ztarget].z h_zvel
+	sub h_zvel sprite.z
+	sub h_zvel 2048
+	ifn am_dist 0
+		div h_zvel am_dist
+	shiftl h_zvel 1
+	div h_zvel 3
+    clamp h_zvel -4096 8192 // prevent overflow
+ends
+
+state make_hitmarker
+	espawn AM_HITMARKER
+	setav[RETURN].htg_owner THISACTOR
+ends

@@ -1,0 +1,902 @@
+/*
+THIS IS THE ACTOR DECLARATION FILE OF ANGER MANAGEMENT
+*/
+
+actor DAMAGETESTER 9999
+	sizeat 40 40
+	cstat 257
+	clipdist 40
+	set temp sprite.htextra
+	ifg temp 0 {
+		addlogvar temp
+		seta .extra 9999
+		seta .htextra -1
+	}
+enda
+
+defstate am_increase_ammocaps
+	for am_iter range 8 {
+		switch am_iter
+			case 1
+				setvar am_tmp WEAPON1_MAXAMMO
+			break
+			case 2
+				setvar am_tmp WEAPON2_MAXAMMO
+			break
+			case 3
+				setvar am_tmp WEAPON3_MAXAMMO
+			break
+			case 4
+				setvar am_tmp WEAPON4_MAXAMMO
+			break
+			case 5
+				setvar am_tmp WEAPON5_MAXAMMO
+			break
+			case 6
+				setvar am_tmp GRENADE_MAXAMMO
+			break
+			case 7
+				setvar am_tmp WEAPON7_MAXAMMO
+			break
+			case 8
+				setvar am_tmp WEAPON8_MAXAMMO
+			break
+			default
+				// do nothing for the baton
+			break
+		endswitch
+		
+		getp .max_ammo_amount am_iter am_tmp2
+		div am_tmp AM_AMMOBONUS_FACTOR
+		add am_tmp2 am_tmp
+		setp .max_ammo_amount am_iter am_tmp2
+	}
+	// increase special ammo caps too
+	set am_tmp GRENADE_MAXAMMO
+	div am_tmp AM_AMMOBONUS_FACTOR
+	add p_max_grenades am_tmp
+	
+	set am_tmp AM_MAX_EXPLOSIVESHELLS
+	div am_tmp AM_AMMOBONUS_FACTOR
+	add p_max_explosiveshells am_tmp
+ends
+
+spritenopal I_AMMOBOOST
+spriteshadow I_AMMOBOOST
+spritenoshade I_AMMOBOOST
+useractor notenemy I_AMMOBOOST
+    state item_initflags
+    geta[].ang temp
+    add temp 32
+    and temp 2047
+    seta[].ang temp
+    state item_stupidwater_fall
+    cstat 16
+    sizeat 32 32
+    spritepal 0
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 15 25
+    
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 12
+    {
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 24
+        abs temp2
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ife counter 24
+            set counter 0
+        set shardblink 0
+    }
+	
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+		ifvarl p_ammocap_bonus AM_MAX_AMMOBONUS_CAP {
+			state item_secret
+			add p_ammocap_bonus 1
+			set p_update_ammocap 1
+			
+			// increase the ammo capacities
+			state am_increase_ammocaps
+			
+            ife se_lotag 32767
+                set se_lotag 0
+				
+			quote 1000
+            palfrom 15 25 32 5
+			
+			or p_wantline TALK_PICKUP
+			globalsound AM_S_AMMOBONUS
+			
+			cstat 32768
+            set counter 300
+            ifg se_hitag 0
+            {
+                operateactivators se_hitag THISACTOR
+                operatemasterswitches se_hitag
+                operaterespawns se_hitag
+                setarray preloadactivations[se_hitag] 1
+            }
+            killit
+		}
+    }
+enda
+
+spritenopal I_DEFLECTOR
+spriteshadow I_DEFLECTOR
+spritenoshade I_DEFLECTOR
+useractor notenemy I_DEFLECTOR
+    state item_initflags
+    geta[].ang temp
+    add temp 32
+    and temp 2047
+    seta[].ang temp
+    state item_stupidwater_fall
+    cstat 16
+    sizeat 32 32
+    spritepal 0
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 15 25
+    
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 12
+    {
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 24
+        abs temp2
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ife counter 24
+            set counter 0
+        set shardblink 0
+    }
+	
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive {
+		ifvarl p_deflectors AM_MAX_DEFLECTORS {
+			state item_secret
+			
+			add p_deflectors 1
+			
+            ife se_lotag 32767
+                set se_lotag 0
+				
+			quote 1002
+            palfrom 15 25 32 5
+			
+			or p_wantline TALK_PICKUP
+			globalsound AM_S_DEFLECTOR
+			
+			cstat 32768
+            set counter 300
+            ifg se_hitag 0
+            {
+                operateactivators se_hitag THISACTOR
+                operatemasterswitches se_hitag
+                operaterespawns se_hitag
+                setarray preloadactivations[se_hitag] 1
+            }
+            killit
+		}
+    }
+enda
+
+spritenopal I_BUDDY
+spriteshadow I_BUDDY
+spritenoshade I_BUDDY
+useractor notenemy I_BUDDY
+	ife st_do_once 0 {
+		geta .z temp
+		sub temp 2560
+		seta .z temp
+		set counter2 temp
+		set counter3 0
+		set st_do_once 1
+	}
+    state item_initflags
+    geta[].ang temp
+    add temp 32
+    and temp 2047
+    seta[].ang temp
+    state item_stupidwater_fall
+    sizeat 20 20
+    spritepal 0
+    gets[].floorshade temp
+    ifg temp 15
+    {
+        sub temp 2
+        clamp temp 15 25
+    }
+    else
+        clamp temp 15 25
+    
+    ife st_do_once 0
+    {
+        set se_shade temp
+        set st_do_once 1
+    }
+    set temp2 counter
+    ifl counter 12
+    {
+        sub temp temp2
+    }
+    else
+    {
+        set temp2 counter
+        sub temp2 24
+        abs temp2
+        sub temp temp2
+    }
+    sub temp 3
+    seta[].shade temp
+    add shardblink 1
+    ifg shardblink 2
+    {
+        add counter 1
+        ife counter 24
+            set counter 0
+        set shardblink 0
+    }
+	
+	// bob up and down
+	set temp counter2
+	sin h_sin counter3
+	shiftr h_sin 4
+	sub temp h_sin
+	seta .z temp
+	
+	add counter3 16
+	and counter3 2047
+	
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive {
+		ifvarl p_buddies AM_MAX_BUDDIES {
+			state item_secret
+			
+			add p_buddies 1
+			
+            ife se_lotag 32767
+                set se_lotag 0
+				
+			quote 1003
+            palfrom 15 25 32 5
+			
+			or p_wantline TALK_PICKUP
+			globalsound AM_S_BUDDY
+			
+			cstat 32768
+            ifg se_hitag 0
+            {
+                operateactivators se_hitag THISACTOR
+                operatemasterswitches se_hitag
+                operaterespawns se_hitag
+                setarray preloadactivations[se_hitag] 1
+            }
+            killit
+		}
+    }
+enda
+
+spritenoshade AM_BRUTE_MUZZLEFLASH
+spritenopal AM_BRUTE_MUZZLEFLASH
+
+action AM_A_BRUTEMUZZLE 0 2 1 1 3 1
+useractor notenemy AM_BRUTE_MUZZLEFLASH
+	ifaction 0 {
+		action AM_A_BRUTEMUZZLE
+		geta .cstat am_tmp
+		xor am_tmp 32768
+		seta .cstat am_tmp
+	}
+	
+	ifn tp_owner -1 {
+		geta[tp_owner].x am_x
+		geta[tp_owner].y am_y
+		geta[tp_owner].ang am_ang
+		seta .x am_x
+		seta .y am_y
+		seta .ang am_ang
+		add am_y 208
+		add am_x 96
+		rotatepoint sprite.x sprite.y am_x am_y am_ang am_x2 am_y2
+		
+		seta .x am_x2
+		seta .y am_y2
+	}
+	
+	geta[].shade am_tmp
+	add am_tmp 8
+	seta[].shade am_tmp
+	
+	ifactioncount 2
+		killit
+enda
+
+spritenoshade AM_A_GENERICMUZZLE
+spritenopal AM_A_GENERICMUZZLE
+
+action AC_A_GENERICMUZZLE 0 7 1 1 3
+useractor notenemy AM_A_GENERICMUZZLE
+	ifaction 0 {
+		action AC_A_GENERICMUZZLE
+		geta .cstat am_tmp
+		xor am_tmp 32768
+		seta .cstat am_tmp
+	}
+	
+	// randomized appearance
+	ifactioncount 1 {
+		rand temp 6
+		geta .htg_t 3 temp2
+		add temp2 temp
+		mod temp2 7
+		seta .htg_t 3 temp2
+	}
+	
+	ifn tp_owner -1 {
+		geta[tp_owner].x am_x
+		geta[tp_owner].y am_y
+		geta[tp_owner].ang am_ang
+		seta .x am_x
+		seta .y am_y
+		seta .ang am_ang
+		add am_y 208
+		add am_x 96
+		rotatepoint sprite.x sprite.y am_x am_y am_ang am_x2 am_y2
+		
+		seta .x am_x2
+		seta .y am_y2
+	}
+	
+	ifl sprite.htg_t 0 counter {
+		geta .xrepeat am_tmp
+		add am_tmp 2
+		seta .xrepeat am_tmp
+		geta .yrepeat am_tmp
+		add am_tmp 2
+		seta .yrepeat am_tmp
+	}
+	else ifand am_estate 1 {
+		geta .xrepeat am_tmp
+		sub am_tmp 1
+		seta .xrepeat am_tmp
+		geta .yrepeat am_tmp
+		sub am_tmp 1
+		seta .yrepeat am_tmp
+	}
+	
+	geta[].shade am_tmp
+	add am_tmp 2
+	seta[].shade am_tmp
+	
+	// extra determines lifetime
+	ife sprite.extra sprite.htg_t 0
+		killit
+enda
+
+defstate make_frame_effect
+	seta[RETURN].owner THISACTOR
+	seta[RETURN].mdflags 16
+	seta[RETURN].extra am_frame_counter
+	setav[RETURN].am_blendswitch 0
+	setav[RETURN].enemy_init sprite.picnum
+	setav[RETURN].am_estate am_frame_settings
+ends
+
+// Uses extra passed to this to determine how long it should last
+action AM_NOACTION 0 1 1 1 35
+useractor notenemy AM_FRAMEEFFECT 0
+	ifaction 0 {
+		action AM_NOACTION
+		ifand sprite.cstat 32768 {
+			geta .cstat temp
+			xor temp 32768
+			seta .cstat temp
+		}
+	}
+	/*
+		am_estate / am_frame_settings
+		1 - fade out by 2
+		2 - fade out by 3 (can combine with 1 for 3 fade out)
+	*/
+	seta .xrepeat sprite[sprite.owner].xrepeat
+	seta .yrepeat sprite[sprite.owner].yrepeat
+	seta .pal sprite[sprite.owner].pal
+	
+	set temp 0
+	ifand am_estate 1
+		set temp 2
+	ifand am_estate 2
+		add temp 3
+	ifand am_estate 4
+		add temp 2
+	set am_tmp am_estate
+	xor am_tmp 7
+	// has at least 1 or 2 in it
+	ifn am_tmp 7 {
+		geta .blend temp2
+		ife am_blendswitch 1
+			inv temp
+		add temp2 temp
+		clamp temp2 1 31
+		ife temp2 31 ifand sprite.cstat 2 {
+			seta .cstat 514
+			set am_blendswitch 1
+		}
+		seta .blend temp2
+	}
+	ifge sprite.htg_t 0 sprite.extra
+		killit
+enda
+
+appendevent EVENT_ANIMATESPRITES
+	ifactor AM_FRAMEEFFECT {
+		gettspr .tsprowner am_ang // the actor that is the world version of this
+		// make it use the picnum of the spawner
+		settspr .tsprpicnum actorvar[am_ang].enemy_init
+		settspr .tsprxrepeat sprite[am_ang].xrepeat
+		settspr .tspryrepeat sprite[am_ang].yrepeat
+	}
+	else ifactor AM_DEFLECTOR_FX {
+		settspr .tsprpicnum 7070
+		settspr .tsprxrepeat 5
+		settspr .tspryrepeat 5
+		settspr .tsprcstat 2
+		settspr .tsprpal 7
+	}
+endevent
+
+useractor notenemy AM_DEFLECTOR_FX 0
+	ifaction 0 {
+		action AM_NOACTION
+		geta .cstat am_tmp
+		xor am_tmp 32768
+		seta .cstat am_tmp
+		cstator 2
+		sizeat 5 5
+		spritepal 7
+		set counter 0
+	}
+	else {
+		geta[htg_owner].x am_x
+		geta[htg_owner].y am_y
+		geta[htg_owner].z am_z
+		sub am_z 4280
+		
+		getpv .p_crouching temp
+		ife temp 1
+			sub am_z 3200
+		
+		set am_tmp2 counter
+		shiftl am_tmp2 5
+		and am_tmp2 2047
+		
+		ife ms_flashpal 0 {
+			sub am_y 384
+			add am_x 192
+			rotatepoint sprite[htg_owner].x sprite[htg_owner].y am_x am_y am_tmp2 am_x2 am_y2
+			
+			sin h_sin am_tmp2
+			shiftr h_sin 2
+			sub am_z h_sin
+		}
+		else ife ms_flashpal 120 {
+			add am_y 384
+			add am_x 192
+			rotatepoint sprite[htg_owner].x sprite[htg_owner].y am_x am_y am_tmp2 am_x2 am_y2
+			
+			sin h_sin am_tmp2
+			shiftr h_sin 2
+			sub am_z h_sin
+		}
+		else ife ms_flashpal 240 {
+			add am_y 384
+			rotatepoint sprite[htg_owner].x sprite[htg_owner].y sprite[htg_owner].x am_y am_tmp2 am_x2 am_y2
+			
+			sub am_z 2576
+			cos h_cos am_tmp2
+			shiftr h_cos 2
+			sub am_z h_cos
+		}
+		else ife ms_flashpal 360 {
+			sub am_y 384
+			rotatepoint sprite[htg_owner].x sprite[htg_owner].y sprite[htg_owner].x am_y am_tmp2 am_x2 am_y2
+			
+			sub am_z 2576
+			cos h_cos am_tmp2
+			shiftr h_cos 2
+			sub am_z h_cos
+		}
+	
+		seta .x am_x2
+		seta .y am_y2
+		seta .z am_z
+		
+		add counter 1
+		ifg counter 63
+			set counter 0
+		
+		// spawn the trail
+		ifand counter 1 {
+			espawn AM_FRAMEEFFECT
+			seta[RETURN].cstat 32770
+			set am_frame_counter 20
+			set am_frame_settings 5
+			state make_frame_effect
+			setav[RETURN].enemy_init 7070 // there's no picnum to take here
+		}
+		
+		getpv[THISACTOR].p_deflector_timer temp
+		ife temp 0
+			killit
+	}
+enda
+
+defineprojectile AM_BUDDY_PROJ PROJ_WORKSLIKE 65538
+defineprojectile AM_BUDDY_PROJ PROJ_SPAWNS AM_BUDDY_PROJHIT
+defineprojectile AM_BUDDY_PROJ PROJ_SXREPEAT 20
+defineprojectile AM_BUDDY_PROJ PROJ_SYREPEAT 20
+defineprojectile AM_BUDDY_PROJ PROJ_VEL 800
+defineprojectile AM_BUDDY_PROJ PROJ_XREPEAT 20
+defineprojectile AM_BUDDY_PROJ PROJ_YREPEAT 20
+defineprojectile AM_BUDDY_PROJ PROJ_EXTRA 20
+defineprojectile AM_BUDDY_PROJ PROJ_EXTRA_RAND 5
+defineprojectile AM_BUDDY_PROJ PROJ_ISOUND AM_S_BUDDY_HIT
+defineprojectile AM_BUDDY_PROJ PROJ_HITRADIUS 768
+defineprojectile AM_BUDDY_PROJ PROJ_OFFSET 14354
+defineprojectile AM_BUDDY_PROJ PROJ_CLIPDIST 40
+defineprojectile AM_BUDDY_PROJ PROJ_CSTAT 2
+
+spritenopal AM_BUDDY_PROJ
+spritenoshade AM_BUDDY_PROJ
+action AC_BUDDY_PROJ 0 2 1 1 5
+useractor notenemy AM_BUDDY_PROJ 0 AC_BUDDY_PROJ enda
+
+spritenopal AM_BUDDY_PROJTRAIL
+spritenoshade AM_BUDDY_PROJTRAIL
+
+action AM_NOACTIONB1 -1 1 1 1 1
+useractor notenemy AM_BUDDY_PROJTRAIL 0 {
+	ifaction 0 {
+		action AM_NOACTIONB1
+		sizeat 20 20
+		seta .blend 255
+		seta .shade 8
+	}
+	else ifcount 5 {
+		ifaction AM_NOACTIONB1
+			action AM_NOACTION
+		else
+			action AM_NOACTIONB1
+		resetcount
+	}
+	ife sprite[sprite.owner].statnum MAXSTATUS
+		killit
+	else {
+		geta[sprite.owner].x am_x
+		geta[sprite.owner].y am_y
+		geta[sprite.owner].z am_z
+		geta[sprite.owner].ang am_ang
+		
+		sub am_ang 1024
+		and am_ang 2047
+		
+		set temp 64
+		mul temp ms_flashpal
+		sub am_x temp
+		rotatepoint sprite[sprite.owner].x sprite[sprite.owner].y am_x sprite[sprite.owner].y am_ang am_x am_y
+		
+		set temp ps_flash // sprite.zvel
+		mul temp ms_flashpal
+		shiftr temp 5
+		add am_z temp
+		
+		seta .x am_x
+		seta .y am_y
+		seta .z am_z
+		
+		cstat 2
+	}
+}
+enda
+
+spritenopal AM_BUDDY_PROJHIT
+spritenoshade AM_BUDDY_PROJHIT
+action AC_BUDDY_PROJHIT 0 5 1 1 4
+useractor notenemy AM_BUDDY_PROJHIT 0 AC_BUDDY_PROJHIT
+	ifactioncount 5
+		killit
+enda
+
+defstate fire_buddyproj
+	ezshoot h_zvel AM_BUDDY_PROJ
+	seta[RETURN].ang face_return
+	getpv .p_pup_damage_time temp2
+	ifn temp2 0 {
+		getthisprojectile[RETURN].extra temp3
+		shiftl temp3 1
+		setthisprojectile[RETURN].extra temp3
+		getthisprojectile[RETURN].extra_rand temp4
+		shiftl temp4 1
+		setthisprojectile[RETURN].extra_rand temp4
+	}
+	
+	ife ms_flashpal 1 {
+		sub face_return 128
+		ezshoot h_zvel AM_BUDDY_PROJ
+		seta[RETURN].ang face_return
+		ifn temp2 0 {
+			setthisprojectile[RETURN].extra temp3
+			setthisprojectile[RETURN].extra_rand temp4
+		}
+		
+		add face_return 256
+		ezshoot h_zvel AM_BUDDY_PROJ
+		seta[RETURN].ang face_return
+		ifn temp2 0 {
+			setthisprojectile[RETURN].extra temp3
+			setthisprojectile[RETURN].extra_rand temp4
+		}
+		set ms_flashpal 0
+	}
+ends
+
+action AM_BUDDY_IDLE 0 1 5 1 1
+action AM_BUDDY_PREPARE 5 1 5 1 8
+action AM_BUDDY_FIRE 10 1 5 1 10
+useractor notenemy AM_BUDDY 0
+	ifaction 0 {
+		action AM_NOACTION
+		set counter 0
+		set counter2 9
+		set ps_flash 0
+		cstat 0
+		clipdist 1
+		sizeat 16 16
+	}
+	else {
+		ifle sprite[htg_owner].extra 0
+			killit
+		geta[htg_owner].x am_x
+		geta[htg_owner].y am_y
+		geta[htg_owner].ang am_ang
+		set am_x2 512 // radius
+		cos h_cos counter
+		sin h_sin counter
+		mul h_cos am_x2
+		mul h_sin am_x2
+		shiftr h_cos 14
+		shiftr h_sin 14
+		add am_x h_cos
+		add am_y h_sin
+		
+		sin h_sin counter
+		shiftr h_sin 3
+		geta[htg_owner].z am_z
+		sub am_z 8192
+		sub am_z h_sin
+		seta .z am_z
+		
+		ldist am_tmp THISACTOR htg_owner
+		set temp 0
+		ifg am_tmp 6400
+			set temp 1
+		set cansee_target htg_owner
+		state cansee_simple
+		ife cansee_return 0 {
+			add ps_flash 1
+			// didn't see the player for a while
+			ife ps_flash 45
+				set temp 1
+		}
+		else
+			set ps_flash 0
+		ife temp 1 {
+			// teleport this to the player immediately
+			seta .x sprite[htg_owner].x
+			seta .y sprite[htg_owner].y
+			set am_tmp 1
+		}
+		// target point to move at is am_x am_y
+		// face that direction to move
+		sub am_x sprite.x
+		sub am_y sprite.y
+		getangle face_return am_x am_y
+		geta .ang am_ang
+		seta .ang face_return
+		set move_v 36
+		shiftr am_tmp 4
+		clamp am_tmp 0 256
+		add move_v am_tmp
+		state move_actor
+		seta .ang am_ang
+		movesprite THISACTOR move_xv move_yv 0 1 am_tmp
+		
+		add counter 32
+		and counter 2047
+		
+		getpv[THISACTOR].p_buddy_timer temp
+		ife temp 0
+			killit
+		else ifcount 5 {
+			// the target, set to -1
+			set am_rolled -1
+			
+			// prioritize whoever hit us last if it's an enemy
+			geta[htg_owner].htowner temp
+			ifn temp -1 {
+				geta[temp].picnum temp2
+				set temp2 tiledata[temp2].gameflags
+				and temp2 32800 // 32768 + 32 = enemy
+				ifn temp2 0 {
+					ldist am_dist temp THISACTOR
+					ifl am_dist 20480 {
+						// is this in sight?
+						geta .z am_z
+						add am_z 3200
+						seta .z am_z
+						set cansee_target temp
+						state cansee_simple
+						sub am_z 3200
+						seta .z am_z
+						ifn cansee_return 0 {
+							ifaction AM_BUDDY_FIRE
+								nullop
+							else 
+								action AM_BUDDY_PREPARE
+							set am_rolled temp
+						}
+					}
+				}
+			}
+			ife am_rolled -1 {
+				for itervar range num_flag32 {
+					// the array of bad guys!
+					set temp gameflag32[itervar]
+					ifg sprite[temp].extra 0 {
+						ldist am_dist temp THISACTOR
+						ifl am_dist 20480 {
+							ife am_rolled -1 {
+								geta .z am_z
+								add am_z 3200
+								seta .z am_z
+								set cansee_target temp
+								state cansee_simple
+								sub am_z 3200
+								seta .z am_z
+								ife cansee_return 1 {
+									set am_rolled temp
+									set temp3 am_dist
+								}
+							}
+							else ifl am_dist temp3 {
+								geta .z am_z
+								add am_z 3200
+								seta .z am_z
+								set cansee_target temp
+								state cansee_simple
+								sub am_z 3200
+								seta .z am_z
+								ife cansee_return 1 {
+									set am_rolled temp
+									set temp3 am_dist
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			// shoot or do nothing
+			ifn am_rolled -1 {
+				ifaction AM_BUDDY_FIRE
+					nullop
+				else 
+					action AM_BUDDY_PREPARE
+				ife sprite.htg_t 0 counter2 {
+					ifaction AM_BUDDY_FIRE {
+						// fire
+						set face_target am_rolled
+						state face_actor
+						seta .ang face_return
+						// calc zvel
+						geta .z am_z
+						add am_z 3200
+						seta .z am_z
+						set am_ztarget am_rolled
+						set am_proj AM_BUDDY_PROJ
+						state am_calc_zvel_other
+						sub am_z 3200
+						seta .z am_z
+						
+						geta .x am_x
+						geta .y am_y
+						add am_x 32
+						rotatepoint sprite.x sprite.y am_x sprite.y sprite.ang am_x2 am_y2
+						add am_z 768
+						seta .x am_x2
+						seta .y am_y2
+						seta .z am_z
+
+						sound AM_S_BUDDY_FIRE
+						state fire_buddyproj
+						
+						sub am_x 32
+						sub am_z 768
+						seta .x am_x
+						seta .y am_y
+						seta .z am_z
+						
+						sub counter2 3
+						ife counter2 3 {
+							set counter2 9
+							ifrnd 128
+								set ms_flashpal 1
+						}
+					}
+				}
+				else ifcount 8 {
+					ifaction AM_BUDDY_PREPARE
+						action AM_BUDDY_FIRE
+				}
+			}
+			
+			ife am_rolled -1 {
+				seta .ang sprite[htg_owner].ang
+				ifactioncount 1 {
+					ifaction AM_BUDDY_PREPARE
+						action AM_BUDDY_IDLE
+					else ifaction AM_BUDDY_FIRE
+						action AM_BUDDY_PREPARE
+				}
+			}
+		}
+	}
+	
+	ifcount 10
+		resetcount
+enda
+
+include scripts/am_enemies.con
+include scripts/am_weapons.con

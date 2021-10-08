@@ -1,0 +1,157 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, Evan Ramos
+        and Dino Bollinger
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019-2021 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file contains the logic that controls the inventory item behavior, as well
+as parts of the pocket system.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+include scripts/exp/inventory.con
+
+appendevent EVENT_HOLODUKEON
+    setvar RETURN -1
+	ifg p_buddies 0 ife p_buddy_timer 0 {
+		set p_buddy_timer AM_BUDDY_TIME
+		palfrom 15 5 32 5
+		sub p_buddies 1
+		globalsound AM_S_BUDDY_USE
+		espawn AM_BUDDY
+		seta[RETURN].cstat 32768
+		setav[RETURN].htg_owner THISACTOR
+	}
+endevent
+
+appendevent EVENT_USEJETPACK
+    setvar RETURN -1
+	ifg p_deflectors 0 ife p_deflector_timer 0 {
+		set p_deflector_timer AM_DEFLECTOR_TIME
+		palfrom 15 5 32 5
+		sub p_deflectors 1
+		globalsound AM_S_DEFLECTOR_USE
+		espawn AM_DEFLECTOR_FX
+		setav[RETURN].ms_flashpal 0
+		setav[RETURN].htg_owner THISACTOR
+		seta[RETURN].mdflags 16
+		espawn AM_DEFLECTOR_FX
+		setav[RETURN].ms_flashpal 120
+		setav[RETURN].htg_owner THISACTOR
+		seta[RETURN].mdflags 16
+		espawn AM_DEFLECTOR_FX
+		setav[RETURN].ms_flashpal 240
+		setav[RETURN].htg_owner THISACTOR
+		seta[RETURN].mdflags 16
+		espawn AM_DEFLECTOR_FX
+		setav[RETURN].ms_flashpal 360
+		setav[RETURN].htg_owner THISACTOR
+		seta[RETURN].mdflags 16
+	}
+endevent
+
+appendevent EVENT_USESTEROIDS
+    setvar RETURN -1
+endevent
+
+appendevent EVENT_USEMEDKIT
+    setvar RETURN -1
+    ifg player[].firstaid_amount 0 ifl sprite[player[].i].extra player[].max_player_health ife p_eol 0
+    {
+        palfrom 15 5 32 5
+        addphealth MEDKIT_HEALTHAMOUNT
+        getp[].firstaid_amount temp
+        sub temp 1
+        setp[].firstaid_amount temp
+        set flash_medkit 3
+        globalsound S_ITEM_HEALTH
+        stopactorsound player[].i S_SHELLY_SEARCHTALK1
+        stopactorsound player[].i S_SHELLY_SEARCHTALK2
+    }
+endevent
+appendevent EVENT_USENIGHTVISION
+    setvar RETURN -1
+    ifg player[].heat_amount 0 ifl p_pup_radar_time 60 ife p_eol 0
+    {
+        palfrom 15 5 32 5
+        set p_pup_radar_time 450
+        getp[].heat_amount temp
+        sub temp 1
+        setp[].heat_amount temp
+        set flash_radar 3
+        setp .sound_pitch -128
+        globalsound S_MINIGUN_PULSE
+        setp .sound_pitch 600
+        globalsound S_MELEE_THUD02
+        setp .sound_pitch 0
+        stopactorsound player[].i S_SHELLY_SEARCHTALK1
+        stopactorsound player[].i S_SHELLY_SEARCHTALK2
+    }
+endevent
+
+defstate use_bombrush
+    set p_pup_bomb_time 900
+    getp .kickback_pic p_pup_old_kickback
+    setp .kickback_pic 0
+    globalsound S_ITEM_BBOMB
+ends
+defstate use_dkshoes
+    set p_pup_jump_time 900
+    globalsound S_ITEM_BBOMB
+ends
+defstate use_damagebooster
+    set p_pup_damage_time 900
+    globalsound S_ITEM_BBOMB
+    setp .sound_pitch -444
+    sound S_MP_ON
+    setp .sound_pitch 0
+ends
+
+appendevent EVENT_INVENTORY
+    set RETURN 1
+    ife p_item_pocket 0
+        break
+    switch p_item_pocket
+        case 1
+            state use_bombrush
+            break
+        case 2
+            state use_dkshoes
+            break
+        case 4
+            state use_damagebooster
+            break
+	default
+            ifn exp_aftershock 0
+                state ashock_inv_extension
+	    break
+    endswitch
+    ifn p_item_pocket 0
+        palfrom 15 48 48 63
+    ifn p_item_pocket 8
+    {
+        set p_item_pocket 0
+        set flash_pocket 2
+    }
+    else
+        set flash_pocket 1 // smaller is larger
+endevent

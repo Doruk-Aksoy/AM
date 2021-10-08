@@ -1,0 +1,145 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, and Evan Ramos
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019-2021 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file contains many easy to edit settings such as maximum ammo and base
+weapon damage and enemy health. For many this might be the only file they touch.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+// Misc settings
+
+define DEFAULTVISIBILITY                384
+
+define GENERICIMPACTDAMAGE              10
+define MAXPLAYERHEALTH                  100
+define STARTARMORHEALTH                 0
+
+define RESPAWNACTORTIME                 768
+define RESPAWNITEMTIME                  768
+
+define RUNNINGSPEED                     51200
+define GRAVITATIONALCONSTANT            180
+
+define CAMERASDESTRUCTABLE              NO
+
+define QSIZE                            1024
+
+define WATERPROOF_ENEMIES               NO
+
+// max ammo amounts
+define WEAPON1_MAXAMMO                  90
+define WEAPON2_MAXAMMO                  48
+define GRENADE_MAXAMMO                  48
+define WEAPON3_MAXAMMO                  240 //320
+define WEAPON4_MAXAMMO                  250 //400
+define WEAPON5_MAXAMMO                  25
+define WEAPON7_MAXAMMO                  75
+define WEAPON8_MAXAMMO                  20
+define BOMBETTE_MAXAMMO                 200
+
+//ammo amounts
+define WEAPON1_AMMOAMOUNT               6
+define AMMOBOX_AMMOAMOUNT               12
+define WEAPON2_AMMOAMOUNT               6
+define GRENADE_AMMOAMOUNT               6
+define WEAPON3_AMMOAMOUNT               52 //80
+define WEAPON4_AMMOAMOUNT               100
+define WEAPON7_AMMOAMOUNT               15
+define BOMBETTE_AMMOAMOUNT              0
+
+//inventory amounts
+define MEDKIT_MAXAMOUNT                 4
+define RADAR_MAXAMOUNT                  6
+define RADAR_GETAMOUNT                  3
+define ARMORSHARD_EXTRAAMOUNT           49
+
+define MEDPACK_AMOUNT                   10
+define MEDICOMP_AMOUNT                  25
+define MEDICOMP_MF_AMOUNT               20
+define MEDKIT_HEALTHAMOUNT              35
+define ARMORSHARD_AMOUNT                1
+define BULLETVEST_MAXAMOUNT             50
+define ARMORVEST_MAXAMOUNT              100
+define TECHVEST_MAXAMOUNT               200
+
+gamestartup                             DEFAULTVISIBILITY       GENERICIMPACTDAMAGE     MAXPLAYERHEALTH
+                                        STARTARMORHEALTH        RESPAWNACTORTIME        RESPAWNITEMTIME
+                                        RUNNINGSPEED            GRAVITATIONALCONSTANT   0
+                                        0                       0                       0
+                                        0                       0                       0
+                                        WEAPON1_MAXAMMO         WEAPON2_MAXAMMO         WEAPON3_MAXAMMO
+                                        WEAPON4_MAXAMMO         WEAPON5_MAXAMMO         GRENADE_MAXAMMO
+                                        WEAPON7_MAXAMMO         WEAPON8_MAXAMMO         0
+                                        0                       CAMERASDESTRUCTABLE     0
+                                        0                       QSIZE                   0
+
+// weapon damage
+define WEAPON0_DMG                      10
+define WEAPON1_DMG                      5 // per round ++ random per round
+define WEAPON2_DMG                      3
+define GRENADE_DMG                      150
+define WEAPON3_DMG                      9 // currently just uses loverboy projectile, change this later!
+define WEAPON4_DMG                      20
+define WEAPON5_DMG                      200
+define WEAPON6_DMG                      5 // smg
+define BOMBETTE_DMG                     30
+define FIREBALL_DMG                     10
+define TURRET_DMG                       5
+define NAPALM_BALL_DMG                  60
+define FLAMINGSKULL_DMG                 60 // ++ random
+define DANCINGQUEEN_DMG                 2
+define MINIMISSILE_DMG                  32 // ++ random
+
+// weapon explosion radius
+define GRENADE_RADIUS                   2048
+define BOWLINGBOMB_RADIUS               1024 // ++ variable
+define BOMBETTE_RADIUS                  1536
+define NAPALM_BALL_RADIUS               1600
+define FLAMINGSKULL_RADIUS              1024
+define MINIMISSILE_RADIUS               1024
+
+// enemy hit points
+define CULTIST_HEALTH                   53
+define SHOTGUNNER_HEALTH                59
+define SHOTGUNNER_ALT_HEALTH            70
+define GREATER_HEALTH                   120
+define ARCHANGEL_HEALTH                 160
+define ARCHANGEL_DIE_HEALTH             50
+define BRUTE_HEALTH                     500
+define DEACON_HEALTH                    160
+define TURRET_HEALTH                    100
+define TURRET_MHEALTH                   300
+define MECHSECT_HEALTH                  25
+define DRONE_HEALTH                     60
+define DIOPEDE_HEALTH                   90
+define WENTEKO_HEALTH                   300
+define MECHBOSS_HEALTH                  3000
+define MECHBOSS_MINI_HEALTH             1500
+define HBOSS_HEALTH                     4000
+define SBOSS_HEALTH                     3000
+define BRUTALBOSS_HEALTH                5500
+
+define CORPSE_HEALTH                    25
+
+include scripts/exp/customize.con

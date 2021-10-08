@@ -1,4 +1,4 @@
-# ION FURY: ANGER MANAGEMENT
+# ION FURY: ANGER MANAGEMENT (WIP 2.0 UPGRADE)
 
 <img src="https://imgur.com/Y2q9K4B.png"/>
 

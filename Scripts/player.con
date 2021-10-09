@@ -150,6 +150,9 @@ defstate powerup_text_countdown_pal
         set hudx_pal 4
 ends
 
+include scripts/base/subroutines_player.con
+include scripts/exp/player.con
+
 // Status bar settings
 
 appendevent EVENT_SETDEFAULTS
@@ -495,15 +498,6 @@ appendevent EVENT_DISPLAYREST
     }
 endevent
 
-defstate update_ammotype
-	set p_prevammotype p_usedammotype
-	set press_alt 20
-	set p_extra_ammo_menu_on 0
-	add temp 1
-	set p_forcedammoswitch temp
-	set RETURN -1
-ends
-
 appendevent EVENT_WEAPKEY1
     ife show_debug_menu 1
     {
@@ -520,8 +514,7 @@ appendevent EVENT_WEAPKEY1
 			set temp AM_AMMOTYPE_NORMALSHELL
 			state update_ammotype
 		}
-		else
-			set RETURN -1
+		set RETURN -1
 	}
 	state do_fast_reload
 endevent
@@ -542,8 +535,7 @@ appendevent EVENT_WEAPKEY2
 			set temp AM_AMMOTYPE_GRENADE
 			state update_ammotype
 		}
-		else
-			set RETURN -1
+		set RETURN -1
 	}
 	state do_fast_reload
 endevent
@@ -561,8 +553,7 @@ appendevent EVENT_WEAPKEY3
 			set temp AM_AMMOTYPE_EXPLOSIVESHELL
 			state update_ammotype
 		}
-		else
-			set RETURN -1
+		set RETURN -1
 	}
 	state do_fast_reload
 endevent
@@ -8364,62 +8355,6 @@ defstate draw_hud_armor
     }
 ends
 
-/*
-- temp => hudx_tilenum
-- temp2 => max ammo amount to show
-- temp3 => weapon clip
-- temp4 => pal
-- temp5 => value to shift up by
-*/
-defstate show_shotgun_ammo
-	set hudx_x HUD_AMMO_X
-	set hudx_y HUD_AMMO_Y
-	set hudx_tilenum temp
-	set hudx_scale HUD_AMMO_Z
-	shiftl hudx_scale 1
-	div hudx_scale 3
-	set hudx_pal temp4
-	add hudx_x 10
-	sub hudx_y 32
-	sub hudx_y temp5
-	ifn flash_ammo 0
-	{
-		set temp6 flash_ammo
-		shiftl temp6 11
-		sub hudx_scale temp6
-	}
-	set hudx_orientation 512
-	or hudx_orientation 1
-	state DrawTile640x480Hud
-
-	set hudx_x HUD_AMMO_TXT_X
-	set hudx_y HUD_AMMO_TXT_Y
-	sub hudx_y temp5
-	set hudx_scale HUD_AMMO_TXT_Z
-	shiftl hudx_scale 1
-	div hudx_scale 3
-	ifg flash_ammo 0
-	{
-		set temp6 flash_ammo
-		shiftl temp6 11
-		sub hudx_scale temp6
-	}
-	set hudx_pal 1
-	add hudx_x 20
-	sub hudx_y 24
-
-	redefinequote 190 %ld / %ld
-	set am_p_tmp2 SHOTGUN_CLIP
-	subvarvar am_p_tmp2 temp3
-	qsprintf 190 190 am_p_tmp2 temp2
-	set hudx_quote 190
-	set hudx_tilenum BIGALPHANUM
-	set hudx_orientation 528
-	or hudx_orientation 1
-	set hudx_txtflags 1
-	state DrawText640x480Hud
-ends
-
 defstate draw_hud_ammo
     ifvarn player[].curr_weapon WEAPON_SHOCKER
     {
@@ -8764,10 +8699,10 @@ defstate pup_decimal_draw
 ends
 
 defstate p_pup_hudx_x_offset
-        sub hudx_x p_pup_xoff
-        set p_pup_xoff_calc itervar
-        mul p_pup_xoff_calc 30
-        add hudx_x p_pup_xoff_calc
+	sub hudx_x p_pup_xoff
+	set p_pup_xoff_calc itervar
+	mul p_pup_xoff_calc 30
+	add hudx_x p_pup_xoff_calc
 ends
 
 
@@ -8781,6 +8716,11 @@ defstate p_pup_draw_icons
         add p_pup_count 1
     ifg p_pup_bomb_time 0
         add p_pup_count 1
+	// extensions
+	ifg p_buddy_timer  0
+		add p_pup_count 1
+	ifg p_deflector_timer 0
+		add p_pup_count 1
     ifn exp_aftershock 0
         state ashock_pupcounter_extensions
     set p_pup_container p_pup_count
@@ -8791,7 +8731,6 @@ defstate p_pup_draw_icons
     for itervar range p_pup_container
     {
         set p_pup_text_temp9 temp9 // preserve for later
-
 
         set hudx_shade g_playtics
         mod hudx_shade 60
@@ -8811,30 +8750,42 @@ defstate p_pup_draw_icons
         set hudx_pal 0
         ifand temp9 1
         {
-                set hudx_tilenum T_HAZARDSUIT_ICON
-                set hudx_pal PAL_HAZARDSUIT
-                add hudx_scale 12288
-                xor temp9 1
+			set hudx_tilenum T_HAZARDSUIT_ICON
+			set hudx_pal PAL_HAZARDSUIT
+			add hudx_scale 12288
+			xor temp9 1
         }
         else ifand temp9 2
         {
-                set hudx_tilenum I_DKSHOES
-                add hudx_scale 12288
-                add hudx_x 1 // slight offset for strap pixels
-                xor temp9 2
+			set hudx_tilenum I_DKSHOES
+			add hudx_scale 12288
+			add hudx_x 1 // slight offset for strap pixels
+			xor temp9 2
         }
         else ifand temp9 4
         {
-                set hudx_tilenum 244
-                xor temp9 4
+			set hudx_tilenum 244
+			xor temp9 4
         }
         else ifand temp9 8
         {
-                set hudx_tilenum 241
-                xor temp9 8
+			set hudx_tilenum 241
+			xor temp9 8
         }
-	else ifn exp_aftershock 0
-            state ashock_puptile_extensions
+		else ifand temp9 16
+		{
+			set hudx_tilenum I_DEFLECTOR
+			add hudx_scale 12288
+			xor temp9 16
+		}
+		else ifand temp9 32
+		{
+			set hudx_tilenum I_BUDDY
+			add hudx_scale 12288
+			xor temp9 32
+		}
+		else ifn exp_aftershock 0
+				state ashock_puptile_extensions
 
         state DrawTile640x480Hud
 
@@ -8871,8 +8822,18 @@ defstate p_pup_draw_icons
                 set powerup_display_counter p_pup_bomb_time
                 state powerup_text_countdown_pal
         }
-	else ifn exp_aftershock 0
-            state ashock_puptext_extensions
+		else ifand p_pup_text_temp9 16
+		{
+                set powerup_display_counter p_deflector_timer
+                state powerup_text_countdown_pal
+		}
+		else ifand p_pup_text_temp9 32
+		{
+                set powerup_display_counter p_buddy_timer
+                state powerup_text_countdown_pal
+		}
+		else ifn exp_aftershock 0
+				state ashock_puptext_extensions
 
         state pup_decimal_draw
     }

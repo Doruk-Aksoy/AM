@@ -345,17 +345,6 @@ var num_nades
 var bowled_strike
 var debug_hubsection
 
-// added from enemies.con
-//var enemy_shoot 0 2
-
-// added from particles.con
-/*var htg_t2 -1 2
-var htg_xvel 0 2
-var htg_zvel 0 2
-var htg_nostat 0 2
-var htg_owner 0 2
-var htg_extra 0 2*/
-
 var boss_fillhp 0 0
 var boss_top_id -1 2
 var boss_btm_id -1 2

@@ -84,16 +84,17 @@ define AM_DEFAULT_WEIGHTMAX					999 // -1 of 1000, because we map rand range of 
 define AM_REGULARCULTIST_WEIGHT				600
 
 define PAL_FIRECULTIST 						16
-define AM_FIRECULTIST_WEIGHT 				300
+define AM_FIRECULTIST_WEIGHT 				250
 define AM_FIRECULTIST_SHOTPAL				15
 define AM_FIRECULTIST_SHOTDMG				3
 define AM_FIRECULTIST_SHOTRAND				2
 
 define PAL_AUTOCULTIST						78
-define AM_AUTOCULTIST_WEIGHT				100
+define AM_AUTOCULTIST_WEIGHT				150
 define AM_AUTOCULTIST_HEALTH 				60
 
 define AM_CULTIST_TYPES						3 // regular, fire, auto
+define AM_CULTIST_TYPE_LOOP					2 // -1 for for loops
 
 define PAL_DIOPEDE_YELLOW					137
 define AM_DIOPEDE_YELLOW_HEALTH				125
@@ -114,11 +115,26 @@ definequote 1006							^5Grenades
 definequote 1007							^11Explosive shells
 definequote 1008							RESERVED
 
+define AM_AMMOHACK_VAL						2
+
 // REPLACED CONSTANTS FROM IF
 define HUD_KEYS_X_AM						91
 
 // VARIABLES
-var i
+// added from particles.con
+var htg_t2 -1 2
+var htg_xvel 0 2
+var htg_zvel 0 2
+var htg_nostat 0 2
+var htg_owner 0 2
+var htg_extra 0 2
+
+// added from enemies.con
+var enemy_shoot 0 2
+
+var am_ammotmp
+var am_maxammo_tmp
+
 var am_tmp
 var am_tmp2
 var am_weight // the result of weight roll for mutator
@@ -131,6 +147,7 @@ var am_proj
 var am_angtemp
 var am_dist
 var am_iter
+var am_p_aa 0 1
 var am_p_tmp 0 1 // used mainly for custom ammo hack
 var am_p_tmp2 0 1 // used for weapon hud stuff
 var am_p_savesleft 1 1

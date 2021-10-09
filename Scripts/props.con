@@ -1,20 +1,21 @@
 /*
 --------------------------------------------------------------------------------
 ================================================================================
-                          +:                                                   
+                          +:
 WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
 WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
 WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
 WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
 WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
 WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
-@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#  
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#
 
 ###############################################################################
 Ion Fury
-Code by Jonathan Strander, Fox Martins, Richard Gobeille, and Evan Ramos
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, Evan Ramos
+        and Dino Bollinger
 All code as written belongs to Voidpoint and the respective authors.
-(c) 2019 Voidpoint, LLC
+(c) 2019-2021 Voidpoint, LLC
 --------------------------------------------------------------------------------
 While we encourage you to experiment, modifications are allowed WITHOUT any
 warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
@@ -32,6 +33,7 @@ action AC_BASE1 1 1 1 1 1
 action AC_BASE12 0 1 12 1 1
 action AC_BASE_MINUS -1 1 1 1 1
 var prop_alt 0 2
+var prop_angvel_off 0 2
 
 var prop_spawn 0 2
 var prop_fall 0 2
@@ -40,6 +42,227 @@ var prop_dmg_build 0 2
 var prop_pushsound
 // these will all change to unique code soon
 // don't do any unhelpful unifying of this code
+// >> sorry, I had to ~bdino
+
+var moveable_ox 0 2
+var moveable_oy 0 2
+var moveable_x 0 2
+var moveable_y 0 2
+var moveable_ocd 0 2
+var moveable_osect 0 2
+var moveable_return 0 0
+
+defstate do_moveable
+    ife actor_moveable 0
+    {
+        geta .cstat temp4
+        ifand temp4 32768
+        {
+            ifspawnedby A_PARTICLE_SPAWNER
+                xor temp4 32768
+            else ifspawnedby A_NEWRESPAWN
+                xor temp4 32768
+            else ifspawnedby RESPAWN
+                xor temp4 32768
+            seta .cstat temp4
+        }
+    }
+    set actor_moveable 1
+    set temp4 tilesizy[sprite[].picnum]
+    shiftl temp4 2
+    mul temp4 sprite[].yrepeat
+    set temp3 sprite[].z
+    sub temp3 temp4
+    getceilzofslope sprite[].sectnum sprite[].x sprite[].y temp5
+    ifand sector.ceilingstat 512
+        ifand sector.ceilingstat 1024
+            set temp5 temp3
+    ifand sector.floorstat 512
+        ifand sector.floorstat 1024
+            set temp5 temp3
+    ifand sector.ceilingstat 128
+        ifand sector.ceilingstat 1024
+            set temp5 temp3
+    ifand sector.floorstat 128
+        ifand sector.floorstat 1024
+            set temp5 temp3
+    iffloordistl 1 ifg temp5 temp3
+    {
+        switch sprite[].picnum
+            case A_CHAIR_BOTTOM:
+            case A_CHAIR_BOTTOM_2:
+            case A_LAMP:
+            case A_LAMP_FLOOR:
+            case A_TRASHCAN_DEAD:
+            case A_TRASHCAN_DMG_2:
+            case A_GARBAGE_DEAD:
+            case A_GARBAGE_DMG_2:
+            case A_REDSWINGLINE:
+            case A_MIKE:
+            case A_POTPLANT_1:
+            case A_POTPLANT_2:
+            case A_POTPLANT_3:
+            case A_POTPLANT_4:
+            case A_POTPLANT_5:
+                geta[].htextra temp
+                add temp 60
+                seta[].htextra temp
+                ifg temp sprite[].extra
+                {
+                    setp[].sound_pitch -768
+                    soundonce S_SMASH_GLASSLAMP
+                    soundonce S_IMPACT_MUGSMASH
+                    setp[].sound_pitch 0
+                    killit
+                }
+                break
+            default
+                geta[].htextra temp
+                add temp 60
+                seta[].htextra temp
+                ifg temp sprite[].extra
+                {
+                    setp[].sound_pitch -768
+                    soundonce S_SMASH_GLASSLAMP
+                    soundonce S_IMPACT_MUGSMASH
+                    setp[].sound_pitch 0
+                }
+                break
+        endswitch
+    }
+    ifg prop_heavy 0
+    {
+        div actor_moveable_xv prop_heavy
+        div actor_moveable_yv prop_heavy
+    }
+    set temp actor_moveable_xv
+    add temp actor_moveable_yv
+    getflorzofslope sprite[].sectnum sprite[].x sprite[].y temp2
+    ifn temp2 prop_lastfloorz
+    {
+        fall
+        set prop_fall 1
+        iffloordistl 1
+            set prop_lastfloorz temp2
+    }
+    shiftr prop_angvel 2
+    ifn temp 0
+    {
+        getangle temp2 actor_moveable_xv actor_moveable_yv
+        sub temp2 sprite.ang
+        set temp3 actor_moveable_xv
+        set temp4 actor_moveable_yv
+        abs temp3
+        abs temp4
+        add temp3 temp4
+        ifn temp3 0
+            ifn temp2 0
+            {
+                mul temp2 temp3
+                shiftr temp2 12
+            }
+        add prop_angvel temp2
+        ifg prop_angvel_off 1
+            div prop_angvel prop_angvel_off
+        else ifl prop_angvel_off 0
+            set prop_angvel 0
+        geta .ang temp2
+        add temp2 prop_angvel
+        and temp2 2047
+        seta .ang temp2
+
+        fall
+        set prop_fall 1
+        geta[].clipdist moveable_ocd
+        geta[].sectnum moveable_osect
+        geta[].x moveable_ox
+        geta[].y moveable_oy
+        movesprite THISACTOR actor_moveable_xv actor_moveable_yv 0 CLIPMASK0 temp
+
+        set temp4 sprite[].sectnum
+        updatesector sprite[].x sprite[].y temp4
+        ife temp4 -1
+        {
+            seta[].x moveable_ox
+            seta[].y moveable_oy
+            seta[].sectnum moveable_osect
+            switch sprite[].picnum
+                case A_TRASHCAN_LID
+                    ifl counter 3
+                        nullop
+                    else
+                        movesprite THISACTOR -actor_moveable_xv -actor_moveable_yv 0 CLIPMASK0 temp
+                    break
+                default
+                    movesprite THISACTOR -actor_moveable_xv -actor_moveable_yv 0 CLIPMASK0 temp
+                    break
+            endswitch
+        }
+        set moveable_return temp
+        ifg temp 49151
+        {
+            sub temp 49152
+            getav[temp].actor_moveable temp2
+            ife temp2 1
+            {
+                getav[temp].actor_moveable_xv temp2
+                set temp3 actor_moveable_xv
+                shiftr temp3 2
+                ifl temp3 2 ifg temp3 -2
+                    set temp3 0
+                add temp2 temp3
+                setav[temp].actor_moveable_xv temp2
+                set temp5 temp2
+
+                getav[temp].actor_moveable_yv temp2
+                set temp3 actor_moveable_yv
+                shiftr temp3 2
+                ifl temp3 2 ifg temp3 -2
+                    set temp3 0
+                add temp2 temp3
+                setav[temp].actor_moveable_yv temp2
+                inv temp5
+                inv temp2
+                add actor_moveable_xv temp5
+                add actor_moveable_yv temp2
+            }
+        }
+        ifn prop_adjustmass 0
+        {
+            set temp3 prop_adjustmass
+            add temp3 1
+            mul actor_moveable_xv prop_adjustmass
+            mul actor_moveable_yv prop_adjustmass
+            div actor_moveable_xv temp3
+            div actor_moveable_yv temp3
+        }
+        else
+        {
+            shiftr actor_moveable_xv 1
+            shiftr actor_moveable_yv 1
+        }
+
+        ifl actor_moveable_xv 2 ifg actor_moveable_xv -2
+            set actor_moveable_xv 0
+        ifl actor_moveable_yv 2 ifg actor_moveable_yv -2
+            set actor_moveable_yv 0
+        set temp2 actor_moveable_xv
+        set temp5 actor_moveable_yv
+        abs temp2
+        abs temp5
+        add temp2 temp5
+        ifn temp2 0 ife prop_pushsound 1
+            soundonce S_OBJECT_PUSH
+        else
+            stopactorsound THISACTOR S_OBJECT_PUSH
+    }
+    else ife prop_fall 1
+        fall
+ends
+
+// placed here because of dependencies
+include scripts/exp/battleship.con // required because of dependencies
+include scripts/exp/props.con
 
 appendevent EVENT_SETDEFAULTS
     setuserdef[].shadow_pal 77
@@ -292,253 +515,14 @@ appendevent EVENT_SPAWN
         case A_CANISTER_2
             spritepal PAL_CANISTER_EXPLOSIVE
             break
+		default
+            ifn exp_aftershock 0
+	        state ashock_prop_spawn_extensions
+	    break
     endswitch
     ifg prop_noprop 1
         changespritestat THISACTOR prop_noprop
 endevent
-
-var moveable_ox 0 2
-var moveable_oy 0 2
-var moveable_x 0 2
-var moveable_y 0 2
-var moveable_ocd 0 2
-var moveable_osect 0 2
-var moveable_return 0 0
-
-defstate do_moveable
-    ife actor_moveable 0
-    {
-        geta .cstat temp4
-        ifand temp4 32768
-        {
-            ifspawnedby A_PARTICLE_SPAWNER
-                xor temp4 32768
-            else ifspawnedby A_NEWRESPAWN
-                xor temp4 32768
-            else ifspawnedby RESPAWN
-                xor temp4 32768
-            seta .cstat temp4
-        }
-    }
-    set actor_moveable 1
-    set temp4 tilesizy[sprite[].picnum]
-    shiftl temp4 2
-    mul temp4 sprite[].yrepeat
-    set temp3 sprite[].z
-    sub temp3 temp4
-    getceilzofslope sprite[].sectnum sprite[].x sprite[].y temp5
-    ifand sector.ceilingstat 512
-        ifand sector.ceilingstat 1024
-            set temp5 temp3
-    ifand sector.floorstat 512
-        ifand sector.floorstat 1024
-            set temp5 temp3
-    ifand sector.ceilingstat 128
-        ifand sector.ceilingstat 1024
-            set temp5 temp3
-    ifand sector.floorstat 128
-        ifand sector.floorstat 1024
-            set temp5 temp3
-    iffloordistl 1 ifg temp5 temp3
-    {
-        switch sprite[].picnum
-            case A_CHAIR_BOTTOM:
-            case A_CHAIR_BOTTOM_2:
-            case A_LAMP:
-            case A_LAMP_FLOOR:
-            case A_TRASHCAN_DEAD:
-            case A_TRASHCAN_DMG_2:
-            case A_GARBAGE_DEAD:
-            case A_GARBAGE_DMG_2:
-            case A_REDSWINGLINE:
-            case A_MIKE:
-            case A_POTPLANT_1:
-            case A_POTPLANT_2:
-            case A_POTPLANT_3:
-            case A_POTPLANT_4:
-            case A_POTPLANT_5:
-                geta[].htextra temp
-                add temp 60
-                seta[].htextra temp
-                ifg temp sprite[].extra
-                {
-                    setp[].sound_pitch -768
-                    soundonce S_SMASH_GLASSLAMP
-                    soundonce S_IMPACT_MUGSMASH
-                    setp[].sound_pitch 0
-                    killit
-                }
-                break
-            default
-                geta[].htextra temp
-                add temp 60
-                seta[].htextra temp
-                ifg temp sprite[].extra
-                {
-                    setp[].sound_pitch -768
-                    soundonce S_SMASH_GLASSLAMP
-                    soundonce S_IMPACT_MUGSMASH
-                    setp[].sound_pitch 0
-                }
-                break
-        endswitch
-    }
-    set temp actor_moveable_xv
-    add temp actor_moveable_yv
-    getflorzofslope sprite[].sectnum sprite[].x sprite[].y temp2
-    ifn temp2 prop_lastfloorz
-    {
-        fall
-        set prop_fall 1
-        iffloordistl 1
-            set prop_lastfloorz temp2
-    }
-    shiftr prop_angvel 2
-    ifn temp 0
-    {
-        getangle temp2 actor_moveable_xv actor_moveable_yv
-        sub temp2 sprite.ang
-        set temp3 actor_moveable_xv
-        set temp4 actor_moveable_yv
-        abs temp3
-        abs temp4
-        add temp3 temp4
-        ifn temp3 0
-            ifn temp2 0
-            {
-                mul temp2 temp3
-                shiftr temp2 12
-            }
-        add prop_angvel temp2
-        geta .ang temp2
-        add temp2 prop_angvel
-        and temp2 2047
-        seta .ang temp2
-
-        fall
-        set prop_fall 1
-        geta[].clipdist moveable_ocd
-        geta[].sectnum moveable_osect
-        geta[].x moveable_ox
-        geta[].y moveable_oy
-        movesprite THISACTOR actor_moveable_xv actor_moveable_yv 0 CLIPMASK0 temp
-
-        geta[].clipdist temp
-        shiftr temp 1
-        seta[].clipdist temp
-        geta[].x moveable_x
-        geta[].y moveable_y
-
-        seta[].x moveable_ox
-        seta[].y moveable_oy
-        movesprite THISACTOR actor_moveable_xv actor_moveable_yv 0 CLIPMASK0 temp
-        geta[].x temp5
-        geta[].y temp6
-        add temp5 -moveable_ox
-        add temp6 -moveable_oy
-        mul temp5 temp5
-        mul temp6 temp6
-        add temp5 temp6
-        sqrt temp5 temp5
-
-        set temp4 moveable_x
-        set temp6 moveable_y
-        add temp4 -moveable_ox
-        add temp6 -moveable_oy
-        mul temp4 temp4
-        mul temp6 temp6
-        add temp4 temp6
-        sqrt temp4 temp4
-
-        seta[].clipdist moveable_ocd
-        ifl temp5 temp4
-            nullop
-        else
-        {
-            seta[].x moveable_ox
-            seta[].y moveable_oy
-            movesprite THISACTOR actor_moveable_xv actor_moveable_yv 0 CLIPMASK0 temp
-        }
-        set temp4 sprite[].sectnum
-        updatesector sprite[].x sprite[].y temp4
-        ife temp4 -1
-        {
-            seta[].x moveable_ox
-            seta[].y moveable_oy
-            seta[].sectnum moveable_osect
-            switch sprite[].picnum
-                case A_TRASHCAN_LID
-                    ifl counter 3
-                        nullop
-                    else
-                        movesprite THISACTOR -actor_moveable_xv -actor_moveable_yv 0 CLIPMASK0 temp
-                    break
-                default
-                    movesprite THISACTOR -actor_moveable_xv -actor_moveable_yv 0 CLIPMASK0 temp
-                    break
-            endswitch
-        }
-        set moveable_return temp
-        ifg temp 49151
-        {
-            sub temp 49152
-            getav[temp].actor_moveable temp2
-            ife temp2 1
-            {
-                getav[temp].actor_moveable_xv temp2
-                set temp3 actor_moveable_xv
-                shiftr temp3 2
-                ifl temp3 2 ifg temp3 -2
-                    set temp3 0
-                add temp2 temp3
-                setav[temp].actor_moveable_xv temp2
-                set temp5 temp2
-
-                getav[temp].actor_moveable_yv temp2
-                set temp3 actor_moveable_yv
-                shiftr temp3 2
-                ifl temp3 2 ifg temp3 -2
-                    set temp3 0
-                add temp2 temp3
-                setav[temp].actor_moveable_yv temp2
-                inv temp5
-                inv temp2
-                add actor_moveable_xv temp5
-                add actor_moveable_yv temp2
-            }
-        }
-        ifn prop_adjustmass 0
-        {
-            set temp3 prop_adjustmass
-            add temp3 1
-            mul actor_moveable_xv prop_adjustmass
-            mul actor_moveable_yv prop_adjustmass
-            div actor_moveable_xv temp3
-            div actor_moveable_yv temp3
-        }
-        else
-        {
-            shiftr actor_moveable_xv 1
-            shiftr actor_moveable_yv 1
-        }
-
-        ifl actor_moveable_xv 2 ifg actor_moveable_xv -2
-            set actor_moveable_xv 0
-        ifl actor_moveable_yv 2 ifg actor_moveable_yv -2
-            set actor_moveable_yv 0
-        set temp2 actor_moveable_xv
-        set temp5 actor_moveable_yv
-        abs temp2
-        abs temp5
-        add temp2 temp5
-        ifn temp2 0 ife prop_pushsound 1
-            soundonce S_OBJECT_PUSH
-        else
-            stopactorsound THISACTOR S_OBJECT_PUSH
-    }
-    else ife prop_fall 1
-        fall
-ends
 
 action AC_FIREEXT_DEAD 1 1 1 1 1
 eventloadactor A_FIREEXT
@@ -1138,6 +1122,8 @@ defstate canisterdmg
                 set counter 1
             }
             hitradius 2048 10 20 30 40
+            // This will allow switch activation upon destruction
+            ifn se_lotag 0 state switch_activate
         }
         break
     }
@@ -1246,6 +1232,16 @@ enda
 actor A_CANISTER_2 10 AC_BASE
     state canisterdmg
     state do_moveable
+enda
+
+eventloadactor A_CANISTER_2
+// In case our canister is tagged, we need to clean things to make it work
+    ifn sprite[].hitag 0
+    {
+        geta[].hitag se_lotag
+              seta[].hitag 0
+              seta[].lotag 0
+    }
 enda
 
 eventloadactor A_SHOCKCANISTER
@@ -3851,9 +3847,9 @@ useractor notenemy A_BOTTLESIDE_1 1 AC_BASE12
         set temp3 temp2
         sub temp2 temp
         ifg temp2 1023
-            sub temp2 2047
+            sub temp2 2048
         ifl temp2 -1023
-            add temp2 2047
+            add temp2 2048
         set temp4 temp2
         shiftr temp2 2
         ife temp2 0
@@ -5587,13 +5583,15 @@ defstate traffic_light_hit
         geta[].z temp2
         sub temp2 temp
         seta[RETURN].z temp2
+        set temp5 temp2
         geta[].htang temp2
         add temp2 1024
         and temp2 2047
         seta[RETURN].ang temp2
         seta[RETURN].xvel 256
         ssp RETURN 0
-        action AC_BASE
+        ife se_lotag 0
+            action AC_BASE
         rand temp3 5
         add temp3 5
         for itervar range temp3
@@ -5603,21 +5601,69 @@ defstate traffic_light_hit
             rand temp4 2047
             seta[RETURN].ang temp4
             seta[RETURN].pal 1
+            ifn se_lotag 0
+                seta[RETURN].z temp5
         }
         ifwasweapon EXPLOSION
         {
             geta[].picnum surface_type
             state bullet_impact_sound
         }
-        cactor A_TRAFFIC_BROKE
+        ife se_lotag 0
+            cactor A_TRAFFIC_BROKE
+    }
+ends
+
+state get_traffic_light_tags
+    geta .lotag se_lotag
+    seta .lotag 0
+    geta .hitag se_hitag
+    ifl se_hitag 1
+        set se_hitag 1
+    seta .hitag 0
+ends
+
+eventloadactor A_TRAFFIC_1    state get_traffic_light_tags    enda
+eventloadactor A_TRAFFIC_2    state get_traffic_light_tags    enda
+eventloadactor A_TRAFFIC_3    state get_traffic_light_tags    enda
+eventloadactor A_TRAFFIC_4    state get_traffic_light_tags    enda
+
+state do_tagged_traffic_light
+    ifg se_lotag 0
+    {
+        ife activateshit[se_lotag] 1
+            ife counter 0
+                set counter se_hitag
+        resetactioncount
+    }
+    ifg counter 0
+    {
+        action AC_BASE
+        ife counter 1
+        {
+            switch sprite.picnum
+                case A_TRAFFIC_1
+                    cactor A_TRAFFIC_2
+                    break
+                case A_TRAFFIC_2
+                    cactor A_TRAFFIC_4
+                    break
+                case A_TRAFFIC_4
+                    cactor A_TRAFFIC_3
+                    break
+            endswitch
+        }
+        sub counter 1
     }
 ends
 
 useractor notenemy A_TRAFFIC_1 1 AC_BASE
+	state do_tagged_traffic_light
     state traffic_light_hit
 enda
 
 useractor notenemy A_TRAFFIC_2 1 AC_BASE
+	state do_tagged_traffic_light
     ifactioncount 300
     {
         action AC_BASE
@@ -5627,6 +5673,7 @@ useractor notenemy A_TRAFFIC_2 1 AC_BASE
 enda
 
 useractor notenemy A_TRAFFIC_4 1 AC_BASE
+	state do_tagged_traffic_light
     ifactioncount 240
     {
         action AC_BASE
@@ -5636,6 +5683,7 @@ useractor notenemy A_TRAFFIC_4 1 AC_BASE
 enda
 
 useractor notenemy A_TRAFFIC_3 1 AC_BASE
+	state do_tagged_traffic_light
     ifactioncount 60
     {
         action AC_BASE
@@ -5652,6 +5700,7 @@ appendevent EVENT_SPAWN
         case T_GRATEBROKE
         case A_VENT_BREAKABLE
         case A_VENT_BROKE
+			set actor_static 1 // cheap hack to introduce shade changes on fans and broken vents
             ifn sprite[].hitag 0
             {
                 geta[].hitag se_hitag

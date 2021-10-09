@@ -2735,13 +2735,6 @@ enda
 
 action AC_SMOKE1BASE 0 7 1 1 5
 
-var htg_t2 -1 2
-var htg_xvel 0 2
-var htg_zvel 0 2
-var htg_nostat 0 2
-var htg_owner 0 2
-var htg_extra 0 2
-
 appendevent EVENT_EGS
     ifactor A_SMOKE1
     {

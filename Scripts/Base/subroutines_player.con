@@ -1,0 +1,282 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, Evan Ramos
+        and Dino Bollinger
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019-2021 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file contains player subroutines that may be overridden by expansion code.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+
+defstate fury_movego_fix
+    ifp pducking
+    {
+        set temp move_v
+        shiftl temp 2
+        div temp 5
+        add move_v temp
+        shiftr temp 3
+        add move_v temp
+    }
+ends
+
+defstate fury_disperser_wswitch
+	ifn p_forcedammoswitch 0
+	{
+		set flash_ammo -3
+		setp[].kickback_pic 38
+		ife w2alt 0
+			set w2alt 1
+		else ife w2alt 30
+			set w2alt -1
+		sub p_forcedammoswitch 1
+		set p_usedammotype p_forcedammoswitch
+		set p_forcedammoswitch 0
+		set w2alt_count 1
+		ifl flash_weapons 3
+			set flash_weapons 30
+		else ifl flash_weapons 27
+			set flash_weapons 27
+	}
+ends
+
+
+defstate fury_disperser_lastweapon
+    ife player.curr_weapon WEAPON_GRENADE
+    {
+        ife player.last_weapon WEAPON_SHOTGUN
+        {
+            setp .weapon_pos 0
+            setp .last_weapon -1
+            setp[].kickback_pic 12
+            set weapon6_realclip SHOTGUN_CLIP
+            set WEAPON6_CLIP 1
+            set w2alt 1
+            setp .kickback_pic 12
+        }
+        ifn player.weapon_pos 0
+            set w2alt 30
+    }
+    ife player.curr_weapon WEAPON_SHOTGUN
+    {
+        ife player.last_weapon WEAPON_GRENADE
+        {
+            setp .weapon_pos 0
+            setp .last_weapon -1
+            setp[].kickback_pic 12
+            set weapon2_realclip SHOTGUN_CLIP
+            set WEAPON2_CLIP 1
+            set w2alt -1
+            setp .kickback_pic 12
+        }
+        ifn player.weapon_pos 0
+            set w2alt 0
+    }
+	ife player.curr_weapon WEAPON_SHOTGUN ifn player.weapon_pos 0
+		set w2alt 0
+ends
+
+
+defstate fury_disperser_altammoswitch
+	ifg w2alt 0 ifl w2alt 30 {
+		add w2alt 1
+		ifg w2alt_count 20
+			add w2alt 1
+		ifge w2alt 30 {
+			set hud_ammo player.ammo_amount WEAPON_SHOTGUN
+			set p_roll_fast 1
+			set w2alt 30
+			//setp .curr_weapon WEAPON_GRENADE
+			set flash_ammo 6
+		}
+	}
+	else ifl w2alt 0 ifg w2alt -30
+	{
+		sub w2alt 1
+		ifg w2alt_count 20
+			sub w2alt 1
+		ifle w2alt -30
+		{
+			//set hud_ammo player.ammo_amount WEAPON_GRENADE
+			set hud_ammo player.ammo_amount WEAPON_SHOTGUN
+			set p_roll_fast 1
+			set w2alt 0
+			setp .curr_weapon WEAPON_SHOTGUN
+			set flash_ammo 6
+		}
+	}
+ends
+
+defstate fury_disperser_altammoinjection
+    getp[].ammo_amount player[].curr_weapon temp2
+ends
+
+
+defstate fury_set_disperser_ammo_tile
+	set hudx_tilenum I_SHOTGUN_AMMO
+	ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL
+		set hudx_pal AM_PAL_EXPLOSIVESHELL
+	else ife p_usedammotype AM_AMMOTYPE_GRENADE
+		set hudx_tilenum I_GRENADELAUNCHER_AMMO
+ends
+
+/*
+- temp => hudx_tilenum
+- temp2 => max ammo amount to show
+- temp3 => weapon clip
+- temp4 => pal
+- temp5 => value to shift up by
+*/
+defstate show_shotgun_ammo
+	set hudx_x HUD_AMMO_X
+	set hudx_y HUD_AMMO_Y
+	set hudx_tilenum temp
+	set hudx_scale HUD_AMMO_Z
+	shiftl hudx_scale 1
+	div hudx_scale 3
+	set hudx_pal temp4
+	add hudx_x 10
+	sub hudx_y 32
+	sub hudx_y temp5
+	ifn flash_ammo 0
+	{
+		set temp6 flash_ammo
+		shiftl temp6 11
+		sub hudx_scale temp6
+	}
+	set hudx_orientation 512
+	or hudx_orientation 1
+	state DrawTile640x480Hud
+
+	set hudx_x HUD_AMMO_TXT_X
+	set hudx_y HUD_AMMO_TXT_Y
+	sub hudx_y temp5
+	set hudx_scale HUD_AMMO_TXT_Z
+	shiftl hudx_scale 1
+	div hudx_scale 3
+	ifg flash_ammo 0
+	{
+		set temp6 flash_ammo
+		shiftl temp6 11
+		sub hudx_scale temp6
+	}
+	set hudx_pal 1
+	add hudx_x 20
+	sub hudx_y 24
+
+	redefinequote 190 %ld / %ld
+	set am_p_tmp2 SHOTGUN_CLIP
+	subvarvar am_p_tmp2 temp3
+	qsprintf 190 190 am_p_tmp2 temp2
+	set hudx_quote 190
+	set hudx_tilenum BIGALPHANUM
+	set hudx_orientation 528
+	or hudx_orientation 1
+	set hudx_txtflags 1
+	state DrawText640x480Hud
+ends
+
+defstate fury_draw_disperser_ammocount
+	// 1 2 4 etc. correspond to 2 ^ am_ammotype_x
+	set temp5 0
+	ife p_usedammotype AM_AMMOTYPE_NORMALSHELL
+		set temp5 6
+	else ife p_usedammotype AM_AMMOTYPE_GRENADE
+		set temp5 5
+	else ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL
+		set temp5 3
+		
+	/*
+		state show_shotgun_ammo:
+			- temp => hudx_tilenum
+			- temp2 => ammo amount to show
+			- temp3 => weapon clip
+			- temp4 => pal
+	*/
+	ifand temp5 1 ifg player.ammo_amount WEAPON_SHOTGUN 0 ifn p_ammohack 1 {
+		set temp 225
+		set temp2 player.ammo_amount WEAPON_SHOTGUN
+		set temp3 weapon2_realclip
+		set temp4 0
+		state show_shotgun_ammo
+		add temp5 32
+	}
+	
+	ifand temp5 2 ifg p_grenades 0
+	{
+		set temp 226
+		set temp2 p_grenades
+		set temp3 p_grenade_clip
+		set temp4 0
+		state show_shotgun_ammo
+		add temp5 32
+	}
+		
+	ifand temp5 4 ifg p_explosiveshells 0 {
+		set temp 225
+		set temp2 p_explosiveshells
+		set temp3 p_explosiveshell_clip
+		set temp4 AM_PAL_EXPLOSIVESHELL
+		state show_shotgun_ammo
+		add temp5 32
+	}
+ends
+
+defstate fury_flycheat_logic
+    setp[].poszv 0
+
+    set temp 0
+    ifn press_jump 0
+    {
+        sub temp 1536
+        iffloordistl 1
+        {
+            getp[].posz fly_z
+            sub fly_z 2048
+            setp[].posz fly_z
+        }
+    }
+    ifn press_crouch 0
+        add temp 1536
+
+    ifn temp 0
+    {
+        setp[].poszv temp
+        getp[].posz fly_z
+    }
+    setp[].posz fly_z
+ends
+
+
+defstate fury_disperser_empty_counter_fix
+    ifg w2alt 0 ifl w2alt 30
+    {
+        ife player[].ammo_amount WEAPON_SHOTGUN 0
+            set hud_ammo 0
+    }
+    else ifl w2alt 0
+    {
+        ife player[].ammo_amount WEAPON_GRENADE 0
+            set hud_ammo 0
+    }
+ends

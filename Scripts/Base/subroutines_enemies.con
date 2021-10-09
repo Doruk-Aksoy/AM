@@ -1,0 +1,909 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, Evan Ramos
+        and Dino Bollinger
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019-2021 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file contains subroutines for enemy actors in the game, which may be
+overridden by expansion content.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+
+defstate fury_shotgunner_althealth
+    ife sprite.picnum A_SHOTGUNNER
+      ifspritepal PAL_SHOTGUNNER_ALT
+        seta .extra SHOTGUNNER_ALT_HEALTH
+ends
+
+defstate fury_spawnmechsect_altpal
+    spritepal PAL_MECHSECT
+ends
+
+defstate fury_spawncultist_altpal
+	ife sprite.pal 0
+		spritepal PAL_CULTIST
+	else ife sprite.pal PAL_AUTOCULTIST
+		seta .extra AM_AUTOCULTIST_HEALTH
+ends
+
+defstate fury_spawnshotgunner_altpal
+    ifspritepal PAL_SHOTGUNNER_ALT
+        nullop
+    else
+        spritepal PAL_SHOTGUNNER
+ends
+
+defstate fury_spawnshotgunner_gtype
+    ifspritepal PAL_SHOTGUNNER_ALT
+        nullop
+    else
+    {
+        ife gunner_type 1
+            spritepal PAL_SHOTGUNNER_ALT
+        else
+            spritepal PAL_SHOTGUNNER
+    }
+ends
+
+defstate fury_spawngreater_altpal
+    spritepal PAL_GREATER
+ends
+
+defstate fury_mechsect_pal
+    spritepal PAL_MECHSECT
+ends
+
+defstate fury_mechsect_repal
+    spritepal PAL_MECHSECT
+ends
+
+defstate fury_mechsect_strafe_or_shoot
+    ife se_hitag 0
+    {
+        ifn cansee_return 1
+        {
+            ifrnd 32 ife enemy_strafe 0
+            {
+                ifrnd 64
+                    state e_fp
+                set enemy_strafe 1
+                rand strafe_dir 1
+            }
+        }
+        else ifrnd 16 ifpdistl 1024 ifl att_return 256 ife cansee_return 1 ife enemy_forcejump 0 ife shot_delay 0 ife enemy_shoot 0
+            set enemy_shoot 1
+    }
+ends
+
+defstate fury_mechsect_melee
+    ifl att_return 256 ifl temp temp2 ife enemy_shoot 10
+    {
+		setp .sound_pitch -1024
+		sound S_MELEE_THUD01
+		setp .sound_pitch 0
+		addphealth -10
+		seta[player.i].htpicnum sprite.picnum
+		add shakeitbaby 6
+    }
+ends
+
+defstate fury_target_icon
+    for temp9 sprofstat STAT_TARGET_ICON
+    {
+        setu .vm_sprite temp9
+        ife target_icon_id -1
+            sizeat 0 0
+        else ife sprite[target_icon_id].statnum STAT_MAXSTATUS
+            sizeat 0 0
+        ife sprite.xrepeat 0
+            changespritestat THISACTOR STAT_ACTOR
+        else
+        {
+            ifspawnedby A_SECTOR_SWITCH
+                seta .xrepeat 0
+            else
+            {
+                sizeat 7 6
+                seta .shade -127
+                ife st_do_once 0
+                {
+                    set st_do_once 1
+                    set se_zvel tilesizy[sprite[target_icon_id].picnum]
+                    shiftl se_zvel 2
+                    mul se_zvel sprite[target_icon_id].yrepeat
+                    add se_zvel 256
+                    switch sprite[target_icon_id].picnum
+                        case A_MECHSECT
+                        case A_MECHSECT_HANG
+                            ifand sprite[target_icon_id].cstat 8
+                                inv se_zvel
+                            break
+                    endswitch
+                }
+                seta .blend 129
+                add counter 1
+                clamp counter 0 65536
+                ifg counter 2
+                {
+                    cstat 2
+                    switch sprite[target_icon_id].picnum
+                        case A_MECHSECT
+                        case A_MECHSECT_HANG
+                            ifand sprite[target_icon_id].cstat 8
+                                cstator 8
+                            break
+                    endswitch
+
+                    ifle sprite[target_icon_id].extra 0
+                        cstator 32768
+                }
+                seta .x sprite[target_icon_id].x
+                seta .y sprite[target_icon_id].y
+                geta[target_icon_id].z temp
+                sub temp se_zvel
+                seta .z temp
+                seta .sectnum sprite[target_icon_id].sectnum
+
+                ife actorvar[target_icon_id].need_target_icon 0
+                    seta .xrepeat 0
+                ife actorvar[target_icon_id].target_icon_id -1
+                    seta .xrepeat 0
+            }
+        }
+    }
+ends
+
+
+defstate fury_altpal_shotgunner_init
+    ifspritepal PAL_SHOTGUNNER_ALT
+    {
+        seta .extra SHOTGUNNER_ALT_HEALTH
+        set gunner_type 1
+    }
+ends
+
+defstate fury_altpal_shotgunner_dodge
+    ife cansee_return 0 ife enemy_dodge 0
+    {
+            set enemy_dodge 90
+            ife enemy_strafe 0
+            {
+                ifrnd 96
+                    state e_fp
+                set enemy_strafe 1
+                rand strafe_dir 1
+            }
+    }
+ends
+
+defstate fury_altcultist_dodgechance
+    ifrnd 64
+        set temp5 1
+ends
+
+defstate fury_shotgunner_attackfreq
+    ife gunner_type 1
+        set temp2 SHOTGUNNER_ALT_ATTK_FREQ
+    else
+        set temp2 SHOTGUNNER_ATTK_FREQ
+ends
+
+defstate fury_gunner_attackrange
+    ifactor A_SHOTGUNNER
+    {
+        getu .player_skill temp4
+        switch gunner_type
+            case 1
+                mul temp4 SHOTGUNNER_ALT_ATTK
+                break
+            default
+                mul temp4 SHOTGUNNER_ATTK
+                break
+        endswitch
+        shiftr temp4 1
+        ifn sprite.htactorstayput -1
+        {
+            mul temp4 3
+            shiftr temp4 1
+        }
+
+        ifl userdef.vm_distance temp4 // only shoot if we are in the right distance zone
+        {
+            switch gunner_type
+                case 1
+                    ldist temp THISACTOR player.i
+                    set temp2 sprite[player.i].z
+                    sub temp2 sprite.z
+                    shiftr temp2 3
+                    add temp temp2
+                    ifg temp 0
+                    {
+                        state grenade_drop_aim // arc
+                        set enemy_shoot 1
+                    }
+                    break
+                default
+                    set enemy_shoot 1
+                    break
+            endswitch
+        }
+    }
+    else ifactor A_SHOTGUNNER
+    {
+        getu .player_skill temp4
+        mul temp4 SHOTGUNNER_ATTK
+        shiftr temp4 1
+        ifn sprite.htactorstayput -1
+        {
+            mul temp4 3
+            shiftr temp4 1
+        }
+        ifl userdef.vm_distance temp4
+            set enemy_shoot 1
+    }
+    else
+    {
+        getu .player_skill temp4
+        mul temp4 CULTIST_ATTK
+        shiftr temp4 1
+        ifn sprite.htactorstayput -1
+        {
+            mul temp4 3
+            shiftr temp4 1
+        }
+
+        ifl userdef.vm_distance temp4
+            set enemy_shoot 1
+    }
+ends
+
+defstate am_cultist_fire
+	ifn shot_delay 45
+	{
+		ifg framerate 30
+		{
+			eshoot A_SHELL1
+			ifpdistl 8192
+			{
+				ife shot_delay 41
+					setav[RETURN].se_zvel 32767
+			}
+			else
+				setav[RETURN].se_zvel 32767
+
+		}
+	}
+
+	setprojectile[P_LOVERBOY].extra 3
+	getu .vm_distance temp
+	add temp 256
+	shiftr temp 7
+	clamp temp 16 32
+	setprojectile[P_LOVERBOY].tnum temp
+	set temp2 0
+	ife shot_delay 49
+		set temp2 1
+	getu .player_skill temp
+	ifge temp 3
+	{
+		ife shot_delay 41
+			set temp2 1
+		else ifg temp 3
+			set temp2 1
+	}
+	ife temp2 1
+	{
+		ifspritepal PAL_AUTOCULTIST 
+		  ifpdistg 2048
+			nullop
+		else {
+			setprojectile[P_LOVERBOY].workslike 1179649
+			ifl userdef.player_skill 4
+			{
+				set temp5 WEAPON1_DMG
+				shiftr temp5 1
+				setprojectile[P_LOVERBOY].extra_rand temp5
+			}
+		}
+	}
+	geta .x temp5
+	geta .y temp7
+	ifpdistl 800
+		nullop
+	else
+	{
+		geta .ang temp3
+		sub temp3 512
+		and temp3 2047
+		cos temp temp3
+		sin temp2 temp3
+		shiftr temp 9
+		shiftr temp2 9
+		add temp temp5
+		add temp2 temp7
+		seta .x temp
+		seta .y temp2
+	}
+	eshoot P_LOVERBOY
+	seta .x temp5
+	seta .y temp7
+	setprojectile[P_LOVERBOY].extra WEAPON1_DMG
+	setprojectile[P_LOVERBOY].extra_rand WEAPON1_DMG
+	setprojectile[P_LOVERBOY].workslike 1
+	setprojectile[P_LOVERBOY].tnum 32
+	
+	getp .sound_pitch temp
+	randvar temp3 64
+	add temp3 512
+	add temp temp3
+	setp .sound_pitch temp
+
+	set temp2 shot_delay
+	mod temp2 3
+	add temp2 S_TRIFIRE_OLD1
+	ifpdistl ENEMY_SOUND_DIST
+		soundvar temp2
+
+	sub temp temp3
+	setp .sound_pitch temp
+ends
+
+defstate fury_cultist_shoot_with_delay
+    switch shot_delay
+        case 50
+        case 48
+        case 46
+        case 44
+        case 42
+        case 40
+            seta .shade -127
+            set enemy_skipshade 1
+            break
+        case 49
+        case 45
+        case 41
+			ldist temp player.i THISACTOR
+			set temp9 0
+			ifl temp 480
+			{
+				set temp4 tilesizy[A_CULTIST]
+				shiftl temp4 2
+				mul temp4 sprite.yrepeat
+				set temp2 sprite.z
+				sub temp2 temp4
+				ifle player.posz sprite.z ifge sprite[player.i].z temp2
+				{
+					sub temp 720
+					geta .x face_x
+					sub face_x sprite[player.i].x
+
+					geta .y face_y
+					sub face_y sprite[player.i].y
+
+					getangle face_return face_x face_y
+					add face_return 1024
+					and face_return 2047
+
+					set move_v temp
+					sub move_v 32
+					abs move_v
+					cos move_xv face_return
+					sin move_yv face_return
+					mul move_xv move_v
+					mul move_yv move_v
+					shiftr move_xv 4
+					shiftr move_yv 4
+					setp .posxv move_xv
+					setp .posyv move_yv
+					set temp9 1
+				}
+			}
+		
+			ifaction AC_CULTIST_SHOOT_CRC
+			{
+				geta .z temp6
+				add temp6 2048
+				seta .z temp6
+			}
+			else
+			{
+				geta .z temp6
+				sub temp6 512
+				seta .z temp6
+			}
+			
+			ifspritepal PAL_FIRECULTIST {
+				geta .x temp5
+				geta .y temp7
+				ifpdistl 1576
+					nullop
+				else
+				{
+					geta .ang temp3
+					sub temp3 512
+					and temp3 2047
+					cos temp temp3
+					sin temp2 temp3
+					shiftr temp 9
+					shiftr temp2 9
+					add temp temp5
+					add temp2 temp7
+					seta .x temp
+					seta .y temp2
+				}
+				eshoot P_DANCINGQUEEN
+				seta[RETURN].pal AM_FIRECULTIST_SHOTPAL
+				setthisprojectile[RETURN].extra AM_FIRECULTIST_SHOTDMG
+				setthisprojectile[RETURN].extra_rand AM_FIRECULTIST_SHOTRAND
+				setthisprojectile[RETURN].xrepeat 16
+				setthisprojectile[RETURN].yrepeat 16
+				setthisprojectile[RETURN].sxrepeat 16
+				setthisprojectile[RETURN].syrepeat 16
+				setthisprojectile[RETURN].vel 644
+				seta .x temp5
+				seta .y temp7
+				
+				ifpdistl ENEMY_SOUND_DIST
+					sound AM_S_DANCINGQUEENFIRE
+			}
+			else // every other color should run this
+				state am_cultist_fire
+
+            seta .shade -127
+            set enemy_skipshade 1
+            ifaction AC_CULTIST_SHOOT_CRC
+            {
+                ife temp9 0
+                    sub temp6 2048
+                seta .z temp6
+            }
+            else
+            {
+                add temp6 512
+                seta .z temp6
+            }
+            ife shot_delay 49
+                state spawn_sound_emitter
+
+            break
+    endswitch
+ends
+
+defstate fury_cultist_idle_after_shoot
+    ifactioncount 24
+    {
+        action AC_CULTIST_IDLE
+        set enemy_shoot 0
+    }
+    else ifactioncount 12
+    {
+        ifaction AC_CULTIST_SHOOT_CRC
+            action AC_CULTIST_IDLE_CRC
+        else action AC_CULTIST_IDLE
+        set enemy_shoot 0
+    }
+ends
+
+defstate fury_cultist_shockpal
+    spritepal 89
+ends
+
+defstate fury_greater_strafechance
+    ifrnd 64
+        set temp -1
+ends
+
+defstate fury_greater_attacktype
+    set temp2 GREATER_ATTK
+ends
+
+defstate fury_greater_strafecounter
+    ifg enemy_strafe 8
+        set enemy_strafe 8
+ends
+
+defstate fury_greater_annoyance_shot_delay
+    ifle enemy_annoyance NEUTRAL
+        nullop
+    else ifle enemy_annoyance ANNOYED
+    {
+        ifg shot_delay 50
+        {
+            set shot_delay 50
+            set enemy_shoot shot_delay
+        }
+    }
+    else ifle enemy_annoyance ANGRY
+    {
+        ifg shot_delay 45
+        {
+            set shot_delay 45
+            set temp shot_delay
+            sub temp 60
+            inv temp
+            set enemy_shoot temp
+        }
+    }
+    else ifle enemy_annoyance PISSED
+    {
+        ifg shot_delay 40
+        {
+            set shot_delay 40
+            set temp shot_delay
+            sub temp 60
+            inv temp
+            set enemy_shoot temp
+        }
+    }
+    else
+    {
+        ifg shot_delay 35
+        {
+            set shot_delay 35
+            set temp shot_delay
+            sub temp 60
+            inv temp
+            set enemy_shoot temp
+        }
+    }
+ends
+
+defstate fury_greater_annoyance_attack
+    ifle enemy_annoyance NEUTRAL
+    {
+        seta .shade -127
+        set enemy_skipshade 1
+        eshoot P_PLASMA_BOLT
+        setthisprojectile[RETURN].extra 2
+        seta[RETURN].extra 2
+        geta[RETURN].ang temp
+        geta[RETURN].zvel temp2
+
+        add temp 24
+        state greater_plasma_bolt
+        sub temp 12
+        state greater_plasma_bolt
+
+        sub temp 36
+        state greater_plasma_bolt
+
+        add temp 12
+        state greater_plasma_bolt
+    }
+    else ifle enemy_annoyance ANNOYED
+    {
+        seta .shade -127
+        set enemy_skipshade 1
+        eshoot P_PLASMA_BOLT
+        geta[RETURN].ang temp
+        geta[RETURN].zvel temp2
+        seta[RETURN].xrepeat 0
+        seta[RETURN].yrepeat 0
+        seta[RETURN].extra 0
+        seta[RETURN].statnum STAT_ACTOR
+
+
+        add temp 24
+        state greater_plasma_bolt
+
+        sub temp 12
+        state greater_plasma_bolt
+
+        sub temp 24
+        state greater_plasma_bolt
+
+        add temp 12
+        state greater_plasma_bolt
+    }
+    else ifle enemy_annoyance ANGRY
+    {
+        seta .shade -127
+        set enemy_skipshade 1
+        eshoot P_PLASMA_BOLT
+        geta[RETURN].ang temp
+        geta[RETURN].zvel temp2
+        setthisprojectile[RETURN].extra 2
+        seta[RETURN].extra 2
+
+        add temp 12
+        state greater_plasma_bolt
+
+        sub temp 24
+        state greater_plasma_bolt
+    }
+    else ifle enemy_annoyance PISSED
+    {
+        seta .shade -127
+        set enemy_skipshade 1
+        eshoot P_PLASMA_BOLT
+        geta[RETURN].ang temp
+        geta[RETURN].zvel temp2
+        seta[RETURN].xrepeat 0
+        seta[RETURN].yrepeat 0
+        seta[RETURN].extra 0
+        seta[RETURN].statnum STAT_ACTOR
+
+        add temp 6
+        state greater_plasma_bolt
+
+        sub temp 12
+        state greater_plasma_bolt
+    }
+    else
+    {
+        seta .shade -127
+        set enemy_skipshade 1
+        eshoot P_PLASMA_BOLT
+        setthisprojectile[RETURN].extra 2
+        seta[RETURN].extra 2
+    }
+ends
+
+defstate fury_greater_dodgeless
+    ifle enemy_dodge 90
+        set enemy_dodge 0
+ends
+
+defstate fury_greater_shockpal
+    spritepal 15
+ends
+
+defstate fury_brute_bottom_zshift
+    shiftr temp4 2
+    add temp temp4
+    shiftr temp4 2
+    add temp temp4
+    shiftr temp4 2
+    add temp temp4
+ends
+
+defstate fury_drone_palchange
+    spritepal PAL_DRONE
+ends
+
+defstate fury_drone_cansee
+    ife cansee_return_o 1
+        state enemy_checkw1alt
+ends
+
+defstate fury_drone_fire
+    set att_target enemy_target
+    state angle_to_target
+    ifl att_return 128
+    {
+        ifaction AC_DRONE_REVERSE
+            nullop
+        else ifrnd 8 ife enemy_target player.i ife cansee_return 1
+        {
+            geta .ang temp9
+            set temp8 temp9
+            sub temp8 512
+            and temp8 2047
+            seta .ang temp8
+            set move_v 128
+            state move_actor
+
+            geta .x temp4
+            geta .y temp5
+            geta .z temp6
+            geta .sectnum temp7
+            movesprite THISACTOR move_xv move_yv 0 CLIPMASK0 temp8
+            getflorzofslope sprite.sectnum sprite.x sprite.y temp8
+            geta .z temp
+            set temp2 temp
+            add temp 5120
+            ifg temp temp8
+            {
+                set temp temp8
+                add temp 3072
+            }
+            setp .sound_pitch 111
+            sound S_DRONE_SHOOT
+            setp .sound_pitch 0
+            set temp8 temp2
+            seta .z temp
+            geta .xvel temp2
+            eshoot P_DANCINGQUEEN
+            geta[RETURN].xvel temp3
+            add temp3 temp2
+            seta[RETURN].xvel temp3
+            eshoot P_DANCINGQUEEN
+            geta[RETURN].xvel temp3
+            add temp3 temp2
+            seta[RETURN].xvel temp3
+            seta[RETURN].yvel 0
+            set enemy_shoot 30
+            seta .z temp8
+            set enemy_skipshade 1
+            seta .shade -127
+            seta .x temp4
+            seta .y temp5
+            seta .z temp6
+            seta .sectnum temp7
+            seta .ang temp9
+        }
+    }
+ends
+
+defstate fury_drone_targeting
+    ifrnd 8
+    {
+        ife enemy_target player.i
+            action AC_DRONE_IDLE
+        set enemy_xv move_xv
+        set enemy_yv move_yv
+    }
+    else
+    {
+        ife enemy_target player.i
+        {
+            geta[player.i].z temp3
+            seta[player.i].z player.posz
+            state cansee_actor
+            seta[player.i].z temp3
+        }
+        else
+            state cansee_actor
+        set temp2 cansee_return
+        ife temp2 1
+        {
+            ldist temp enemy_target THISACTOR
+            ifl temp 6144 ifg temp 3072
+                ifrnd 16 ife enemy_target player.i
+                    action AC_DRONE_SWOOP
+        }
+    }
+ends
+
+defstate fury_bosshealth_display
+    ifand boss_hpflash 2
+        set hudx_pal 1
+    else
+    {
+
+        switch boss_type
+            case 1
+                set temp SBOSS_HEALTH
+                break
+            case 2
+                set temp brute_boss_hp
+                break
+            case 5
+                set temp HBOSS_HEALTH
+                break
+            default
+                set temp MECHBOSS_HEALTH
+                break
+        endswitch
+        shiftr temp 1
+        ifle boss_currhp temp
+        {
+            shiftr temp 1
+            ifle boss_currhp temp
+                set hudx_pal 9
+            else
+                set hudx_pal 11
+        }
+        else
+            set hudx_pal 5
+    }
+    switch boss_type
+        case 1
+            set temp9 SBOSS_HEALTH
+            break
+        case 2
+            set temp9 brute_boss_hp
+            break
+        case 5
+            set temp9 HBOSS_HEALTH
+            break
+        default
+            set temp9 MECHBOSS_HEALTH
+            break
+    endswitch
+    ifl boss_currhp temp9
+    {
+        set hudx_x1 0
+        set hudx_y1 0
+        set hudx_y2 ydim
+        scalevar GetWindowX 8192000 boss_currhp temp9 // (126 - 1) * hudx_scale
+        add GetWindowX 20971520 // hudx_x << 16
+        sub GetWindowX 4063232 // (63 - 1) * hudx_scale
+        state 640Full16_to_xdim
+        set hudx_x2 GetWindowX
+        sub hudx_x2 1
+
+        state DrawTile640x480Screen_Windowed
+    }
+    else
+        state DrawTile640x480Screen
+ends
+
+defstate fury_bossname_text
+    switch boss_type
+        case 1
+            redefinequote 190 REVENANT 8991-PX
+            break
+        case 2
+            redefinequote 190 MEGA BRUTALIZER TWINS
+            break
+        case 5
+            redefinequote 190 HESKEL AND HIS BITCHIN' TERROR DOME
+            break
+        default
+            redefinequote 190 WARMECH
+            break
+    endswitch
+ends
+
+defstate fury_spawn_dronepal
+    spritepal PAL_DRONE
+ends
+
+defstate fury_droneshockpal
+    ifspritepal PAL_DRONE
+    {
+        spritepal 69
+        seta .shade -127
+        set enemy_skipshade 1
+        rand temp 2
+        for itervar range temp
+        {
+            espawn A_GENERIC_PARTICLE
+            seta[RETURN].xrepeat 120 // sparks
+            seta[RETURN].pal 6
+
+            rand temp2 512
+            ifrnd 127
+                inv temp2
+            add temp2 sprite.htang
+            add temp2 1024
+            seta[RETURN].ang temp2
+
+
+            geta .picnum temp2
+            set temp4 tilesizy[temp2]
+           // basic formula: (sizy*256)/64 = base value then mul yrepeat for game topZ
+           // simplified to sizy*4*yrepeat
+            shiftl temp4 2
+            mul temp4 sprite.yrepeat
+            set temp2 sprite.z
+            rand temp3 temp4
+            sub temp2 temp3
+            seta[RETURN].z temp2
+
+            rand temp2 128
+            ifrnd 127
+                inv temp2
+            add temp2 sprite.x
+            seta[RETURN].x temp2
+            rand temp2 128
+            ifrnd 127
+                inv temp2
+            add temp2 sprite.y
+            seta[RETURN].y temp2
+        }
+    }
+    else
+        spritepal PAL_DRONE
+ends

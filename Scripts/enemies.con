@@ -54,7 +54,6 @@ var enemy_strafe 0 2
 var enemy_strafe_mod 0 2
 var enemy_stop 0 2
 var enemy_start 0 2
-var enemy_shoot 0 2
 var enemy_dodge 0 2
 var enemy_lastshot 0 2
 var enemy_roamang -1 2
@@ -488,9 +487,331 @@ ends
 
 action AC_ENEMY_BODY   0 1 1 1 1
 
-
 move AM_ENEMY_SEARCH 60 0
 move AM_ENEMY_SEARCH_STOP 0 0
+
+action AC_MECHSECT_IDLE     0 1 5 1 1
+action AC_MECHSECT_WALK     5 4 5 1 16
+action AC_MECHSECT_WALK_DEAD 5 4 5 1 1
+action AC_MECHSECT_STRAFE   5 4 5 1 12
+action AC_MECHSECT_DODGE    5 4 5 1 12
+action AC_MECHSECT_SHOOT    25 3 5 1 20
+action AC_MECHSECT_HIT      0 1 5 1 1
+action AC_MECHSECT_SHOCKED  -5 2 5 1 1
+action AC_MECHSECT_DYING1    45 5 1 1 4
+action AC_MECHSECT_DEAD1     49 1 1 1 1
+action AC_MECHSECT_DYING2    50 4 1 1 4
+action AC_MECHSECT_DEAD2     56 7 1 1 1
+
+action AC_CULTIST_IDLE     64 1 5 1 1
+action AC_CULTIST_WALK     0 4 5 1 12
+action AC_CULTIST_STRAFE   0 4 5 1 16
+action AC_CULTIST_DODGE    32 4 5 1 12
+action AC_CULTIST_SHOOT    64 3 5 1 1
+action AC_CULTIST_IDLE_CRC 96 1 5 1 1
+action AC_CULTIST_SHOOT_CRC 96 3 5 1 1  //
+action AC_CULTIST_HIT      126 1 1 1 1
+action AC_CULTIST_SHOCKED  134 2 5 1 1
+action AC_CULTIST_DYING    126 8 1 1 8
+action AC_CULTIST_SUFFER   127 2 1 1 12
+action AC_CULTIST_DEAD     131 1 1 1 4
+action AC_CULTIST_GIBBED   145 8 1 1 8
+action AC_CULTIST_HEADACHE 154 8 1 1 8
+action AC_SHOTGUNNER_HEADACHE 111 8 1 1 8
+
+action AC_DRONE_IDLE 0 1 5 1 1
+action AC_DRONE_FORWARD 15 2 5 1 1
+action AC_DRONE_REVERSE 35 2 5 1 1
+action AC_DRONE_LEFT 55 1 8 1 1 1
+action AC_DRONE_RIGHT 87 1 8 1 1 1
+action AC_DRONE_SPIN 87 1 8 1 1 1
+action AC_DRONE_SWOOP 15 2 5 1 1
+action AC_DRONE_SPIN_DIE 87 1 8 1 1 1
+
+action AC_BRUTEBOTTOM_ROLL 0 3 9 1 4
+action AC_BRUTEBOTTOM_STUNNED 0 3 9 1 1
+action AC_BRUTEBOTTOM_ROLL_FAST 0 3 9 1 1
+action AC_BRUTEBOTTOM_ZIGZAG 0 3 9 1 1
+action AC_BRUTEBOTTOM_CIRCLE1 0 3 9 1 1
+action AC_BRUTEBOTTOM_FIRE1 0 3 9 1 4
+action AC_BRUTEBOTTOM_FIRE2 0 3 9 1 1
+action AC_BRUTEBOTTOM_FIRE3 0 3 9 1 1
+
+// moved up because of dependencies
+defstate e_fps // face the player, but with a small bit of lag/time lapse
+    ife ignore_me 1
+        break
+    else ifl ignore_me 0
+    {
+        seta .ang -ignore_me
+        add angcount 1
+        ifg angcount 60
+            set ignore_me 0
+        break
+    }
+
+
+    ife sector.lotag 1
+    {
+        geta .z enemy_fps_temp2
+        sub enemy_fps_temp2 2048
+        seta .z enemy_fps_temp2
+    }
+    set enemy_fps_temp 0
+    ifge cansee_return_o 1
+        set enemy_fps_temp 1
+    else ifge cansee_return 1
+        set enemy_fps_temp 1
+    ifge enemy_fps_temp 1
+        ifn se_hitag 0
+            set enemy_fps_temp 0
+    ifge enemy_fps_temp 1 // if we can see the player don't use waypoints and don't do any seekplayer
+    {
+        set way_current -1
+        set enemy_search 0
+        ifn cansee_return 2 ifg cansee_return 0
+            set way_last way_nearest
+        set way_counter 0
+    }
+    else ifn enemy_shoot 0
+        set way_current -1
+    else
+        state find_waypoints
+    ife sector.lotag 1
+    {
+        geta .z enemy_fps_temp2
+        add enemy_fps_temp2 2048
+        seta .z enemy_fps_temp2
+    }
+    cstator 256
+    ife way_current -1
+    {
+        getp .i att_target
+        set enemy_endoftheline -1
+    }
+    else // if we're using a waypoint face that directly instead of any other mumbo jumbo
+    {
+        ifg enemy_endoftheline -1
+            seta .ang enemy_endoftheline
+        else
+        {
+            ifn way_ang -1
+                seta .ang way_ang
+            else
+            {
+                set att_target way_current
+                set face_target way_current
+                state face_actor
+                seta .ang face_return
+            }
+            ife enemy_shoot 0
+                set enemy_start 7
+            set enemy_strafe 0
+        }
+        break
+    }
+    set att_noclamp 1
+    state angle_to_target
+    ife cansee_return_o 1 ifn att_return 0
+    {
+        set enemy_fps_temp att_return
+        shiftr enemy_fps_temp 2
+        ifg enemy_fps_temp 4
+            set att_return enemy_fps_temp
+        else ifl enemy_fps_temp -4
+            set att_return enemy_fps_temp
+    }
+    geta .ang enemy_fps_temp
+    sub enemy_fps_temp att_return
+    and enemy_fps_temp 2047
+
+    ifn enemy_shoot 0 // if we get hung up then do silly hardcoded "seekplayer" stuff
+    {
+        move AM_ENEMY_SEARCH_STOP
+        set enemy_search 0
+    }
+    ife enemy_search 0
+        seta .ang enemy_fps_temp
+
+    ife reverse_dir 1
+         ifle se_hitag 0
+         {
+            ifrnd 127
+                setvar enemy_search 60
+            else ifrnd 127
+            {
+                rand enemy_fps_temp2 64
+                ifrnd 127
+                    inv enemy_fps_temp2
+                add enemy_fps_temp2 sprite.ang
+                and enemy_fps_temp2 2047
+                seta .ang enemy_fps_temp2
+            }
+        }
+    ifg enemy_search 0
+    {
+            set way_current -1
+            ife enemy_shoot 0
+                set enemy_start 7
+            set enemy_strafe 0
+            ifrnd 127 ife enemy_shoot 0
+                move AM_ENEMY_SEARCH 512
+            sub enemy_search 1
+    }
+    else ifmove AM_ENEMY_SEARCH
+        move AM_ENEMY_SEARCH_STOP
+ends
+
+
+// moved up because of dependencies
+defstate e_fp // same as above but for facing the player directly
+    ife ignore_me 1
+        break
+    else ifl ignore_me 0
+    {
+        seta .ang -ignore_me
+        add angcount 1
+        ifg angcount 60
+            set ignore_me 0
+        break
+    }
+
+    ife sector.lotag 1
+    {
+        geta .z enemy_fps_temp2
+        sub enemy_fps_temp2 2048
+        seta .z enemy_fps_temp2
+    }
+    set enemy_fps_temp 0
+    ifge cansee_return_o 1
+        set enemy_fps_temp 1
+    else ifge cansee_return 1
+        set enemy_fps_temp 1
+    ifge enemy_fps_temp 1
+        ifn se_hitag 0
+            set enemy_fps_temp 0
+    ifge enemy_fps_temp 1
+    {
+        set way_current -1
+        set enemy_search 0
+        ifn cansee_return 2 ifg cansee_return 0
+            set way_last way_nearest
+        set way_counter 0
+    }
+    else ifn enemy_shoot 0
+        set way_current -1
+    else
+        state find_waypoints
+    ife sector.lotag 1
+    {
+        geta .z enemy_fps_temp2
+        add enemy_fps_temp2 2048
+        seta .z enemy_fps_temp2
+    }
+    cstator 256
+    ife way_current -1
+    {
+        getp .i face_target
+        set enemy_endoftheline -1
+    }
+    else // if we're using a waypoint face that directly instead of any other mumbo jumbo
+    {
+        ifg enemy_endoftheline -1
+            seta .ang enemy_endoftheline
+        else
+        {
+            ifn way_ang -1
+                seta .ang way_ang
+            else
+            {
+                set face_target way_current
+                state face_actor
+                seta .ang face_return
+            }
+            ife enemy_shoot 0
+                set enemy_start 7
+            set enemy_strafe 0
+        }
+        break
+    }
+    ifg enemy_endoftheline -1
+            seta .ang enemy_endoftheline
+    else
+        state face_actor
+
+    ifn enemy_shoot 0
+    {
+        move AM_ENEMY_SEARCH_STOP
+        set enemy_search 0
+    }
+    ife enemy_search 0
+        seta .ang face_return
+    ife reverse_dir 1
+         ifle se_hitag 0
+         {
+            ifrnd 127
+                setvar enemy_search 60
+            else ifrnd 127
+            {
+                rand enemy_fps_temp2 64
+                ifrnd 127
+                    inv enemy_fps_temp2
+                add enemy_fps_temp2 sprite.ang
+                and enemy_fps_temp2 2047
+                seta .ang enemy_fps_temp2
+            }
+        }
+    ifg enemy_search 0
+    {
+        set way_current -1
+        ife enemy_shoot 0
+            set enemy_start 7
+        set enemy_strafe 0
+        ife enemy_shoot 0 ifrnd 127
+            move AM_ENEMY_SEARCH 512
+        sub enemy_search 1
+    }
+    else ifmove AM_ENEMY_SEARCH
+        move AM_ENEMY_SEARCH_STOP
+ends
+
+// moved up because of dependencies
+defstate grenade_drop_aim
+    ldist temp THISACTOR player.i
+    set temp2 sprite[player.i].z
+    sub temp2 sprite.z
+    ifg temp2 -8192
+        add temp2 8192 // aim at the player feet
+    set temp3 temp2
+    scalevar enemy_horiz temp2 projectile[P_GRENADE].vel temp
+
+    // compensate for the drop
+    sub temp 256 // player clipdist
+    set temp2 temp
+    shiftl temp2 1
+    add temp2 projectile[P_GRENADE].vel
+    set temp3 temp2
+    scalevar temp2 temp2 temp2 projectile[P_GRENADE].vel
+    sub temp2 temp3
+    scalevar temp2 temp2 projectile[P_GRENADE].drop temp
+    shiftr temp2 2
+    add enemy_horiz temp2
+
+    clamp enemy_horiz -32768 32767 // prevent overflow
+ends
+
+//moved up because of dependencies
+defstate greater_plasma_bolt
+    and temp 2047
+    eshoot P_PLASMA_BOLT
+    seta[RETURN].ang temp
+    seta[RETURN].zvel temp2
+    getthisprojectile[RETURN].workslike temp3
+    orvar temp3 4096
+    setthisprojectile[RETURN].workslike temp3
+    setthisprojectile[RETURN].extra 2
+    seta[RETURN].extra 2
+ends
 
 defstate fixshade
     ife enemy_skipshade 0
@@ -4606,97 +4927,6 @@ useractor enemy A_SHOTGUNNER_STAYPUT SHOTGUNNER_HEALTH AC_CULTIST_IDLE
     cactor A_SHOTGUNNER
 enda
 
-defstate am_cultist_fire
-	ifn shot_delay 45
-	{
-		ifg framerate 30
-		{
-			eshoot A_SHELL1
-			ifpdistl 8192
-			{
-				ife shot_delay 41
-					setav[RETURN].se_zvel 32767
-			}
-			else
-				setav[RETURN].se_zvel 32767
-
-		}
-	}
-
-	setprojectile[P_LOVERBOY].extra 3
-	getu .vm_distance temp
-	add temp 256
-	shiftr temp 7
-	clamp temp 16 32
-	setprojectile[P_LOVERBOY].tnum temp
-	set temp2 0
-	ife shot_delay 49
-		set temp2 1
-	getu .player_skill temp
-	ifge temp 3
-	{
-		ife shot_delay 41
-			set temp2 1
-		else ifg temp 3
-			set temp2 1
-	}
-	ife temp2 1
-	{
-		ifspritepal PAL_AUTOCULTIST 
-		  ifpdistg 2048
-			nullop
-		else {
-			setprojectile[P_LOVERBOY].workslike 1179649
-			ifl userdef.player_skill 4
-			{
-				set temp5 WEAPON1_DMG
-				shiftr temp5 1
-				setprojectile[P_LOVERBOY].extra_rand temp5
-			}
-		}
-	}
-	geta .x temp5
-	geta .y temp7
-	ifpdistl 800
-		nullop
-	else
-	{
-		geta .ang temp3
-		sub temp3 512
-		and temp3 2047
-		cos temp temp3
-		sin temp2 temp3
-		shiftr temp 9
-		shiftr temp2 9
-		add temp temp5
-		add temp2 temp7
-		seta .x temp
-		seta .y temp2
-	}
-	eshoot P_LOVERBOY
-	seta .x temp5
-	seta .y temp7
-	setprojectile[P_LOVERBOY].extra WEAPON1_DMG
-	setprojectile[P_LOVERBOY].extra_rand WEAPON1_DMG
-	setprojectile[P_LOVERBOY].workslike 1
-	setprojectile[P_LOVERBOY].tnum 32
-	
-	getp .sound_pitch temp
-	randvar temp3 64
-	add temp3 512
-	add temp temp3
-	setp .sound_pitch temp
-
-	set temp2 shot_delay
-	mod temp2 3
-	add temp2 S_TRIFIRE_OLD1
-	ifpdistl ENEMY_SOUND_DIST
-		soundvar temp2
-
-	sub temp temp3
-	setp .sound_pitch temp
-ends
-
 defstate lesser_shotgun_shared
     ife st_do_once 0
     {
@@ -5818,7 +6048,7 @@ defstate lesser_shotgun_shared
     }
 	
 	ifn enemy_shoot 1
-		set am_tmp 0
+		set am_estate 0
 
     ifpdistl 800 ife cansee_return 1
     {
@@ -6027,10 +6257,10 @@ defstate lesser_shotgun_shared
                     }
                 }
                 else {
-					ifn am_tmp 1 {
+					ifn am_estate 1 {
 						// auto fire cultist plays this once at only beginning of fire
 						soundvar temp
-						set am_tmp 1
+						set am_estate 1
 					}
 				}
             }

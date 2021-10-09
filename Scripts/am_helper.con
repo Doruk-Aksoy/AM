@@ -1,6 +1,15 @@
 /*
 THIS FILE CONTAINS HELPER SUBROUTINES FOR AM
 */
+defstate correct_shotgun_ammohack
+	ife p_ammohack 1 {
+		set p_ammohack 0
+		getp[].ammo_amount WEAPON_SHOTGUN am_tmp
+		sub am_tmp AM_AMMOHACK_VAL // we add 2 for the hack
+		setp[].ammo_amount WEAPON_SHOTGUN am_tmp
+	}
+ends
+
 defstate update_p_maxhp
 	ife p_stamina_boosts 0
 		setp .max_player_health MAXPLAYERHEALTH

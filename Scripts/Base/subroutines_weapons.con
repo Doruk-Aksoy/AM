@@ -1,0 +1,741 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, Evan Ramos
+        and Dino Bollinger
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019-2021 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file contains weapon states that may be overridden by expansion states.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+
+defstate fury_a_napalm_burst
+	ife counter 0
+    {
+		ifspawnedby P_NAPALM_BALL
+			hitradius NAPALM_BALL_RADIUS 15 21 27 33
+        flash
+        set counter 1
+        rand temp 6
+        add temp 5
+        for itervar range temp
+        {
+            espawn A_NAPALM_FLAME
+            ifspawnedby P_FLAMINGSKULL {
+				ifspritepal 0
+					seta[RETURN].pal 6
+				else
+					seta[RETURN].pal sprite.pal
+			}
+            rand temp2 2047
+            seta[RETURN].ang temp2
+            rand temp2 160
+            add temp2 160
+            seta[RETURN].xvel temp2
+            rand temp2 512
+            add temp2 1024
+            inv temp2
+            seta[RETURN].zvel temp2
+            ssp RETURN 0
+            // sub temp 1
+        }
+        ifspawnedby P_FLAMINGSKULL {
+			ifspritepal 0
+				spritepal 6
+		}
+    }
+    ifactioncount 6
+        killit
+ends
+
+
+defstate fury_proj_puck_thrown
+    // same as ashock variant, but without golden gun code
+    setu[].vm_sprite temp
+    setu .vm_player myconnectindex
+    ifge counter 1
+    {
+        ifand w9_state 1
+            nullop
+        else
+            cstat 384
+        add counter 1
+    }
+    else
+    {
+        add counter 1
+        ifand w9_state 1
+        {
+            or se_yvel 1
+            set lam_hit_id lam_hit
+        }
+        ifand w9_state 2
+            or se_yvel 2
+    }
+    /*  ifand se_yvel 1
+        nullop
+    else
+        setthisprojectile .workslike 2 */
+    ifand se_yvel 1
+    {
+        ifand se_yvel 2
+            spritepal 15
+        else
+            spritepal 21
+    }
+    else
+    {
+        geta .angoff temp
+        add temp 128
+        and temp 2047
+        seta .angoff temp
+        ifand se_yvel 2
+            spritepal 172
+        else
+            spritepal 170
+    }
+    ife sprite.yvel 0
+    {
+        ifand se_yvel 1
+        {
+            setsprite THISACTOR lam_hitx lam_hity lam_hitz
+            seta .sectnum lam_hitsect // guarantee same sector as hit location
+            action AC_PUCK_IDLE
+            cactor P_PUCK_PLACED
+            setp .sound_pitch 480
+            sound S_SHOTGUN_OPENCLOSE
+            setp .sound_pitch 0
+            set temp3 lam_hit_id
+            ifl temp3 49152
+            {
+                sub temp3 32768
+                getw[temp3].x temp4
+                getw[temp3].y temp5
+                getw[temp3].point2 temp6
+                getw[temp6].x temp7
+                getw[temp6].y temp8
+                sub temp4 temp7
+                sub temp5 temp8
+                getangle temp3 temp4 temp5
+                add temp3 1536
+                and temp3 2047
+                seta[].ang temp3
+            }
+            else
+            {
+                sub temp3 49152
+                geta[player.i].x att_x
+                sub att_x sprite[temp3].x
+                geta[player.i].y att_y
+                sub att_y sprite[temp3].y
+
+                getangle att_ang att_x att_y
+                geta[temp3].ang att_return
+                sub att_return att_ang
+
+                ifg att_return 1023
+                    sub att_return 2048
+                ifl att_return -1023
+                    add att_return 2048
+                abs att_return
+                ifle att_return 512
+                    seta .ang sprite[temp3].ang
+                else
+                {
+                    set temp4 sprite[temp3].ang
+                    add temp4 1024
+                    and temp4 2047
+                    seta .ang temp4
+                }
+            }
+            set move_v 10
+            state move_actor
+            add move_xv sprite.x
+            add move_yv sprite.y
+            seta .x move_xv
+            seta .y move_yv
+            changespritestat THISACTOR STAT_ACTOR
+        }
+        else
+        {
+            ife counter2 1
+                setsprite THISACTOR plasma_last_x plasma_last_y plasma_last_z
+
+            rand temp4 32
+            setp .sound_pitch temp4
+            sound S_BIG_IMPACT
+            setp .sound_pitch 0
+
+            state puck_radius_shared
+            // ifand se_yvel 2
+            {
+                set temp7 16
+                ifand se_yvel 2
+                    shiftl temp7 1
+                for itervar range temp7
+                {
+                    rand temp3 2047
+                    seta .ang temp3
+                    rand temp3 4096
+                    ifrnd 127
+                        inv temp3
+                    ezshoot temp3 P_BOMBETTE
+                    seta[RETURN].htowner sprite.htowner
+                    ifand se_yvel 2
+                        nullop
+                    else
+                    {
+                        setav[RETURN].se_xvel 2
+                        seta[RETURN].yvel 1
+                        geta[RETURN].extra temp4
+                        shiftr temp4 2
+                        seta[RETURN].extra temp4
+                        setthisprojectile[RETURN].extra temp4
+                        getthisprojectile[RETURN].extra_rand temp4
+                        shiftr temp4 2
+                        setthisprojectile[RETURN].extra_rand temp4
+                    }
+                }
+            }
+        }
+    }
+    else // do this to prevent the appearance of extra travel on some sector impacts
+    {
+        geta[].x plasma_last_x
+        geta[].y plasma_last_y
+        geta[].z plasma_last_z
+        set counter2 1
+    }
+
+ends
+
+defstate fury_proj_minimissile
+    setu[].vm_sprite temp
+    cstator 256
+    ife counter 0
+        rand counter3 -3
+    add counter 1
+
+    ifg counter3 0
+    {
+        add counter3 1
+        ifge counter3 40
+            set counter3 0
+    }
+    else ifl counter3 0
+        add counter3 1
+    else
+    {
+        ldist temp2 temp player[myconnectindex].i
+        ifl temp2 16384
+        {
+            actorsound THISACTOR S_MINIMISSILE_TRAVEL
+            set counter3 1
+        }
+        else
+            set counter3 15
+    }
+    ifn minimissile_t -1
+    {
+        ifn sprite[minimissile_t].statnum MAXSTATUS
+        {
+            ifl counter 210
+            ifg sprite[minimissile_t].extra 0
+            {
+                set att_target minimissile_t
+                setvar att_noclamp 1
+                state angle_to_target
+                set temp3 att_return
+                shiftr temp3 4
+                ife temp3 0
+                {
+                    ifn att_return 0
+                    {
+                        ifl att_return 0
+                            set temp3 -1
+                        else
+                            set temp3 1
+                    }
+                }
+                set temp4 4
+                mul temp4 userdef.player_skill
+                add temp4 4
+                clamp temp3 -temp4 temp4
+                set att_return -temp3
+                add att_return sprite[].ang
+                and att_return 2047
+                seta .ang att_return
+            }
+        }
+    }
+    ifg counter 150
+    {
+        set temp3 counter
+        shiftr temp3 2
+        add temp3 sprite.zvel
+        seta[].zvel temp3
+    }
+ends
+
+defstate fury_proj_bombette
+    setu[].vm_sprite temp
+    ldist temp2 temp player[myconnectindex].i
+
+    ifand se_xvel 2
+        set temp7 0
+    else set temp7 4
+
+    ifg temp2 128 // we don't want the projectile to spawn in the player's face
+    {
+
+        ifg temp2 256
+        {
+            seta[temp].cstat 0
+            getthisprojectile[temp].vel temp3
+
+            ifg temp2 1024
+            {
+                seta[temp].xrepeat 3
+                seta[temp].yrepeat 3
+            }
+        }
+    }
+    ife st_do_once 0
+    {
+        rand temp2 32
+        ifrnd 127
+            inv temp2
+        add temp2 sprite[].zvel
+        seta[].zvel temp2
+
+        geta[].yvel se_yvel
+        geta[].zvel se_zvel
+        rand temp2 8
+        ifrnd 127
+            inv temp2
+        add temp2 sprite[].ang
+        and temp2 2047
+        seta[].ang temp2
+        ifspawnedby P_PUCK_THROWN
+        {
+            geta .xvel temp3
+            shiftr temp3 2
+            ifrnd 160
+                shiftr temp3 temp7
+            ifand se_xvel 2
+                shiftr temp3 3
+            seta .xvel temp3
+            spritepal 65
+            geta .shade temp3
+            sub temp3 5
+            clamp temp3 -127 127
+            seta .shade temp3
+            rand temp4 4
+            add temp4 S_BULLET_RICOCHET1
+            setthisprojectile .bsound temp4
+        }
+
+        set st_do_once 1
+    }
+    ifn sprite[].yvel se_yvel
+    {
+        ifg sprite[].xvel 240
+            seta[].xvel 240
+    }
+    else
+    {
+        geta[temp].zvel temp5
+        set temp4 temp5
+        shiftr temp4 3
+        ifrnd 160
+            shiftr temp4 temp7
+        add temp5 temp4
+        seta[temp].zvel temp5
+        geta[temp].xvel temp5
+        set temp4 temp5
+        shiftr temp4 1
+        ifrnd 160
+            shiftr temp4 temp7
+        ifspawnedby P_PUCK_THROWN
+            shiftr temp4 1
+        add temp5 temp4
+        seta[temp].xvel temp5
+    }
+    add counter 1
+    and counter 15
+    set temp3 counter
+    shiftr temp3 2
+    switch temp3
+        case 1
+            spritepal 72
+            break
+        default
+            spritepal 65
+            break
+    endswitch
+    geta[].htmovflag temp3
+        ifl temp3 0 // 49152 is normal, but for this apparently sprites are negative? weird
+        {
+            add temp3 16384
+            ifg temp3 -1
+            ifg sprite[temp3].extra 0
+            ifn sprite[].owner temp3
+            {
+                ifand tiledata[sprite[temp3].picnum].gameflags 32
+                {
+                    seta[temp].xvel 0
+                    seta[temp].yvel 0
+                    geta[temp3].htextra temp2
+                    add temp2 sprite.extra
+                    add temp2 sprite.extra
+                    seta[temp3].htextra temp2
+                    seta[temp3].htowner sprite.htowner
+                    seta[temp3].htpicnum EXPLOSION
+                    set move_v sprite.extra
+                    ifg sprite[temp3].extra 0
+                        shiftl move_v 1
+                    cos move_xv sprite[temp3].htang
+                    sin move_yv sprite[temp3].htang
+                    mul move_xv move_v
+                    mul move_yv move_v
+
+                    shiftr move_xv 14
+                    shiftr move_yv 14
+                    getav[temp3].enemy_shotgun_xv temp4
+                    getav[temp3].enemy_shotgun_yv temp5
+                    add move_xv temp4
+                    add move_yv temp5
+                    clamp move_xv -256 256
+                    clamp move_yv -256 256
+                    setav[temp3].enemy_shotgun_xv move_xv
+                    setav[temp3].enemy_shotgun_yv move_yv
+                }
+                else ife temp3 player[myconnectindex].i
+                {
+                    seta[temp].xvel 0
+                    seta[temp].yvel 0
+                }
+                else ife actorvar[temp3].actor_crack 1
+                {
+                    seta[temp].xvel 0
+                    seta[temp].yvel 0
+                }
+                else ifg sprite.xvel 25
+                {
+                    switch sprite[temp3].picnum
+                        case A_GLASS_PANEL
+                            seta[temp3].htextra 1
+                            rand temp3 2
+                            add temp3 S_BULLET_GLASS1
+                            soundvar temp3
+                            break
+                    endswitch
+                }
+            }
+        }
+ends
+
+
+defstate fury_proj_grenade
+    setu[].vm_sprite temp
+    setarray nades[temp] 1
+    setarray nades2[num_nades] temp
+    add num_nades 1
+    set temp3 gtfo[sprite.sectnum]
+    ifand temp3 2
+    {
+        setsprite THISACTOR bbomb_lastx bbomb_lasty bbomb_lastz
+        seta[].sectnum bbomb_lastsect // previously saved sector
+        geta .ang temp3
+        add temp3 1024
+        and temp3 2047
+        seta .ang temp3
+    }
+    else
+    {
+        geta[].x bbomb_lastx
+        geta[].y bbomb_lasty
+        geta[].z bbomb_lastz
+        geta[].sectnum bbomb_lastsect
+    }
+    ifn sprite[].htmovflag 0
+    {
+
+        geta[].htmovflag temp3
+        ifl temp3 0 // 49152 is normal, but for this apparently sprites are negative? weird
+        {
+            add temp3 16384
+            ifg temp3 -1
+            ifg sprite[temp3].extra 0
+            ifn sprite[].owner temp3
+            {
+                ifand tiledata[sprite[temp3].picnum].gameflags 32
+                {
+                    seta[temp].xvel 0
+                    seta[temp].yvel 0
+                    geta[temp3].htextra temp2
+                    add temp2 sprite.extra
+                    seta[temp3].htextra temp2
+                    seta[temp3].htpicnum EXPLOSION
+                    seta[temp3].htowner sprite[temp].htowner
+                    set move_v sprite.extra
+                    ifg sprite[temp3].extra 0
+                        shiftl move_v 1
+                    cos move_xv sprite[temp3].htang
+                    sin move_yv sprite[temp3].htang
+                    mul move_xv move_v
+                    mul move_yv move_v
+
+                    shiftr move_xv 14
+                    shiftr move_yv 14
+                    getav[temp3].enemy_shotgun_xv temp4
+                    getav[temp3].enemy_shotgun_yv temp5
+                    add move_xv temp4
+                    add move_yv temp5
+                    clamp move_xv -256 256
+                    clamp move_yv -256 256
+                    setav[temp3].enemy_shotgun_xv move_xv
+                    setav[temp3].enemy_shotgun_yv move_yv
+                }
+                else ife temp3 player[myconnectindex].i
+                {
+                    seta[temp].xvel 0
+                    seta[temp].yvel 0
+                }
+                else ife actorvar[temp3].actor_crack 1
+                {
+                    seta[temp].xvel 0
+                    seta[temp].yvel 0
+                }
+                else
+                {
+                    switch sprite[temp3].picnum
+                        case A_GLASS_PANEL
+                            seta[temp3].htextra 1
+                            rand temp3 2
+                            add temp3 S_BULLET_GLASS1
+                            soundvar temp3
+                            break
+                        case P_PUCK_PLACED
+                            seta[temp].xvel 0
+                            seta[temp].yvel 0
+                            break
+                    endswitch
+                }
+            }
+        }
+
+        espawn A_SOUND_EMITTER
+        seta[RETURN].extra SE_DIST_GRENADE_BOUNCE // read distance
+        seta[RETURN].xrepeat 64
+        seta[RETURN].yrepeat 64
+        seta[RETURN].cstat 32768
+        action AC_GRENADE_TUMBLE
+    }
+    getflorzofslope sprite[temp].sectnum sprite[temp].x sprite[temp].y temp5
+    geta[temp].zvel temp4
+    shiftr temp4 1
+    sub temp5 temp4
+    ifonwater ifl temp5 sprite[temp].z
+    {
+        seta[temp].xvel 0
+        seta[temp].yvel 0
+    }
+    ifspawnedby APLAYER
+        setthisprojectile[temp].range 1536
+    ldist temp2 temp player[myconnectindex].i
+
+    ifg temp2 768 // we don't want the projectile to spawn in the player's face
+    {
+        setthisprojectile[temp].trail A_SMOKE2
+        seta[temp].cstat 257
+    }
+    else ife counter 2
+        seta[temp].cstat 0
+    ife counter 0
+    {
+        geta[].z temp3
+        sub temp3 1024
+        seta[].z temp3
+        ifspawnedby APLAYER
+        {
+            geta[].zvel temp3
+            sub temp3 1024
+            seta[].zvel temp3
+            geta[].z temp3
+            add temp3 512
+            seta[].z temp3
+            seta[].xvel 640
+        }
+        set counter 1
+    }
+    else ifspawnedby APLAYER ifl counter 5
+    {
+        geta[].zvel temp3
+        sub temp3 256
+        seta[].zvel temp3
+        add counter 1
+    }
+ends
+
+defstate fury_goldbbomb_check
+    sizeat 11 10
+ends
+
+defstate fury_noweapon
+    ife player[].ammo_amount temp 0
+    {
+        set RETURN -1
+        ife temp WEAPON_SHOTGUN
+        {
+            ife player[].gotweapon WEAPON_GRENADE 1
+                ifg player[].ammo_amount WEAPON_GRENADE 0
+                {
+                    set RETURN WEAPON_GRENADE
+                    quote 196
+                }
+        }
+        else ife temp WEAPON_GRENADE
+        {
+            ife player[].gotweapon WEAPON_SHOTGUN 1
+                ifg player[].ammo_amount WEAPON_SHOTGUN 0
+                {
+                    set RETURN WEAPON_SHOTGUN
+                    quote 197
+                }
+        }
+        sound S_SWITCH_CARDLOCKED
+    }
+    else ife player[].gotweapon temp 0
+    {
+        sound S_SWITCH_CARDLOCKED
+        set RETURN -1
+    }
+    else ife RETURN player.curr_weapon
+    {
+        ifn player[].reloading 0
+            set RETURN -1
+    }
+ends
+
+defstate fury_event_weapkey3
+	set temp WEAPON_SHOTGUN
+    ife show_debug_menu 0
+        set w2alt 0
+    state fury_noweapon
+
+    state clear_weapon_charges
+ends
+
+defstate fury_event_weapkey7
+    set temp WEAPON_GRENADE
+    ife player[].curr_weapon WEAPON_SHOTGUN ife show_debug_menu 0
+    {
+        ifg player.ammo_amount WEAPON_GRENADE 0
+        {
+            ife p_have_dart 0
+                set press_alt 20
+            set RETURN -1
+        }
+    }
+    else ife show_debug_menu 0
+        set w2alt 30
+    state fury_noweapon
+    state clear_weapon_charges
+ends
+
+defstate fury_event_weapkey10
+    set RETURN -1
+    ife nodrawweapon 0
+        set nodrawweapon 1
+    else
+        set nodrawweapon 0
+ends
+
+defstate fury_swap_shot_gren
+   ife player.curr_weapon WEAPON_GRENADE
+    {
+        ife RETURN WEAPON_SHOTGUN
+        {
+            set press_alt 20
+            set temp -1
+        }
+    }
+    else ife player.curr_weapon WEAPON_SHOTGUN
+    {
+        ife RETURN WEAPON_GRENADE
+        {
+            set press_alt 20
+            set temp -1
+        }
+    }
+ends
+
+defstate fury_pistol_num_shells
+	ifn w2alt 0
+		ifn w2alt 30
+			set pistol_num_shells SHOTGUN_NUMSHELLS
+ends
+
+defstate fury_minigun_shoot
+    shoot P_MINIGUN
+ends
+
+defstate fury_minigun_shottype
+    set WEAPON3_SHOOTS P_MINIGUN
+ends
+
+defstate fury_smg_shoot
+    shoot P_SMG2
+ends
+
+defstate fury_drawshotgun_alts
+	set hudx_pal PAL_SHOTGUN
+	ifg player.kickback_pic 37 ifl player.kickback_pic 64 {
+		ife p_prevammotype AM_AMMOTYPE_EXPLOSIVESHELL 
+			set hudx_pal 14
+		else ife p_prevammotype AM_AMMOTYPE_GRENADE
+			set hudx_pal PAL_LAUNCHER
+	}
+    else {
+		ife w2alt 0
+			set temp 1
+		else ife w2alt 30
+			set temp 1
+		ife temp 1 {
+			ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL
+				set hudx_pal 14
+			else ife p_usedammotype AM_AMMOTYPE_GRENADE
+				set hudx_pal PAL_LAUNCHER
+		}
+	}
+ends
+
+defstate fury_drawgl_alts
+	ife hudx_pal PAL_LAUNCHER
+		add hudx_tilenum 10
+ends
+
+defstate fury_fire_weap9
+    ife player[].curr_weapon 9
+        set RETURN -1
+ends

@@ -1,0 +1,408 @@
+/*
+--------------------------------------------------------------------------------
+================================================================================
+                          +:
+WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
+WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
+WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
+WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
+WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#
+
+###############################################################################
+Ion Fury
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, Evan Ramos
+        and Dino Bollinger
+All code as written belongs to Voidpoint and the respective authors.
+(c) 2019-2021 Voidpoint, LLC
+--------------------------------------------------------------------------------
+While we encourage you to experiment, modifications are allowed WITHOUT any
+warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
+we encourage you to make backups.
+--------------------------------------------------------------------------------
+
+NOTES:
+This file pickup subroutines that may be overridden by expansion code.
+================================================================================
+--------------------------------------------------------------------------------
+*/
+
+// exists to resolve a circular dependency
+defstate fury_item_initflags
+    ife pickups_initflags_once 0
+    {
+        geta[].htflags temp
+        or temp 4
+        ifand tiledata[sprite[].picnum].gameflags 4
+            xor temp 4
+        spriteflags temp
+        set pickups_initflags_once 1
+    }
+    ifoutside
+        gets[].ceilingshade temp
+    else
+        gets[].floorshade temp
+    seta[].shade temp
+
+
+    geta[].shade temp
+    sub temp 3
+    ifactor I_CLUSTERPUCK
+        sub temp 3
+    clamp temp -127 127
+    seta[].shade temp
+
+    switch sprite[].picnum
+        case I_LOVERBOY
+        case I_LOVERBOY_AMMO
+        case I_LOVERBOY_AMMO2
+        case I_MEDPACK
+        case I_MEDICOMP
+        case I_MEDKIT
+        case I_BULLETVEST
+        case I_ARMORVEST
+        case I_TECHVEST
+        case I_MINIGUN_AMMO
+        case I_PLASMACROSSBOW_AMMO
+        case I_PLASMACROSSBOW
+        case I_MINIGUN
+        case I_BOWLINGBOMB
+        case I_ACCESSCARD
+        case I_SHOTGUN
+        case I_SHOTGUN_AMMO
+        case I_GRENADELAUNCHER
+        case I_GRENADELAUNCHER_AMMO
+        case I_ARMOR_SHARD
+        case I_SMG
+        case I_SMG_AMMO
+        case I_BATON
+            state item_killconditions
+            break
+    endswitch
+ends
+
+defstate fury_i_shotgun
+    state fury_item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 16 14
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+		getp[].max_ammo_amount WEAPON_SHOTGUN am_maxammo_tmp
+        set temp7 WEAPON2_AMMOAMOUNT
+        state item_secret
+        ife player[].gotweapon WEAPON_SHOTGUN 0
+        {
+            set p_face_grin 45
+            set myfavoriteguns 1
+        }
+        ifn player.ammo_amount WEAPON_SHOTGUN am_maxammo_tmp
+        {
+            ife player.curr_weapon WEAPON_SHOTGUN
+                set flash_wasweaponammo 2
+            else
+                set flash_wasweaponammo 6
+
+            ifspawnedby A_SHOTGUNNER
+            {
+                state shotgun_ammorand
+                set temp7 0
+            }
+        }
+
+        ife player[].curr_weapon 0
+        {
+            getp[].weaponswitch temp6
+            ife player[].gotweapon WEAPON_SHOTGUN 1
+            {
+                setp[].weaponswitch 0
+                ife player[].ammo_amount WEAPON_SHOTGUN am_maxammo_tmp // missing check for w2alt?
+                ife temp7 WEAPON2_AMMOAMOUNT
+                {
+                    setp[].weaponswitch temp6
+                    break
+                }
+            }
+            addweapon WEAPON_SHOTGUN temp7
+            setp[].weaponswitch temp6
+        }
+        else
+            addweapon WEAPON_SHOTGUN temp7
+		state correct_shotgun_ammohack
+
+        getp[].sound_pitch temp
+        setp[].sound_pitch 256
+        globalsound S_SHOTGUN_RELOAD1
+        setp[].sound_pitch temp
+        quote 134
+        palfrom 15 5 32 5
+        ifn myfavoriteguns 1
+        {
+            ifrnd 64
+                or p_wantline TALK_SHOTGUN
+            else
+                or p_wantline TALK_PICKUP
+        }
+        else
+            or p_wantline TALK_SHOTGUN
+        or c_256 16
+        killit
+    }
+ends
+
+defstate shotgun_ammo_picked
+	ife sprite.pal AM_PAL_EXPLOSIVESHELL {
+		add p_explosiveshells AM_EXPLOSIVESHELL_AMMOCOUNT
+		clamp p_explosiveshells 0 p_max_explosiveshells
+	}
+	else
+		addammo WEAPON_SHOTGUN WEAPON2_AMMOAMOUNT
+ends
+
+defstate fury_i_shotgunammo
+    state fury_item_initflags
+    state item_stupidwater_fall
+    sizeat 16 14
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+		set am_ammotmp 0
+		ife sprite.pal AM_PAL_EXPLOSIVESHELL {
+			ife p_explosiveshells p_max_explosiveshells
+				set am_ammotmp 1
+		}
+		else {
+			getp[].max_ammo_amount WEAPON_SHOTGUN am_maxammo_tmp
+			ife player[].ammo_amount WEAPON_SHOTGUN am_maxammo_tmp
+				set am_ammotmp 1
+		}
+		
+        ifspawnedby A_SHOTGUNNER
+        {
+			ife am_ammotmp 1
+				break
+            state shotgun_ammorand
+        }
+        else ife player[].curr_weapon 0
+        {
+            getp[].weaponswitch temp6
+            setp[].weaponswitch 0
+			
+			// simplified to include ex shell here
+			ife am_ammotmp 0 {
+                ife player.curr_weapon WEAPON_GRENADE
+                    set flash_wasweaponammo 6
+                else
+                    set flash_wasweaponammo 2
+				state shotgun_ammo_picked
+			}
+			else ife am_ammotmp 1 {
+				setp[].weaponswitch temp6
+				break
+			}
+
+            state shotgun_ammo_picked
+            setp[].weaponswitch temp6
+        }
+        else
+            state shotgun_ammo_picked
+		
+		state correct_shotgun_ammohack
+		
+        getp[].sound_pitch temp
+        setp[].sound_pitch 256
+        globalsound S_SHOTGUN_RELOAD1
+        setp[].sound_pitch temp
+        quote 135
+        palfrom 15 5 32 5
+        or p_wantline TALK_PICKUP
+        killit
+    }
+    ifspawnedby A_SHOTGUNNER
+    {
+        geta[].xvel temp
+        ifg temp 0
+        {
+            ssp THISACTOR CLIPMASK0
+            ifg temp 32
+                sub temp 4
+            else
+                sub temp 2
+            seta[].xvel temp
+        }
+    }
+ends
+
+defstate fury_i_grenadelauncher
+    state fury_item_initflags
+    state item_spin
+    state item_stupidwater_fall
+    sizeat 16 14
+    cstat 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife player[].gotweapon WEAPON_GRENADE 0
+        {
+            set p_face_grin 45
+            set myfavoriteguns 1
+        }
+        ifn player.ammo_amount WEAPON_GRENADE GRENADE_MAXAMMO
+        {
+            ife player.curr_weapon WEAPON_GRENADE
+                set flash_wasweaponammo 6
+            else
+                set flash_wasweaponammo 2
+        }
+        ife player[].curr_weapon 0
+        {
+            getp[].weaponswitch temp6
+            ife player[].gotweapon WEAPON_GRENADE 1
+            {
+                setp[].weaponswitch 0
+                ife player[].ammo_amount WEAPON_GRENADE GRENADE_MAXAMMO
+                {
+                    setp[].weaponswitch temp6
+                    break
+                }
+            }
+            addweapon WEAPON_GRENADE GRENADE_AMMOAMOUNT
+
+            setp[].weaponswitch temp6
+        }
+        else
+        {
+            ife p_firstgrenade 0
+            {
+                ife player.curr_weapon WEAPON_SHOTGUN
+                {
+                    set press_alt 20
+                    setp .gotweapon WEAPON_GRENADE 1
+                    addammo WEAPON_GRENADE GRENADE_AMMOAMOUNT
+                }
+                else
+                    addweapon WEAPON_GRENADE GRENADE_AMMOAMOUNT
+            }
+            else
+                addweapon WEAPON_GRENADE GRENADE_AMMOAMOUNT
+        }
+        set p_firstgrenade 1
+        getp[].sound_pitch temp
+        setp[].sound_pitch 256
+        globalsound S_SHOTGUN_RELOAD1
+        setp[].sound_pitch temp
+        quote 134
+        palfrom 15 5 32 5
+        ifn myfavoriteguns 1
+        {
+            ifrnd 64
+                or p_wantline TALK_SHOTGUN
+            else ifrnd 16
+                or p_wantline 128
+            else
+                or p_wantline TALK_PICKUP
+        }
+        else
+            or p_wantline 128
+        or c_256 32
+        killit
+    }
+ends
+
+defstate fury_i_grenadeammo
+    state fury_item_initflags
+    state item_stupidwater_fall
+    sizeat 16 14
+    cstat 0
+    set temp8 0
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
+    {
+        state item_secret
+        ife player[].gotweapon WEAPON_SHOTGUN 1
+        {
+            ife p_firstgrenade 0
+            {
+                ifn player[].curr_weapon WEAPON_SHOTGUN ifn player[].curr_weapon WEAPON_GRENADE
+                {
+                    setp[].gotweapon WEAPON_GRENADE 0
+                    addweapon WEAPON_GRENADE 0
+                    or c_256 32
+                    set w2alt 30
+                }
+                ifl p_grenades p_max_grenades
+                {
+                    ifge w2alt 0 ifn w2alt 30
+                    {
+                        ife player[].curr_weapon WEAPON_SHOTGUN
+                            set press_alt 20
+                    }
+                }
+                set p_firstgrenade 1
+                set myfavoriteguns 1
+                set temp8 1
+            }
+        }
+        ifspawnedby A_SHOTGUNNER
+        {
+            ife p_grenades p_max_grenades
+                break
+            state grenade_ammorand
+        }
+        else ife player[].curr_weapon 0
+        {
+            getp[].weaponswitch temp6
+            setp[].weaponswitch 0
+            ifn p_grenades p_max_grenades
+            {
+                ife player.curr_weapon WEAPON_GRENADE
+                    set flash_wasweaponammo 6
+                else
+                    set flash_wasweaponammo 2
+            }
+            ifl p_grenades p_max_grenades {
+				add p_grenades GRENADE_AMMOAMOUNT
+				clamp p_grenades 0 p_max_grenades
+			}
+            else
+            {
+                setp[].weaponswitch temp6
+                break
+            }
+
+			add p_grenades GRENADE_AMMOAMOUNT
+			clamp p_grenades 0 p_max_grenades
+            setp[].weaponswitch temp6
+        }
+        else {
+			add p_grenades GRENADE_AMMOAMOUNT
+			clamp p_grenades 0 p_max_grenades
+		}
+        getp[].sound_pitch temp
+        setp[].sound_pitch 256
+        globalsound S_SHOTGUN_RELOAD1
+        setp[].sound_pitch temp
+        quote 136
+        palfrom 15 5 32 5
+        ife temp8 1
+            or p_wantline 128
+        else
+            or p_wantline TALK_PICKUP
+        killit
+    }
+    ifspawnedby A_SHOTGUNNER
+    {
+        geta[].xvel temp
+        ifg temp 0
+        {
+            ssp THISACTOR CLIPMASK0
+            ifg temp 32
+                sub temp 4
+            else
+                sub temp 2
+            seta[].xvel temp
+        }
+    }
+ends

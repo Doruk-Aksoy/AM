@@ -1762,7 +1762,7 @@ useractor enemy AM_EXODUDE AM_EXODUDE_HEALTH AC_EXODUDE_IDLE
             sub temp3 temp2
             seta .extra temp3
         }
-		else {
+		/*else {
 			set temp3 temp4
 			shiftl temp3 1
 			set move_v temp3
@@ -1774,7 +1774,7 @@ useractor enemy AM_EXODUDE AM_EXODUDE_HEALTH AC_EXODUDE_IDLE
 			add enemy_yv move_yv
 			state enemy_do_move
 			seta .ang temp3
-		}
+		}*/
 		
         ifdead {
 			seta .shade enemy_smg_flame

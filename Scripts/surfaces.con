@@ -1,20 +1,21 @@
 /*
 --------------------------------------------------------------------------------
 ================================================================================
-                          +:                                                   
+                          +:
 WWW@*WWWWWWW+  *WWWWWWW*  :=@       @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
 WWW@*WWWWWWWWW**WWWWWWWWW=   =*     @WWWWWWWWW*WWW*  =WWW*WWWWWWWWWW@*WWW+  @WW
 WWW@*WWW+  WWWW*WWW*  @WWW :WWWWWW+ @WWW*    *+WWW*  =WWW*WWW#=#WWWW#*WWWWW@@WW
 WWW@*WWW+  @WWW*WWW*  #WWW @WWWWWWW @WWW#WWWW@+WWW*  =WWW*WWW#WWWWW* *WWWWW@@WW
 WWW@*WWW@  @WWW*WWW*  #WWW += =# += @WWW      +WWWW: =WWW*WWW=  @WWW@      *WWW
 WWW@ *WWWWWWWWW*WWW*  #WWW   =WW@   @WWW       :WWWWWWWWW*WWW=   WWW@:WWWWWWWW@
-@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#  
+@@@@   +@@@@@@@+@@@+  #WWW          @WWW         :WWWWWWW+W@@=   @@@@:@@@@@@#
 
 ###############################################################################
 Ion Fury
-Code by Jonathan Strander, Fox Martins, Richard Gobeille, and Evan Ramos
+Code by Jonathan Strander, Fox Martins, Richard Gobeille, Evan Ramos
+        and Dino Bollinger
 All code as written belongs to Voidpoint and the respective authors.
-(c) 2019 Voidpoint, LLC
+(c) 2019-2021 Voidpoint, LLC
 --------------------------------------------------------------------------------
 While we encourage you to experiment, modifications are allowed WITHOUT any
 warranty or guarantee of support. Editing these files is AT YOUR OWN RISK, and
@@ -48,17 +49,10 @@ define SURFACE_CARPET 15
 define SURFACE_FLESH 16
 define SURFACE_BULLETHOLE 17
 
-// Kill HITSCAN on certain sprites
 var bbomb_reflect 0 2
-defstate remove_hitscan
-    ife sprite[].statnum STAT_FALLER
-        break
-    geta[].cstat temp
-    ifand temp 256
-        xor temp 256
-    seta[].cstat temp
-    changespritestat THISACTOR 0
-ends
+
+include scripts/base/subroutines_surfaces.con
+include scripts/exp/surfaces.con
 
 appendevent EVENT_SPAWN
     switch sprite[].picnum
@@ -153,6 +147,10 @@ appendevent EVENT_SPAWN
             state remove_hitscan
             set bbomb_reflect 1
             break
+	default
+	    ifn exp_aftershock 0
+                state ashock_surfaces_spawn_extensions
+	    break
     endswitch
     
     switch sprite.picnum
@@ -2056,6 +2054,25 @@ defstate propogate_surfaces
         case 14143
         case 14147
         case 14148
+		case 15150 //added by Gambini, check its done properly
+		case 15153 //added by Gambini, check its done properly
+		case 15156 //added by Gambini, check its done properly
+		case 15157 //added by Gambini, check its done properly
+		case 15158 //added by Gambini, check its done properly
+		case 15159 //added by Gambini, check its done properly
+		case 15160 //added by Gambini, check its done properly
+		case 15161 //added by Gambini, check its done properly
+		case 15166 //added by Gambini, check its done properly
+		case 15167 //added by Gambini, check its done properly
+		case 15168 //added by Gambini, check its done properly
+		case 15169 //added by Gambini, check its done properly
+		case 15170 //added by Gambini, check its done properly
+		case 15171 //added by Gambini, check its done properly
+		case 15173 //added by Gambini, check its done properly
+		case 15174 //added by Gambini, check its done properly
+		case 15176 //added by Gambini, check its done properly
+		case 15177 //added by Gambini, check its done properly
+		case 15178 //added by Gambini, check its done properly
 
         // enemies
         case A_TURRET_BOTTOM
@@ -2131,6 +2148,13 @@ defstate propogate_surfaces
         case A_GLASS_WINDOW_1 // 6223
         case A_GLASS_WINDOW_2 // 6224
         case A_CUBEGLASS_1 // 6395
+        case A_GLASS_WINBRK_1
+        case A_GLASS_WINBRK_2
+        case A_GLASS_WINBRK_3
+        case A_GLASS_WINBRK_4
+        case A_GLASS_WINBRK_5
+        case A_GLASS_WINBRK_6
+        case A_GLASS_WINBRK_7
         case 6439
         case 6451
         case 6452
@@ -3032,6 +3056,8 @@ defstate propogate_surfaces
         case 14080
             setarray pre_surface_type[temp] SURFACE_LIGHT
             break
+		case 15164 //added by Gambini, check its done properly
+		case 15165 //added by Gambini, check its done properly
         case 162
         case A_CAMERA // 621
         case A_CAMERA_2 // 629
@@ -3609,7 +3635,10 @@ defstate propogate_surfaces
             setarray pre_surface_type[temp] SURFACE_FLESH
             break
         default
-            setarray pre_surface_type[temp] 0
+            ifn exp_aftershock 0
+                state ashock_propogate_surfaces_default
+            else
+                state fury_propogate_surfaces_default
             break
     endswitch
 ends
@@ -4349,6 +4378,88 @@ appendevent EVENT_ENTERLEVEL
     }
 endevent
 
+var break_maskwall_id
+var break_maskwall_x
+var break_maskwall_y
+var break_maskwall_xdim
+var break_maskwall_ydim
+var break_maskwall_z
+var break_maskwall_z_up
+var break_maskwall_z_dn
+var break_maskwall_ang
+var break_maskwall_nextwall
+var break_maskwall_temp
+var break_maskwall_temp2
+
+
+defstate break_maskwall_glass
+    set break_maskwall_id RETURN
+    ifn wall[break_maskwall_id].nextsector -1 {
+        ifn wall[break_maskwall_id].nextwall -1 {
+            ifn wall[wall[break_maskwall_id].nextwall].nextsector -1 {
+                    set break_maskwall_xdim wall[wall[break_maskwall_id].point2].x
+                    set break_maskwall_ydim wall[wall[break_maskwall_id].point2].y
+                    sub break_maskwall_xdim wall[break_maskwall_id].x
+                    sub break_maskwall_ydim wall[break_maskwall_id].y
+                for itervar range 25 {
+                    rand break_maskwall_x break_maskwall_xdim
+                    rand break_maskwall_y break_maskwall_ydim
+                    add break_maskwall_x wall[break_maskwall_id].x
+                    add break_maskwall_y wall[break_maskwall_id].y
+
+                    getflorzofslope wall[wall[break_maskwall_id].nextwall].nextsector break_maskwall_x break_maskwall_y break_maskwall_z_dn
+                    getflorzofslope wall[break_maskwall_id].nextsector break_maskwall_x break_maskwall_y break_maskwall_temp
+                    ifl break_maskwall_temp break_maskwall_z_dn
+                        set break_maskwall_z_dn break_maskwall_temp
+
+                    getceilzofslope wall[wall[break_maskwall_id].nextwall].nextsector break_maskwall_x break_maskwall_y break_maskwall_z_up
+                    getceilzofslope wall[break_maskwall_id].nextsector break_maskwall_x break_maskwall_y break_maskwall_temp
+                    ifg break_maskwall_temp break_maskwall_z_up
+                        set break_maskwall_z_up break_maskwall_temp
+
+                    set break_maskwall_z break_maskwall_z_up
+                    sub break_maskwall_z break_maskwall_z_dn
+                    rand break_maskwall_z break_maskwall_z
+                    add break_maskwall_z break_maskwall_z_dn
+
+                    espawn A_GENERIC_DEBRIS
+                    setsprite RETURN break_maskwall_x break_maskwall_y break_maskwall_z
+                    setav[RETURN].debris_type DEBRIS_GLASS
+                    seta[RETURN].pal wall[temp].pal
+                    rand break_maskwall_ang 128
+                    sub break_maskwall_ang 64
+                    add break_maskwall_ang 1024
+                    and break_maskwall_ang 2047
+                    seta[RETURN].ang break_maskwall_ang
+
+                    espawn A_GENERIC_DEBRIS
+                    rand break_maskwall_temp 128
+                    sub break_maskwall_temp 64
+                    add break_maskwall_x break_maskwall_temp
+                    add break_maskwall_y break_maskwall_temp
+                    add break_maskwall_z break_maskwall_temp
+                    setsprite RETURN break_maskwall_x break_maskwall_y break_maskwall_z
+                    setav[RETURN].debris_type DEBRIS_GLASS
+                    seta[RETURN].pal wall[break_maskwall_id].pal
+                }
+            }
+        }
+    }
+    set break_maskwall_temp wall[break_maskwall_id].cstat
+    and break_maskwall_temp -74
+    setw[break_maskwall_id].cstat break_maskwall_temp
+    setw[break_maskwall_id].overpicnum 13
+    set break_maskwall_nextwall wall[break_maskwall_id].nextwall
+    ifn break_maskwall_nextwall -1
+    {
+        set break_maskwall_temp wall[break_maskwall_nextwall].cstat
+        and break_maskwall_temp -74
+        setw[break_maskwall_nextwall].cstat break_maskwall_temp
+        setw[break_maskwall_nextwall].overpicnum 13
+    }
+    set RETURN break_maskwall_id
+ends
+
 appendevent EVENT_DAMAGEWALL
     ifn wall[RETURN].picnum 9250 ifg wall[RETURN].picnum 0
     {
@@ -4371,6 +4482,20 @@ appendevent EVENT_DAMAGEWALL
                 break
         endswitch
     }
+	
+    // Breakable maskwalls
+    switch wall[RETURN].overpicnum
+        case A_GLASS_WINBRK_1
+        case A_GLASS_WINBRK_2
+        case A_GLASS_WINBRK_3
+        case A_GLASS_WINBRK_4
+        case A_GLASS_WINBRK_5
+        case A_GLASS_WINBRK_6
+        case A_GLASS_WINBRK_7
+        case A_GLASS_WINBRK_8
+                state break_maskwall_glass
+            break
+    endswitch
 endevent
 
 appendevent EVENT_DAMAGEFLOOR
@@ -4423,6 +4548,7 @@ endevent
 
 appendevent EVENT_DAMAGESPRITE
     switch sprite[RETURN].picnum
+		case APLAYER
         case A_SODA_DISPENSER
             break
         default
@@ -4487,6 +4613,19 @@ damageeventtile 5388
 damageeventtile 5389
 damageeventtile 5390
 damageeventtile 6478
+
+damageeventtile A_GLASS_WINDOW_2
+
+
+damageeventtile A_GLASS_WINBRK_1
+damageeventtile A_GLASS_WINBRK_2
+damageeventtile A_GLASS_WINBRK_3
+damageeventtile A_GLASS_WINBRK_4
+damageeventtile A_GLASS_WINBRK_5
+damageeventtile A_GLASS_WINBRK_6
+damageeventtile A_GLASS_WINBRK_7
+damageeventtile A_GLASS_WINBRK_8
+
 damageeventtile 6480
 damageeventtile 6482
 damageeventtile 6484

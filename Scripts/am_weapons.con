@@ -1,3 +1,141 @@
+spritenoshade AM_EXSHELL
+defineprojectile AM_EXSHELL PROJ_WORKSLIKE 32770
+defineprojectile AM_EXSHELL PROJ_SPAWNS A_SMOKE1
+defineprojectile AM_EXSHELL PROJ_SXREPEAT 24
+defineprojectile AM_EXSHELL PROJ_SYREPEAT 24
+defineprojectile AM_EXSHELL PROJ_XREPEAT 16
+defineprojectile AM_EXSHELL PROJ_YREPEAT 16
+defineprojectile AM_EXSHELL PROJ_ISOUND AM_S_EXSHOTGUNHIT
+defineprojectile AM_EXSHELL PROJ_EXTRA 16
+defineprojectile AM_EXSHELL PROJ_EXTRA_RAND 4
+defineprojectile AM_EXSHELL PROJ_HITRADIUS 0
+defineprojectile AM_EXSHELL PROJ_OFFSET 14354
+defineprojectile AM_EXSHELL PROJ_VEL 512
+defineprojectile AM_EXSHELL PROJ_VEL_MULT 4
+defineprojectile AM_EXSHELL PROJ_CLIPDIST 4
+defineprojectile AM_EXSHELL PROJ_DECAL A_BULLETHOLE
+
+defstate exshell_spawn_firespark
+	espawn 6705
+	seta[RETURN].xrepeat 32
+	seta[RETURN].yrepeat 32
+	seta[RETURN].cstat 130
+	seta[RETURN].blend 129
+	seta[RETURN].shade 30
+
+	rand temp 2047
+	seta[RETURN].ang temp
+	set move_override RETURN
+	rand move_v 512
+
+	geta[].xrepeat temp
+	shiftl temp 3
+	add move_v temp
+	state move_actor
+	add move_xv sprite[].x
+	add move_yv sprite[].y
+	seta[RETURN].x move_xv
+	seta[RETURN].y move_yv
+
+	rand temp2 2048
+	sub temp2 1024
+	geta[].z temp
+	add temp temp2
+	seta[RETURN].z temp
+
+
+	geta[RETURN].ang temp4
+	geta[].x face_x
+	sub face_x sprite[RETURN].x
+
+	geta[].y face_y
+	sub face_y sprite[RETURN].y
+
+	getangle face_return face_x face_y
+
+	sub face_return 128
+	and face_return 2047
+	seta[RETURN].ang face_return
+	rand temp 15
+	add temp 50
+	seta[RETURN].xvel temp
+	
+	ifrnd 64 {
+		rand temp 3
+		add temp 1
+		set temp3 2048
+		ifle temp 2
+			rand temp3 1023
+		else
+			div temp3 temp
+		
+		rand temp4 1576
+		sub temp4 512
+		set temp5 sprite.z
+		sub temp5 temp4
+		getceilzofslope sprite.sectnum sprite.x sprite.y temp2
+		ifl temp5 temp2
+			set temp5 temp2
+		for itervar range temp {
+			rand temp2 -8096
+			sub temp2 1024
+			ezshoot temp2 P_EXPLOSION_SPARK
+			set temp4 temp3
+			mul temp4 itervar
+			add temp4 sprite.ang
+			seta[RETURN].ang temp4
+			seta[RETURN].z temp5
+			seta[RETURN].pal sprite.pal
+		}
+	}
+ends
+
+action AM_EXSHELL_AC 0 12 1 1 3
+spritenoshade AM_EXSHELL_HIT
+actor AM_EXSHELL_HIT 0
+	ifaction 0 {
+		action AM_EXSHELL_AC
+		cstat 2
+		ifrnd 128
+			cstator 4
+		ifrnd 128
+			cstator 8
+	}
+	
+	ife sprite.htg_t 0 1
+		state exshell_spawn_firespark
+	
+	ife sprite.htg_t 0 ms_flashpal {
+		// idk how you get player id from a known actor id
+		getpv[myconnectindex].p_pup_damage_time temp
+		ifg temp 0
+			hitradius 1280 24 36 48 60
+		else
+			hitradius 1280 12 18 24 30
+	}
+	
+	ifactioncount 12
+		killit
+enda
+
+appendevent EVENT_EGS
+	ifactor AM_EXSHELL_HIT {
+		geta .owner temp
+		getav[temp].ms_flashpal temp2
+		setav .ms_flashpal temp2
+	}
+endevent
+
+appendevent EVENT_ANIMATESPRITES
+	switch sprite.picnum
+		case AM_EXSHELL
+		case AM_EXSHELL_HIT
+			settspr .tsprblend 255
+			settspr .tsprshade 4
+		break
+	endswitch
+endevent
+
 appendevent EVENT_ANIMATESPRITES
 	ifactor AM_FLAME {
 		settspr .tsprcstat 2

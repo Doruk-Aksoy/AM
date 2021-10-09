@@ -9,16 +9,15 @@ appendevent EVENT_PRELEVEL
 	for am_tmp range AM_CULTIST_TYPES {
 		switch am_tmp
 			case 0	
-				set am_weight AM_REGULARCULTIST_WEIGHT
+				add am_weight_comp AM_REGULARCULTIST_WEIGHT
 			break
 			case 1
-				set am_weight AM_FIRECULTIST_WEIGHT
+				add am_weight_comp AM_FIRECULTIST_WEIGHT
 			break
 			case 2
-				set am_weight AM_AUTOCULTIST_WEIGHT
+				add am_weight_comp AM_AUTOCULTIST_WEIGHT
 			break
 		endswitch
-		add am_weight_comp am_weight
 		setarray am_cultist_weights[am_tmp] am_weight_comp
 	}
 endevent
@@ -41,7 +40,7 @@ defstate roll_cultist_type
 	set am_tmp 0
 	set am_rolled 0
 	whilen am_tmp AM_CULTIST_TYPES {
-		ifle am_weight am_cultist_weights[am_tmp] ifn am_rolled 1 {
+		ifl am_weight am_cultist_weights[am_tmp] ifn am_rolled 1 {
 			set am_rolled 1
 			ife am_tmp 1
 				spritepal PAL_FIRECULTIST
@@ -57,22 +56,25 @@ appendevent EVENT_LOADACTOR
 	switch sprite[].picnum
 		case A_CULTIST
 		case A_CULTIST_STAYPUT
-			state roll_cultist_type
+			// from what I tested cultists have palette of 89 not PAL_CULTIST?
+			ifspritepal PAL_CULTIST
+				state roll_cultist_type
+			else ifspritepal 89
+				state roll_cultist_type
 		break
 	endswitch
 endevent
-		
+
 appendevent EVENT_SPAWN
 	ifspawnedby RESPAWN {
-		geta[sprite.owner].pal am_tmp
-		ife am_tmp 0 {
-			// do this mutation only if respawn doesn't have a palette given to it already
-			switch sprite[].picnum
-				case A_CULTIST
-				case A_CULTIST_STAYPUT
+		// do this mutation only if respawn doesn't have a palette given to it already
+		switch sprite[].picnum
+			case A_CULTIST
+			case A_CULTIST_STAYPUT
+				geta[sprite.owner].pal am_tmp
+				ife am_tmp 0
 					state roll_cultist_type
-				break
-			endswitch
-		}
+			break
+		endswitch
 	}
 endevent

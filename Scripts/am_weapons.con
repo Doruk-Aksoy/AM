@@ -149,7 +149,7 @@ spritenoshade AM_FLAME
 // requires its zvel to be set
 action AC_AMFLAME 0 15 1 1 4
 action AC_AMFLAME_FAST 0 15 1 1 2
-useractor notenemy AM_FLAME 0
+useractor notenemy AM_FLAME
 	cstat 130
     geta .htcgg temp
     add temp 1
@@ -160,7 +160,7 @@ useractor notenemy AM_FLAME 0
 		action AC_AMFLAME
 		set counter2 AM_FLAME_SPEED
 		set counter 0
-		
+
 		ifrnd 128
 			cstator 4
 		ifrnd 128

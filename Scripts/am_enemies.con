@@ -36,7 +36,7 @@ appendevent EVENT_SPAWN
 	}
 	switch sprite.picnum
 		case AM_SEEKERDRONE
-            sizeat 40 40
+            sizeat 48 48
             cstat 257
             state clear_enemy_vels
             state enemy_spawn_checkhitag
@@ -301,7 +301,7 @@ useractor enemy AM_SEEKERDRONE AM_SEEKERDRONE_HEALTH AC_SEEKERDRONE_IDLE
     add temp 1
     mod temp 3
     seta .htcgg temp
-    clipdist 48
+    clipdist 64
 	
 	state fixshade
 		
@@ -1132,7 +1132,7 @@ defstate exo_decide_attack
 	sleeptime 300
 	set enemy_shoot 1
 	set enemy_smg_flame sprite.shade
-	ifspritepal 128 {
+	ifspritepal AM_EXODUDE_FLAMEPAL {
 		ifpdistl AM_EXODUDE_FLAMEDIST
 			set temp 1
 	}
@@ -1141,14 +1141,14 @@ defstate exo_decide_attack
 		
 	ife temp 1 {
 		// auto sg
-		ifspritepal 128
+		ifspritepal AM_EXODUDE_FLAMEPAL
 			set shot_delay 82
 		else
 			set shot_delay 42
 		set am_estate 1
 		// sound
         ifpdistl ENEMY_SOUND_DIST {
-			ifspritepal 128
+			ifspritepal AM_EXODUDE_FLAMEPAL
 				nullop
 			else {
 				rand temp 1
@@ -1158,13 +1158,13 @@ defstate exo_decide_attack
 				setp .sound_pitch 0
 			}
 		}
-		ifspritepal 128
+		ifspritepal AM_EXODUDE_FLAMEPAL
 			sound AM_S_FLAME
 	}
 	else { // alternative attack if conditions didn't apply
 		set shot_delay 55
 		set am_estate 2
-        ifspritepal 128
+        ifspritepal AM_EXODUDE_FLAMEPAL
 			nullop
 		else ifpdistl ENEMY_SOUND_DIST
 			sound AM_S_EXODUDE_RAILCHRG
@@ -2036,13 +2036,15 @@ useractor enemy AM_EXODUDE AM_EXODUDE_HEALTH AC_EXODUDE_IDLE
 			}
 			
 			ife am_estate 2 { // attack #2 state
-				ifspritepal 128 {
+				ifspritepal AM_EXODUDE_FLAMEPAL {
 					// launch grenade
 					ife shot_delay 45 {
 						rand temp 1
 						add temp S_SHOTGUN_RELOAD1
+						setp .sound_pitch -128
 						ifpdistl ENEMY_SOUND_DIST
 							sound temp
+						setp .sound_pitch 0
 					}
 					else ife shot_delay 12 {
 						ldist temp THISACTOR player.i
@@ -2054,9 +2056,7 @@ useractor enemy AM_EXODUDE AM_EXODUDE_HEALTH AC_EXODUDE_IDLE
 							state grenade_drop_aim
 							set enemy_shoot 1
 						}
-                        setp .sound_pitch -128
-                        sound S_SHOTGUN_CLIPOUT
-						setp .sound_pitch 0
+                        sound S_GRENADE_LAUNCH
 						
 						// fire
 						geta .x am_x
@@ -2263,7 +2263,7 @@ useractor enemy AM_EXODUDE AM_EXODUDE_HEALTH AC_EXODUDE_IDLE
 			}
 			else ife am_estate 1 { // autofire state
 				set temp3 shot_delay
-				ifspritepal 128
+				ifspritepal AM_EXODUDE_FLAMEPAL
 					mod temp3 2
 				else
 					mod temp3 9
@@ -2276,7 +2276,7 @@ useractor enemy AM_EXODUDE AM_EXODUDE_HEALTH AC_EXODUDE_IDLE
 					geta .z am_z
 					set am_z2 am_z
 					
-					ifspritepal 128 {
+					ifspritepal AM_EXODUDE_FLAMEPAL {
 						espawn AM_FLAME
 						geta .ang am_ang
 						add am_ang 512
@@ -2432,7 +2432,7 @@ useractor enemy AM_EXODUDE AM_EXODUDE_HEALTH AC_EXODUDE_IDLE
 			sub shot_delay 1
 			ife shot_delay 0 {
 				ifand am_estate 1 {
-					ifspritepal 128 {
+					ifspritepal AM_EXODUDE_FLAMEPAL {
 						stopsound AM_S_FLAME
 						sound AM_S_FLAMEEND
 					}

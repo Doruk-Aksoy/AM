@@ -12392,6 +12392,8 @@ useractor enemy A_DIOPEDE_HEAD DIOPEDE_HEALTH AC_DIOPEDE_IDLE
 	// don't accidently update for wrong pals
 	ifspritepal 0
 		nullop
+	else ifspritepal PAL_DIOPEDE
+		nullop
 	else ifspritepal 69
 		nullop
 	else ifspritepal 72

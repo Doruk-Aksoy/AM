@@ -50,21 +50,21 @@ tilefromtexture 672 { file /sprites/am/weapons/exshell/DKSXL0.png xoff -4 yoff -
 tilefromtexture 673 { file /sprites/am/dummy64x64.png }
 
 // flames
-tilefromtexture 674 { file /sprites/am/weapons/flames/FLAMA0.png }
-tilefromtexture 675 { file /sprites/am/weapons/flames/FLAMB0.png }
-tilefromtexture 676 { file /sprites/am/weapons/flames/FLAMC0.png yoff -12 }
-tilefromtexture 677 { file /sprites/am/weapons/flames/FLAMD0.png yoff -16 }
-tilefromtexture 678 { file /sprites/am/weapons/flames/FLAME0.png yoff -32 }
-tilefromtexture 679 { file /sprites/am/weapons/flames/FLAMF0.png yoff -40 }
-tilefromtexture 680 { file /sprites/am/weapons/flames/FLAMG0.png yoff -48 }
-tilefromtexture 681 { file /sprites/am/weapons/flames/FLAMH0.png yoff -56 }
-tilefromtexture 682 { file /sprites/am/weapons/flames/FLAMI0.png xoff 8 yoff -64 }
-tilefromtexture 683 { file /sprites/am/weapons/flames/FLAMJ0.png xoff 8 yoff -64 }
-tilefromtexture 684 { file /sprites/am/weapons/flames/FLAMK0.png xoff 12 yoff -72 }
-tilefromtexture 685 { file /sprites/am/weapons/flames/FLAML0.png xoff 12 yoff -72 }
-tilefromtexture 686 { file /sprites/am/weapons/flames/FLAMM0.png xoff 12 yoff -72 }
-tilefromtexture 687 { file /sprites/am/weapons/flames/FLAMN0.png xoff 8 yoff -68 }
-tilefromtexture 688 { file /sprites/am/weapons/flames/FLAMO0.png xoff 1 yoff -58 }
+tilefromtexture 734 { file /sprites/am/weapons/flames/FLAMA0.png }
+tilefromtexture 735 { file /sprites/am/weapons/flames/FLAMB0.png }
+tilefromtexture 736 { file /sprites/am/weapons/flames/FLAMC0.png yoff -12 }
+tilefromtexture 737 { file /sprites/am/weapons/flames/FLAMD0.png yoff -16 }
+tilefromtexture 738 { file /sprites/am/weapons/flames/FLAME0.png yoff -32 }
+tilefromtexture 739 { file /sprites/am/weapons/flames/FLAMF0.png yoff -40 }
+tilefromtexture 740 { file /sprites/am/weapons/flames/FLAMG0.png yoff -48 }
+tilefromtexture 741 { file /sprites/am/weapons/flames/FLAMH0.png yoff -56 }
+tilefromtexture 742 { file /sprites/am/weapons/flames/FLAMI0.png xoff 8 yoff -64 }
+tilefromtexture 743 { file /sprites/am/weapons/flames/FLAMJ0.png xoff 8 yoff -64 }
+tilefromtexture 744 { file /sprites/am/weapons/flames/FLAMK0.png xoff 12 yoff -72 }
+tilefromtexture 745 { file /sprites/am/weapons/flames/FLAML0.png xoff 12 yoff -72 }
+tilefromtexture 746 { file /sprites/am/weapons/flames/FLAMM0.png xoff 12 yoff -72 }
+tilefromtexture 747 { file /sprites/am/weapons/flames/FLAMN0.png xoff 8 yoff -68 }
+tilefromtexture 748 { file /sprites/am/weapons/flames/FLAMO0.png xoff 1 yoff -58 }
 
 // enemies
 // seeker drone -- SPRITES BY SHADESMASTER

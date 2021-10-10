@@ -52,6 +52,11 @@ defstate roll_cultist_type
 	// won't do anything otherwise
 ends
 
+defstate roll_diopede_type
+	ifrnd 64
+		spritepal PAL_DIOPEDE_YELLOW
+ends
+
 appendevent EVENT_LOADACTOR
 	switch sprite[].picnum
 		case A_CULTIST
@@ -61,6 +66,23 @@ appendevent EVENT_LOADACTOR
 				state roll_cultist_type
 			else ifspritepal 89
 				state roll_cultist_type
+		break
+		case A_DIOPEDE_HEAD
+			ifspritepal 0
+				state roll_diopede_type
+			else ifspritepal PAL_DIOPEDE
+				state roll_diopede_type
+			else ifspritepal 89
+				state roll_diopede_type
+		break
+		case A_DRONE
+			ifrnd 64
+				cactor AM_SEEKERDRONE
+		break
+		case A_ARCHANGEL
+			ifspritepal 0
+				ifrnd 32
+					cactor AM_EXODUDE
 		break
 	endswitch
 endevent
@@ -74,6 +96,20 @@ appendevent EVENT_SPAWN
 				geta[sprite.owner].pal am_tmp
 				ife am_tmp 0
 					state roll_cultist_type
+			break
+			case A_DIOPEDE_HEAD
+				geta[sprite.owner].pal am_tmp
+				ife am_tmp 0
+					state roll_diopede_type
+			break
+			case A_DRONE
+				ifrnd 64
+					cactor AM_SEEKERDRONE
+			break
+			case A_ARCHANGEL
+				ifspritepal 0
+					ifrnd 32
+						cactor AM_EXODUDE
 			break
 		endswitch
 	}

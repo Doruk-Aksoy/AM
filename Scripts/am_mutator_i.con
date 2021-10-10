@@ -28,7 +28,7 @@ appendevent EVENT_LOADACTOR
 			}
 		break
 		case I_SHOTGUN_AMMO
-			ifrnd AM_EXPLOSIVESHELL_SPAWNCHANCE
+			ifspritepal 0 ifrnd AM_EXPLOSIVESHELL_SPAWNCHANCE
 				spritepal AM_PAL_EXPLOSIVESHELL
 		break
 	endswitch

@@ -95,8 +95,8 @@ defstate spawnpickup_standard
     {
         ifspritepal 9
             set pickups_nospin 1
-
-        spritepal 0
+		
+		state do_itempal_exceptions
     }
 ends
 

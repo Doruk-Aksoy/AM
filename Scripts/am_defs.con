@@ -19,7 +19,7 @@ define AM_EXSHELL_HIT			661
 
 define DAMAGETESTER				673
 
-define AM_FLAME					674
+define AM_FLAME					734
 
 define AM_FRAMEEFFECT			1246
 
@@ -39,12 +39,13 @@ define AM_EXODUDE_STAYPUT			12844
 define AM_EXODUDE_DEAD				12889
 define AM_EXODUDE_SHIELD			12890
 define AM_EXODUDE_FLAMEDIST			7200
-define AM_FLAME_SPEED				416
+define AM_FLAME_SPEED				480
 define AM_P_EXORAILTRAIL			5950
 define AM_P_EXORAIL					5951
 define AM_P_EXORAILHIT				5952
 define AM_P_EXORAILTRAIL_FAKE		5953
 define AM_EXODUDE_HEALTH			250
+define AM_EXODUDE_FLAMEPAL			128
 
 // QUOTE DEFS
 definequote 1000      ^15AMMO BOOSTER! ^92Ammo capacities increased by 10%.

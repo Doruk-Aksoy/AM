@@ -2623,8 +2623,14 @@ appendevent EVENT_DISPLAYCROSSHAIR
                     scalevar temp4 weapon1_realclip 100 PISTOL_CLIP
                 break
             case WEAPON_SHOTGUN
+				// custom ammo checks
+				ife p_usedammotype AM_AMMOTYPE_NORMALSHELL
                     scalevar temp4 weapon2_realclip 100 SHOTGUN_CLIP
-                break
+				else ife p_usedammotype AM_AMMOTYPE_GRENADE
+					scalevar temp4 p_grenade_clip 100 SHOTGUN_CLIP
+				else ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL
+					scalevar temp4 p_explosiveshell_clip 100 SHOTGUN_CLIP
+			break
             case WEAPON_GRENADE
                     scalevar temp4 weapon6_realclip 100 SHOTGUN_CLIP
                 break

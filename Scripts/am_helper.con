@@ -21,6 +21,21 @@ defstate update_p_maxhp
 	}
 ends
 
+defstate do_itempal_exceptions
+    set am_tmp sprite.picnum
+    switch am_tmp
+		case I_SHOTGUN_AMMO
+			ifspritepal AM_PAL_EXPLOSIVESHELL
+				nullop
+			else
+				spritepal 0
+		break
+		default
+			spritepal 0
+		break
+	endswitch
+ends
+
 /*
 INPUT:  cansee_target
 		cansee_height

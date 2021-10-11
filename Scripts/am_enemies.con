@@ -1487,12 +1487,12 @@ useractor enemy AM_EXODUDE AM_EXODUDE_HEALTH AC_EXODUDE_IDLE
 	else ife actorvar.ms_flashpal 0
 		setav .ms_flashpal sprite.pal
 	seta .pal ms_flashpal
-	clipdist 80
+	clipdist 64
 	
     state fixshade
 		
 	set cansee_target player.i
-    set cansee_height 10240
+    set cansee_height 8192
     getceilzofslope sprite.sectnum sprite.x sprite.y temp
     geta .z temp2
     sub temp2 cansee_height
@@ -1558,13 +1558,46 @@ useractor enemy AM_EXODUDE AM_EXODUDE_HEALTH AC_EXODUDE_IDLE
 				action AC_EXODUDE_WALK
 		}
     }
-	else ifand am_estate 2 {
-		action AC_EXODUDE_WALK
-		set am_estate 0
-	}
-	else ifaction AC_EXODUDE_IDLE ifn am_estate 0 {
-		ifge userdef.player_skill 3 {
-			ifactioncount 6 {
+	else {
+        sleeptime 300
+        ifl enemy_cantsee 5
+        {
+            add enemy_cantsee 1
+            set enemy_target player.i
+            set enemy_idle_count enemy_cantsee
+            set way_current -1
+        }
+        else
+        {
+            state e_fp
+            ifn way_current -1
+                ife sprite[way_current].extra -1
+                    ife sprite[way_current].statnum STAT_WAYPOINT
+                        set way_current -1
+            ifn way_current -1
+                set enemy_target way_current
+            else
+                set enemy_target player.i
+            ifl enemy_cantsee 30
+                add enemy_cantsee 1
+        }
+	
+		ifand am_estate 2 {
+			action AC_EXODUDE_WALK
+			set am_estate 0
+		}
+		else ifaction AC_EXODUDE_IDLE ifn am_estate 0 {
+			ifge userdef.player_skill 3 {
+				ifactioncount 6 {
+					ifand am_estate 1 {
+						stopactorsound THISACTOR S_SHOTGUN_RELOAD1
+						stopactorsound THISACTOR S_SHOTGUN_RELOAD2
+					}
+					action AC_EXODUDE_WALK
+					set am_estate 0
+				}
+			}
+			else ifactioncount 12 { // little bit pause if easy difficulties are used
 				ifand am_estate 1 {
 					stopactorsound THISACTOR S_SHOTGUN_RELOAD1
 					stopactorsound THISACTOR S_SHOTGUN_RELOAD2
@@ -1572,14 +1605,6 @@ useractor enemy AM_EXODUDE AM_EXODUDE_HEALTH AC_EXODUDE_IDLE
 				action AC_EXODUDE_WALK
 				set am_estate 0
 			}
-		}
-		else ifactioncount 12 { // little bit pause if easy difficulties are used
-			ifand am_estate 1 {
-				stopactorsound THISACTOR S_SHOTGUN_RELOAD1
-				stopactorsound THISACTOR S_SHOTGUN_RELOAD2
-			}
-			action AC_EXODUDE_WALK
-			set am_estate 0
 		}
 	}
 	

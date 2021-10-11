@@ -12,12 +12,9 @@ appendevent EVENT_LOADACTOR
 		case I_SYRINGE
 		case I_DEFLECTOR
 		case I_BUDDY
-			geta[].lotag se_lotag
-            seta[].lotag 0
-            geta[].hitag se_hitag
-            seta[].hitag 0
-            geta[].yvel se_yvel
-            seta[].yvel 0
+			// NO NEED: WE USE CACTOR, IT PRESERVES CODE FROM PREVIOUS RUNS
+			ife am_estate 0
+				state loadpickup_standard
 		break
 	endswitch
 endevent
@@ -60,7 +57,13 @@ appendevent EVENT_SPAWN
 				cstator 8
 			cstator 32768
 		break
-		
+		case I_AMMOBOOST
+		case I_DEFLECTOR
+		case I_BUDDY
+		case I_SYRINGE
+			//ife am_estate 0
+				state spawnpickup_standard
+		break
 	endswitch
 endevent
 

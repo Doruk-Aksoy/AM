@@ -31,20 +31,6 @@ tilefromtexture 658 { file /sprites/am/pickups/buddy/BUDAI0.png }
 tilefromtexture 659 { file /sprites/am/pickups/buddy/BUDAJ0.png }
 
 // weapons
-// explosive shell
-tilefromtexture 660 { file /sprites/am/weapons/exshell/DXSKA0.png }
-tilefromtexture 661 { file /sprites/am/weapons/exshell/DKSXA0.png }
-tilefromtexture 662 { file /sprites/am/weapons/exshell/DKSXB0.png xoff -1 yoff -5 }
-tilefromtexture 663 { file /sprites/am/weapons/exshell/DKSXC0.png xoff -2 yoff -6 }
-tilefromtexture 664 { file /sprites/am/weapons/exshell/DKSXD0.png xoff -2 yoff -12 }
-tilefromtexture 665 { file /sprites/am/weapons/exshell/DKSXE0.png xoff -2 yoff -12 }
-tilefromtexture 666 { file /sprites/am/weapons/exshell/DKSXF0.png xoff -3 yoff -14 }
-tilefromtexture 667 { file /sprites/am/weapons/exshell/DKSXG0.png xoff -2 yoff -14 }
-tilefromtexture 668 { file /sprites/am/weapons/exshell/DKSXH0.png xoff -7 yoff -14 }
-tilefromtexture 669 { file /sprites/am/weapons/exshell/DKSXI0.png xoff -4 yoff -12 }
-tilefromtexture 670 { file /sprites/am/weapons/exshell/DKSXJ0.png xoff -4 yoff -12 }
-tilefromtexture 671 { file /sprites/am/weapons/exshell/DKSXK0.png xoff -4 yoff -11 }
-tilefromtexture 672 { file /sprites/am/weapons/exshell/DKSXL0.png xoff -4 yoff -8 }
 
 // damage tester
 tilefromtexture 673 { file /sprites/am/dummy64x64.png }
@@ -65,6 +51,21 @@ tilefromtexture 745 { file /sprites/am/weapons/flames/FLAML0.png xoff 12 yoff -7
 tilefromtexture 746 { file /sprites/am/weapons/flames/FLAMM0.png xoff 12 yoff -72 }
 tilefromtexture 747 { file /sprites/am/weapons/flames/FLAMN0.png xoff 8 yoff -68 }
 tilefromtexture 748 { file /sprites/am/weapons/flames/FLAMO0.png xoff 1 yoff -58 }
+
+// explosive shell
+tilefromtexture 749 { file /sprites/am/weapons/exshell/DXSKA0.png }
+tilefromtexture 750 { file /sprites/am/weapons/exshell/DKSXA0.png }
+tilefromtexture 751 { file /sprites/am/weapons/exshell/DKSXB0.png xoff -1 yoff -5 }
+tilefromtexture 752 { file /sprites/am/weapons/exshell/DKSXC0.png xoff -2 yoff -6 }
+tilefromtexture 753 { file /sprites/am/weapons/exshell/DKSXD0.png xoff -2 yoff -12 }
+tilefromtexture 754 { file /sprites/am/weapons/exshell/DKSXE0.png xoff -2 yoff -12 }
+tilefromtexture 755 { file /sprites/am/weapons/exshell/DKSXF0.png xoff -3 yoff -14 }
+tilefromtexture 756 { file /sprites/am/weapons/exshell/DKSXG0.png xoff -2 yoff -14 }
+tilefromtexture 757 { file /sprites/am/weapons/exshell/DKSXH0.png xoff -7 yoff -14 }
+tilefromtexture 758 { file /sprites/am/weapons/exshell/DKSXI0.png xoff -4 yoff -12 }
+tilefromtexture 759 { file /sprites/am/weapons/exshell/DKSXJ0.png xoff -4 yoff -12 }
+tilefromtexture 760 { file /sprites/am/weapons/exshell/DKSXK0.png xoff -4 yoff -11 }
+tilefromtexture 761 { file /sprites/am/weapons/exshell/DKSXL0.png xoff -4 yoff -8 }
 
 // enemies
 // seeker drone -- SPRITES BY SHADESMASTER

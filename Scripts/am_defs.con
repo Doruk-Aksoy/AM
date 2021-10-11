@@ -14,8 +14,8 @@ define AM_BUDDY_PROJ			653
 define AM_BUDDY_PROJTRAIL		654
 define AM_BUDDY_PROJHIT			655
 
-define AM_EXSHELL				660
-define AM_EXSHELL_HIT			661
+define AM_EXSHELL				749
+define AM_EXSHELL_HIT			750
 
 define DAMAGETESTER				673
 
@@ -77,7 +77,7 @@ define AM_BUDDY_TIME			600 // 20 seconds
 define AM_MAX_BUDDIES			5
 define AM_BUDDY_SPAWNCHANCE		64
 
-define AM_STAMINA_BOOST			5
+define AM_STAMINA_BOOST			2
 define AM_MAX_STAMINA_BOOST   	300
 define AM_STAMINA_SPAWNCHANCE	52 // around 20%
 
@@ -101,6 +101,9 @@ define PAL_DIOPEDE_YELLOW					137
 define AM_DIOPEDE_YELLOW_HEALTH				125
 define AM_DIOPEDE_YELLOW_BUTT_HEALTH		30
 define AM_DIOPEDE_YELLOW_DIST				160
+
+define HUD_POCKET_X_NEW						617
+define HUD_POCKET_Y_NEW						410
 
 define AM_A_GENERICMUZZLE					5994
 define AM_BRUTE_MUZZLEFLASH					6003
@@ -189,6 +192,7 @@ var p_max_grenades GRENADE_MAXAMMO GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SER
 
 var p_usedammotype 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
 var p_prevammotype 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
+var p_weaponcycle 0 1
 var p_extra_ammo_menu_on 0 1
 var p_prev_input 0 1
 var p_changeprevammo 0 1

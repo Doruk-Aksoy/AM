@@ -8,23 +8,24 @@ appendevent EVENT_LOADACTOR
 		case I_RADAR
 			// 33% chance to instead drop an ammo booster in this thing's place
 			ifrnd AM_AMMOBONUS_SPAWNCHANCE {
-				espawn I_AMMOBOOST
-				killit
+				// prevents se_lotag and other loading code from being run
+				set am_estate 1
+				cactor I_AMMOBOOST
 			}
 			else ifrnd AM_DEFLECTOR_SPAWNCHANCE {
-				espawn I_DEFLECTOR
-				killit
+				set am_estate 1
+				cactor I_DEFLECTOR
 			}
 		break
 		case I_MEDKIT
 			// 25% chance to instead drop a health syringe in this thing's place
 			ifrnd AM_STAMINA_SPAWNCHANCE {
-				espawn I_SYRINGE
-				killit
+				set am_estate 1
+				cactor I_SYRINGE
 			}
 			else ifrnd AM_BUDDY_SPAWNCHANCE {
-				espawn I_BUDDY
-				killit
+				set am_estate 1
+				cactor I_BUDDY
 			}
 		break
 		case I_SHOTGUN_AMMO
@@ -35,32 +36,34 @@ appendevent EVENT_LOADACTOR
 endevent
 		
 appendevent EVENT_SPAWN
-	switch sprite[].picnum
-		case I_RADAR
-			// 33% chance to instead drop an ammo booster in this thing's place
-			ifrnd AM_AMMOBONUS_SPAWNCHANCE {
-				espawn I_AMMOBOOST
-				killit
-			}
-			else ifrnd AM_DEFLECTOR_SPAWNCHANCE {
-				espawn I_DEFLECTOR
-				killit
-			}
-		break
-		case I_MEDKIT
-			// 25% chance to instead drop a health syringe in this thing's place
-			ifrnd AM_STAMINA_SPAWNCHANCE {
-				espawn I_SYRINGE
-				killit
-			}
-			else ifrnd AM_BUDDY_SPAWNCHANCE {
-				espawn I_BUDDY
-				killit
-			}
-		break
-		case I_SHOTGUN_AMMO
-			ifspritepal 0 ifrnd AM_EXPLOSIVESHELL_SPAWNCHANCE
-				spritepal AM_PAL_EXPLOSIVESHELL
-		break
-	endswitch
+	ifspawnedby RESPAWN {
+		switch sprite[].picnum
+			case I_RADAR
+				// 33% chance to instead drop an ammo booster in this thing's place
+				ifrnd AM_AMMOBONUS_SPAWNCHANCE {
+					set am_estate 1
+					cactor I_AMMOBOOST
+				}
+				else ifrnd AM_DEFLECTOR_SPAWNCHANCE {
+					set am_estate 1
+					cactor I_DEFLECTOR
+				}
+			break
+			case I_MEDKIT
+				// 25% chance to instead drop a health syringe in this thing's place
+				ifrnd AM_STAMINA_SPAWNCHANCE {
+					set am_estate 1
+					cactor I_SYRINGE
+				}
+				else ifrnd AM_BUDDY_SPAWNCHANCE {
+					set am_estate 1
+					cactor I_BUDDY
+				}
+			break
+			case I_SHOTGUN_AMMO
+				ifspritepal 0 ifrnd AM_EXPLOSIVESHELL_SPAWNCHANCE
+					spritepal AM_PAL_EXPLOSIVESHELL
+			break
+		endswitch
+	}
 endevent

@@ -76,41 +76,69 @@ appendevent EVENT_LOADACTOR
 				state roll_diopede_type
 		break
 		case A_DRONE
-			ifrnd 64
+			ifrnd 96
 				cactor AM_SEEKERDRONE
 		break
 		case A_ARCHANGEL
 			ifspritepal 0
-				ifrnd 32
+				ifrnd 64 {
 					cactor AM_EXODUDE
+					ifrnd 128
+						spritepal AM_EXODUDE_FLAMEPAL
+				}
 		break
 	endswitch
 endevent
 
+defstate am_enemy_mutation
+	// do this mutation only if respawn doesn't have a palette given to it already
+	switch sprite[].picnum
+		case A_CULTIST
+		case A_CULTIST_STAYPUT
+			geta[sprite.owner].pal am_tmp
+			ife am_tmp 0
+				state roll_cultist_type
+		break
+		case A_DIOPEDE_HEAD
+			geta[sprite.owner].pal am_tmp
+			ife am_tmp 0
+				state roll_diopede_type
+		break
+		case A_DRONE
+			ifrnd 96 {
+				espawn AM_SEEKERDRONE
+				killit
+			}
+		break
+		case A_ARCHANGEL
+			ifspritepal 0
+				ifrnd 256 {
+					espawn AM_EXODUDE
+					
+					// keep the scripts related to this guy working
+					setav[RETURN].se_hitag se_extra
+					setav[RETURN].se_xvel se_xvel
+					setav[RETURN].se_yvel se_yvel
+					setav[RETURN].se_zvel se_zvel
+					setav[RETURN].se_lotag tp_owner
+					setav[RETURN].enemy_init 1
+					
+					setav[RETURN].enemy_dontsleep 1
+					
+					ifrnd 128 {
+						seta[RETURN].pal AM_EXODUDE_FLAMEPAL
+						setav[RETURN].ms_flashpal AM_EXODUDE_FLAMEPAL
+					}
+					
+					killit
+				}
+		break
+	endswitch
+ends
+
 appendevent EVENT_SPAWN
-	ifspawnedby RESPAWN {
-		// do this mutation only if respawn doesn't have a palette given to it already
-		switch sprite[].picnum
-			case A_CULTIST
-			case A_CULTIST_STAYPUT
-				geta[sprite.owner].pal am_tmp
-				ife am_tmp 0
-					state roll_cultist_type
-			break
-			case A_DIOPEDE_HEAD
-				geta[sprite.owner].pal am_tmp
-				ife am_tmp 0
-					state roll_diopede_type
-			break
-			case A_DRONE
-				ifrnd 64
-					cactor AM_SEEKERDRONE
-			break
-			case A_ARCHANGEL
-				ifspritepal 0
-					ifrnd 32
-						cactor AM_EXODUDE
-			break
-		endswitch
-	}
+	ifspawnedby RESPAWN
+		state am_enemy_mutation
+	else ifspawnedby A_NEWRESPAWN
+		state am_enemy_mutation
 endevent

@@ -111,10 +111,9 @@ useractor notenemy I_AMMOBOOST
         set shardblink 0
     }
 	
-    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
-    {
+    ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive {
+		state item_secret
 		ifvarl p_ammocap_bonus AM_MAX_AMMOBONUS_CAP {
-			state item_secret
 			add p_ammocap_bonus 1
 			set p_update_ammocap 1
 			
@@ -195,9 +194,8 @@ useractor notenemy I_DEFLECTOR
     }
 	
     ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive {
+		state item_secret
 		ifvarl p_deflectors AM_MAX_DEFLECTORS {
-			state item_secret
-			
 			add p_deflectors 1
 			
             ife se_lotag 32767
@@ -291,9 +289,8 @@ useractor notenemy I_BUDDY
 	and counter3 2047
 	
     ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive {
+		state item_secret
 		ifvarl p_buddies AM_MAX_BUDDIES {
-			state item_secret
-			
 			add p_buddies 1
 			
             ife se_lotag 32767

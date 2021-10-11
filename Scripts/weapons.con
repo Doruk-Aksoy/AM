@@ -5711,8 +5711,16 @@ appendevent EVENT_PREVIOUSWEAPON
     else ife p_laddermounted 1
         set RETURN -1
 	// skip weapon slot 7 for now
-	ife player.curr_weapon WEAPON_CROSSBOW
-		set RETURN WEAPON_BOWLINGBOMB
+	set p_weaponcycle player[].curr_weapon
+	whilevarn p_weaponcycle -1 {
+		sub p_weaponcycle 1
+		ifl p_weaponcycle 0
+			set p_weaponcycle WEAPON_LAM
+		ife player[].gotweapon p_weaponcycle 1 ifn p_weaponcycle WEAPON_GRENADE {
+			set RETURN p_weaponcycle
+			set p_weaponcycle -1
+		}
+	}
     set weaponlast player[].curr_weapon
     set weaponcycle 1
     state clear_weapon_charges
@@ -5726,8 +5734,16 @@ appendevent EVENT_NEXTWEAPON
     else ife p_laddermounted 1
         set RETURN -1
 	// skip weapon slot 7 for now
-	ife player.curr_weapon WEAPON_BOWLINGBOMB
-		set RETURN WEAPON_CROSSBOW
+	set p_weaponcycle player[].curr_weapon
+	whilevarn p_weaponcycle -1 {
+		add p_weaponcycle 1
+		ifg p_weaponcycle WEAPON_LAM
+			set p_weaponcycle WEAPON_SHOCKER
+		ife player[].gotweapon p_weaponcycle 1 ifn p_weaponcycle WEAPON_GRENADE {
+			set RETURN p_weaponcycle
+			set p_weaponcycle -1
+		}
+	}
     set weaponlast player[].curr_weapon
     set weaponcycle 2
     state clear_weapon_charges

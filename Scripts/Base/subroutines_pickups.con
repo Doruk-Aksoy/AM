@@ -207,7 +207,9 @@ defstate fury_i_shotgunammo
             state shotgun_ammo_picked
             setp[].weaponswitch temp6
         }
-        else
+        else ife am_ammotmp 1
+			break
+		else
             state shotgun_ammo_picked
 		
 		state correct_shotgun_ammohack
@@ -245,31 +247,27 @@ defstate fury_i_grenadelauncher
     ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
     {
         state item_secret
-        ife player[].gotweapon WEAPON_GRENADE 0
+        ife player[].gotweapon WEAPON_SHOTGUN 0
         {
             set p_face_grin 45
             set myfavoriteguns 1
         }
-        ifn player.ammo_amount WEAPON_GRENADE GRENADE_MAXAMMO
-        {
-            ife player.curr_weapon WEAPON_GRENADE
-                set flash_wasweaponammo 6
-            else
-                set flash_wasweaponammo 2
-        }
+        ifn p_grenades p_max_grenades
+            set flash_wasweaponammo 2
         ife player[].curr_weapon 0
         {
             getp[].weaponswitch temp6
-            ife player[].gotweapon WEAPON_GRENADE 1
+            ife player[].gotweapon WEAPON_SHOTGUN 1
             {
                 setp[].weaponswitch 0
-                ife player[].ammo_amount WEAPON_GRENADE GRENADE_MAXAMMO
+                ife p_grenades p_max_grenades
                 {
                     setp[].weaponswitch temp6
                     break
                 }
             }
-            addweapon WEAPON_GRENADE GRENADE_AMMOAMOUNT
+            add p_grenades GRENADE_AMMOAMOUNT
+			clamp p_grenades 0 p_max_grenades
 
             setp[].weaponswitch temp6
         }
@@ -280,14 +278,11 @@ defstate fury_i_grenadelauncher
                 ife player.curr_weapon WEAPON_SHOTGUN
                 {
                     set press_alt 20
-                    setp .gotweapon WEAPON_GRENADE 1
-                    addammo WEAPON_GRENADE GRENADE_AMMOAMOUNT
+                    //setp .gotweapon WEAPON_GRENADE 1
                 }
-                else
-                    addweapon WEAPON_GRENADE GRENADE_AMMOAMOUNT
             }
-            else
-                addweapon WEAPON_GRENADE GRENADE_AMMOAMOUNT
+            add p_grenades GRENADE_AMMOAMOUNT
+			clamp p_grenades 0 p_max_grenades
         }
         set p_firstgrenade 1
         getp[].sound_pitch temp
@@ -325,7 +320,7 @@ defstate fury_i_grenadeammo
         {
             ife p_firstgrenade 0
             {
-                ifn player[].curr_weapon WEAPON_SHOTGUN ifn player[].curr_weapon WEAPON_GRENADE
+                ifn player[].curr_weapon WEAPON_SHOTGUN
                 {
                     setp[].gotweapon WEAPON_GRENADE 0
                     addweapon WEAPON_GRENADE 0
@@ -356,12 +351,7 @@ defstate fury_i_grenadeammo
             getp[].weaponswitch temp6
             setp[].weaponswitch 0
             ifn p_grenades p_max_grenades
-            {
-                ife player.curr_weapon WEAPON_GRENADE
-                    set flash_wasweaponammo 6
-                else
-                    set flash_wasweaponammo 2
-            }
+                set flash_wasweaponammo 2
             ifl p_grenades p_max_grenades {
 				add p_grenades GRENADE_AMMOAMOUNT
 				clamp p_grenades 0 p_max_grenades

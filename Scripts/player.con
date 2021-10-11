@@ -2873,6 +2873,7 @@ defstate reset_131072
 	set p_explosiveshell_clip 0
 	set p_explosiveshells 0
 	set p_usedammotype 0
+	set p_stamina_boosts 0
 ends
 
 array tempwall 262144
@@ -8361,6 +8362,16 @@ defstate draw_hud_armor
     }
 ends
 
+// new state added to adjust pocket pos
+defstate adjust_pocket_y
+	ife player.curr_weapon WEAPON_SHOTGUN {
+		ifg p_grenades 0
+			sub hudx_y 32
+		ifg p_explosiveshells 0
+			sub hudx_y 32
+	}
+ends
+
 defstate draw_hud_ammo
     ifvarn player[].curr_weapon WEAPON_SHOCKER
     {
@@ -8609,8 +8620,10 @@ defstate draw_hud_ammo
     {
         set hudx_tilenum HUD_POCKET_FULL
 
-        set hudx_x HUD_POCKET_X
-        set hudx_y HUD_POCKET_Y
+        set hudx_x HUD_POCKET_X_NEW // changed coord to somewhere else
+        set hudx_y HUD_POCKET_Y_NEW
+		state adjust_pocket_y
+		
         set hudx_scale HUD_POCKET_Z
         set hudx_pal 0
         set hudx_shade 0

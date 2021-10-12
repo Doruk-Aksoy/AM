@@ -106,12 +106,18 @@ actor AM_EXSHELL_HIT 0
 		state exshell_spawn_firespark
 	
 	ife sprite.htg_t 0 ms_flashpal {
-		// idk how you get player id from a known actor id
-		getpv[myconnectindex].p_pup_damage_time temp
-		ifg temp 0
-			hitradius 1280 24 36 48 60
-		else
-			hitradius 1280 12 18 24 30
+		set am_tmp sprite[tp_owner].picnum
+		ife am_tmp A_SHOTGUNNER {
+			hitradius 1280 3 5 7 9
+		}
+		else {
+			// idk how you get player id from a known actor id
+			getpv[myconnectindex].p_pup_damage_time temp
+			ifg temp 0
+				hitradius 1280 24 36 48 60
+			else
+				hitradius 1280 12 18 24 30
+		}
 	}
 	
 	ifactioncount 12

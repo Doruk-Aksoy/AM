@@ -49,13 +49,17 @@ ends
 defstate fury_spawnshotgunner_altpal
     ifspritepal PAL_SHOTGUNNER_ALT
         nullop
-    else
+    else ifspritepal PAL_EXSHOTGUNNER
+		nullop
+	else
         spritepal PAL_SHOTGUNNER
 ends
 
 defstate fury_spawnshotgunner_gtype
     ifspritepal PAL_SHOTGUNNER_ALT
         nullop
+    else ifspritepal PAL_EXSHOTGUNNER
+		nullop
     else
     {
         ife gunner_type 1
@@ -180,6 +184,8 @@ defstate fury_altpal_shotgunner_init
         seta .extra SHOTGUNNER_ALT_HEALTH
         set gunner_type 1
     }
+	else ifspritepal PAL_EXSHOTGUNNER
+		set gunner_type 2
 ends
 
 defstate fury_altpal_shotgunner_dodge

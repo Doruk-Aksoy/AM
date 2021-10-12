@@ -57,6 +57,11 @@ defstate roll_diopede_type
 		spritepal PAL_DIOPEDE_YELLOW
 ends
 
+defstate roll_shotgunner_type
+	ifrnd AM_EXSHOTGUNNER_WEIGHT
+		spritepal PAL_EXSHOTGUNNER
+ends
+
 appendevent EVENT_LOADACTOR
 	switch sprite[].picnum
 		case A_CULTIST
@@ -66,6 +71,15 @@ appendevent EVENT_LOADACTOR
 				state roll_cultist_type
 			else ifspritepal 89
 				state roll_cultist_type
+		break
+		case A_SHOTGUNNER:
+		case A_SHOTGUNNER_STAYPUT:
+			ifspritepal PAL_SHOTGUNNER
+				state roll_shotgunner_type
+			else ifspritepal 89
+				state roll_shotgunner_type
+			else ifspritepal 0
+				state roll_shotgunner_type
 		break
 		case A_DIOPEDE_HEAD
 			ifspritepal 0
@@ -81,7 +95,7 @@ appendevent EVENT_LOADACTOR
 		break
 		case A_ARCHANGEL
 			ifspritepal 0
-				ifrnd 64 {
+				ifrnd 72 {
 					cactor AM_EXODUDE
 					ifrnd 128
 						spritepal AM_EXODUDE_FLAMEPAL
@@ -89,6 +103,30 @@ appendevent EVENT_LOADACTOR
 		break
 	endswitch
 endevent
+
+defstate am_copy_tags
+	// keep the scripts related to this guy working
+	set am_tmp sprite[sprite.owner].yvel
+	ifn am_tmp 0 {
+		setav[RETURN].se_yvel am_tmp
+		
+		getav[sprite.owner].se_extra am_tmp
+		setav[RETURN].se_hitag am_tmp
+		
+		set am_tmp sprite[sprite.owner].xvel
+		setav[RETURN].se_xvel am_tmp
+		
+		set am_tmp sprite[sprite.owner].zvel
+		setav[RETURN].se_zvel am_tmp
+		
+		getav[].se_lotag am_tmp
+		setav[RETURN].se_lotag am_tmp
+		
+		setav[RETURN].enemy_init 1
+	}
+
+	setav[RETURN].enemy_dontsleep 1
+ends
 
 defstate am_enemy_mutation
 	// do this mutation only if respawn doesn't have a palette given to it already
@@ -99,6 +137,12 @@ defstate am_enemy_mutation
 			ife am_tmp 0
 				state roll_cultist_type
 		break
+		case A_SHOTGUNNER:
+		case A_SHOTGUNNER_STAYPUT:
+			geta[sprite.owner].pal am_tmp
+			ife am_tmp 0
+				state roll_shotgunner_type
+		break
 		case A_DIOPEDE_HEAD
 			geta[sprite.owner].pal am_tmp
 			ife am_tmp 0
@@ -107,23 +151,17 @@ defstate am_enemy_mutation
 		case A_DRONE
 			ifrnd 96 {
 				espawn AM_SEEKERDRONE
+				state am_copy_tags
 				killit
 			}
 		break
 		case A_ARCHANGEL
 			ifspritepal 0
-				ifrnd 256 {
+				ifrnd 72 {
 					espawn AM_EXODUDE
 					
-					// keep the scripts related to this guy working
-					setav[RETURN].se_hitag se_extra
-					setav[RETURN].se_xvel se_xvel
-					setav[RETURN].se_yvel se_yvel
-					setav[RETURN].se_zvel se_zvel
-					setav[RETURN].se_lotag tp_owner
-					setav[RETURN].enemy_init 1
-					
-					setav[RETURN].enemy_dontsleep 1
+					state am_copy_tags
+					setav[RETURN].am_estate 64
 					
 					ifrnd 128 {
 						seta[RETURN].pal AM_EXODUDE_FLAMEPAL

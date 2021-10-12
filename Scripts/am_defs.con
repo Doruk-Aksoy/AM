@@ -38,13 +38,14 @@ define AM_EXODUDE					12843
 define AM_EXODUDE_STAYPUT			12844
 define AM_EXODUDE_DEAD				12889
 define AM_EXODUDE_SHIELD			12890
+define AM_EXODUDE_SPEED				32
 define AM_EXODUDE_FLAMEDIST			7200
 define AM_FLAME_SPEED				480
 define AM_P_EXORAILTRAIL			5950
 define AM_P_EXORAIL					5951
 define AM_P_EXORAILHIT				5952
 define AM_P_EXORAILTRAIL_FAKE		5953
-define AM_EXODUDE_HEALTH			250
+define AM_EXODUDE_HEALTH			300
 define AM_EXODUDE_FLAMEPAL			128
 
 // QUOTE DEFS
@@ -93,6 +94,9 @@ define AM_FIRECULTIST_SHOTRAND				2
 define PAL_AUTOCULTIST						78
 define AM_AUTOCULTIST_WEIGHT				150
 define AM_AUTOCULTIST_HEALTH 				60
+
+define PAL_EXSHOTGUNNER						15
+define AM_EXSHOTGUNNER_WEIGHT				64
 
 define AM_CULTIST_TYPES						3 // regular, fire, auto
 define AM_CULTIST_TYPE_LOOP					2 // -1 for for loops
@@ -193,6 +197,7 @@ var p_max_grenades GRENADE_MAXAMMO GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SER
 var p_usedammotype 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
 var p_prevammotype 0 GAMEVAR_PERPLAYER GAMEVAR_NORESET GAMEVAR_SERIALIZE
 var p_weaponcycle 0 1
+var p_weaponcycle_result 0 1
 var p_extra_ammo_menu_on 0 1
 var p_prev_input 0 1
 var p_changeprevammo 0 1

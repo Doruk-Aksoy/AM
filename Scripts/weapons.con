@@ -5703,6 +5703,18 @@ appendevent EVENT_SELECTWEAPON
     }
 endevent
 
+defstate confirm_weapon_swap
+	ife p_weaponcycle WEAPON_SHOCKER
+		set p_weaponcycle_result 1
+	else ifg player[].ammo_amount p_weaponcycle 0 
+		set p_weaponcycle_result 1
+
+	ife p_weaponcycle_result 1 {
+		set RETURN p_weaponcycle
+		set p_weaponcycle -1
+	}
+ends
+
 appendevent EVENT_PREVIOUSWEAPON
     ife minigun 1
         set RETURN -1
@@ -5712,14 +5724,13 @@ appendevent EVENT_PREVIOUSWEAPON
         set RETURN -1
 	// skip weapon slot 7 for now
 	set p_weaponcycle player[].curr_weapon
+	set p_weaponcycle_result 0
 	whilevarn p_weaponcycle -1 {
 		sub p_weaponcycle 1
 		ifl p_weaponcycle 0
 			set p_weaponcycle WEAPON_LAM
-		ife player[].gotweapon p_weaponcycle 1 ifn p_weaponcycle WEAPON_GRENADE {
-			set RETURN p_weaponcycle
-			set p_weaponcycle -1
-		}
+		ife player[].gotweapon p_weaponcycle 1 ifn p_weaponcycle WEAPON_GRENADE ifn p_weaponcycle player[].curr_weapon
+			state confirm_weapon_swap
 	}
     set weaponlast player[].curr_weapon
     set weaponcycle 1
@@ -5735,14 +5746,13 @@ appendevent EVENT_NEXTWEAPON
         set RETURN -1
 	// skip weapon slot 7 for now
 	set p_weaponcycle player[].curr_weapon
+	set p_weaponcycle_result 0
 	whilevarn p_weaponcycle -1 {
 		add p_weaponcycle 1
 		ifg p_weaponcycle WEAPON_LAM
 			set p_weaponcycle WEAPON_SHOCKER
-		ife player[].gotweapon p_weaponcycle 1 ifn p_weaponcycle WEAPON_GRENADE {
-			set RETURN p_weaponcycle
-			set p_weaponcycle -1
-		}
+		ife player[].gotweapon p_weaponcycle 1 ifn p_weaponcycle WEAPON_GRENADE ifn p_weaponcycle player[].curr_weapon
+			state confirm_weapon_swap
 	}
     set weaponlast player[].curr_weapon
     set weaponcycle 2

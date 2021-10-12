@@ -7765,23 +7765,68 @@ defstate do_ammo_on_wheel
 		// no baton ammo obv.
 		ifn temp 0 {
 			// special ammo coloring for shotgun
-			ife temp WEAPON_SHOTGUN {
-				ife p_usedammotype AM_AMMOTYPE_NORMALSHELL {
+			switch temp
+				case WEAPON_LOVERBOY
+					redefinequote 190 %ld / %ld
+					getp[].ammo_amount temp am_p_tmp
+					set am_p_tmp2 PISTOL_CLIP
+					sub am_p_tmp2 weapon1_realclip
+					ifl am_p_tmp am_p_tmp2 
+						set am_p_tmp2 am_p_tmp
+					qsprintf 190 190 am_p_tmp2 am_p_tmp
+					set hudx_pal 12
+				break
+				case WEAPON_SHOTGUN
+					redefinequote 190 %ld / %ld
+					ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL {
+						set am_p_tmp2 SHOTGUN_CLIP
+						sub am_p_tmp2 p_explosiveshell_clip
+						set am_p_tmp p_explosiveshells
+						set hudx_pal 14
+					}
+					else ife p_usedammotype AM_AMMOTYPE_GRENADE {
+						set am_p_tmp2 SHOTGUN_CLIP
+						sub am_p_tmp2 p_grenade_clip
+						set am_p_tmp p_grenades
+						set hudx_pal 5
+					}
+					else {
+						getp[].ammo_amount temp am_p_tmp
+						set am_p_tmp2 SHOTGUN_CLIP
+						sub am_p_tmp2 weapon2_realclip
+						set hudx_pal 9
+					}
+					ifl am_p_tmp am_p_tmp2 
+						set am_p_tmp2 am_p_tmp
+					qsprintf 190 190 am_p_tmp2 am_p_tmp
+				break
+				case WEAPON_SMG
+					redefinequote 190 %ld / %ld
+					getp[].ammo_amount temp am_p_tmp
+					set am_p_tmp2 SMG_CLIP
+					sub am_p_tmp2 weapon3_realclip
+					ifl am_p_tmp am_p_tmp2 
+						set am_p_tmp2 am_p_tmp
+					qsprintf 190 190 am_p_tmp2 am_p_tmp
+					set hudx_pal 12
+				break
+				case WEAPON_CROSSBOW
+					redefinequote 190 %ld / %ld
+					getp[].ammo_amount temp am_p_tmp
+					set am_p_tmp2 CROSSBOW_CLIP
+					sub am_p_tmp2 weapon7_realclip
+					ifl am_p_tmp am_p_tmp2 
+						set am_p_tmp2 am_p_tmp
+					qsprintf 190 190 am_p_tmp2 am_p_tmp
+					set hudx_pal 12
+				break
+				default
 					redefinequote 190 %ld
 					qsprintf 190 190 player.ammo_amount temp
-					set hudx_pal 9
-				}
-				else ife p_usedammotype AM_AMMOTYPE_GRENADE {
-					redefinequote 190 %ld
-					qsprintf 190 190 p_grenades
-					set hudx_pal 5
-				}
-				else ife p_usedammotype AM_AMMOTYPE_EXPLOSIVESHELL {
-					redefinequote 190 %ld
-					qsprintf 190 190 p_explosiveshells
-					set hudx_pal 14
-				}
-			}
+					set hudx_pal 12
+				break
+			endswitch
+
 			state DrawText640x480Hud
 		}
 		sub hudx_x temp2
@@ -7810,7 +7855,6 @@ defstate draw_hud_weaponwheel
             {
                 ife itervar WEAPON_GRENADE
                 {
-                
                     ife p_firstgrenade 1
                         add temp8 1
                 }

@@ -11,7 +11,7 @@ INSTALLATION:
 	Simply export all the folders into your main Ion Fury folder under steam.
 	This is typically the following folder: C:/Steam/steamapps/common/Ion Fury/
 	Dump all the files provided in the zip to this folder. Make sure to backup any folder that has the same name as the ones in here!
-	To uninstall simply remove these folders.
+	To uninstall simply remove these folders, am.def and fury.def files.
 
 FEATURES:
 =========
@@ -45,6 +45,9 @@ b) Enemies
 		+ Additionally, you can place this in maps. Palette 15 on a cultist will make it into this version.
 	- One that fires unless the line of sight is broken. Palette 78 will make a cultist into this type. This has a 10% chance to appear in place of a regular cultist. Also has a little more health.
 	- NOTE: If you don't want these to randomly appear, comment out the "include scripts/am_mutator_e.con" line in "am.con" (Double // at the beginning). That's the enemy mutator file.
+* New shotgunner variant. Pal 15 -> Fires explosive shells! Extremely deadly.
+	- This has a 25% chance to appear in place of a regular shotgunner.
+	- NOTE: If you don't want this to randomly appear, comment out the "include scripts/am_mutator_e.con" line in "am.con" (Double // at the beginning). That's the enemy mutator file.
 * There is a new Diopede type that spits acid in more areas at once and has more overall health. It has palette 137 and is a bit bigger than the regular diopede.
 * You can now place enemies with different palette colors in your maps. The default colors will be instantiated if palette is left as is, which is 0.
 * Added a new enemy: Seeker Drone (Tile 11744). Acts a bit like the drones but they are weaker, and can sometimes move to dodge while firing. They do area damage when dead.

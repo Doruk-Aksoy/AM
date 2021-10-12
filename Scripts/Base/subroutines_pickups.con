@@ -284,6 +284,7 @@ defstate fury_i_grenadelauncher
             add p_grenades GRENADE_AMMOAMOUNT
 			clamp p_grenades 0 p_max_grenades
         }
+		addweapon WEAPON_SHOTGUN 0
         set p_firstgrenade 1
         getp[].sound_pitch temp
         setp[].sound_pitch 256

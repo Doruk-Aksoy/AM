@@ -839,12 +839,13 @@ defstate clear_enemy_vels
     geta .xvel se_xvel
     geta .yvel se_yvel
     geta .zvel se_zvel
+	
     ifge se_zvel GRAVITATIONALCONSTANT
         sub se_zvel GRAVITATIONALCONSTANT
     seta .xvel 0
     seta .yvel 0
     seta .zvel 0
-    
+	
 	state fixshade
 ends
 
@@ -5496,8 +5497,16 @@ defstate lesser_shotgun_shared
             {
                 ifactor A_SHOTGUNNER
                 {
-                    ifg gunner_type 0 // TODO: fix this later so we spawn the correct ammo!!!
-                        espawn I_GRENADELAUNCHER_AMMO
+					// TODO: fix this later so we spawn the correct ammo!!!
+					// -- added ex shotgunner
+                    ifg gunner_type 0 {
+						ife gunner_type 1
+							espawn I_GRENADELAUNCHER_AMMO
+						else {
+							espawn I_SHOTGUN_AMMO
+							seta[RETURN].pal AM_PAL_EXPLOSIVESHELL
+						}
+					}
                     else
                     {
                         ifrnd 128 espawn I_SHOTGUN
@@ -6362,7 +6371,6 @@ defstate lesser_shotgun_shared
 
 					switch gunner_type
                         case 1
-                        case 2
                             getprojectile[P_GRENADE].extra temp8
                             getprojectile[P_GRENADE].extra_rand temp9
 
@@ -6394,7 +6402,39 @@ defstate lesser_shotgun_shared
                             setprojectile[P_GRENADE].workslike temp4
                             setprojectile[P_GRENADE].extra temp8
                             setprojectile[P_GRENADE].extra_rand temp9
-                            break
+                        break
+						case 2
+							for itervar range AM_EXSHELL_SHOTSPERBURST {
+								geta .ang am_estate
+								set temp am_estate
+								rand temp2 64
+								sub temp2 32
+								add temp temp2
+								
+								setprojectile[AM_EXSHELL].extra 4
+								
+								eshoot AM_EXSHELL
+								seta[RETURN].ang temp
+								
+								setprojectile[AM_EXSHELL].extra 16 // restore default
+								
+								set temp itervar
+								add temp 1
+								setav[RETURN].ms_flashpal temp
+								geta[RETURN].zvel am_z
+								rand temp2 96
+								sub temp2 48
+								shiftl temp2 3
+								add am_z temp2
+								seta[RETURN].zvel am_z
+								
+								// not too loud please
+								ifrnd 64
+									setthisprojectile[RETURN].isound -1
+								
+								seta .ang am_estate
+							}
+						break
                         default
                             eshoot P_SHOTGUN
                             eshoot P_SHOTGUN
@@ -14367,8 +14407,8 @@ useractor notenemy A_ARCHANGEL_DEAD 0 AC_BASE
     changespritestat THISACTOR STAT_STATIC_GIB
 enda
 useractor enemy A_ARCHANGEL ARCHANGEL_HEALTH AC_ARCHANGEL_BASE
-	ifn sprite.pal 0 ifn sprite.pal 77 ifn sprite.pal 7
-		ife actorvar.ms_flashpal 0
+	ife actorvar.ms_flashpal 0
+		ifn sprite.pal 0 ifn sprite.pal 77 ifn sprite.pal 7 ifn sprite.pal 63
 			setav .ms_flashpal sprite.pal
     ifspritepal 7
         set counter2 1

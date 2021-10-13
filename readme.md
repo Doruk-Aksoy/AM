@@ -79,8 +79,8 @@
 ## Showcase Videos
 ------------------
 
-- Showcase #1: Power Up! https://youtu.be/DdNKoZn0WvQ
-- Showcase #2: Inhospitable Hospitality: https://youtu.be/IR07waFuJ8k
+- Showcase #1: Inhospitable Hospitality: https://youtu.be/IR07waFuJ8k
+- Showcase #2: Power Up! https://youtu.be/DdNKoZn0WvQ
 
 ## CONTACT
 - You can contact me in Discord under DrkKsy#9327.

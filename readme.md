@@ -44,6 +44,9 @@
 		+ Additionally, you can place this in maps. Palette 15 on a cultist will make it into this version.
 	- One that fires unless the line of sight is broken. Palette 78 will make a cultist into this type. This has a 10% chance to appear in place of a regular cultist. Also has a little more health.
 	- NOTE: If you don't want these to randomly appear, comment out the "include scripts/am_mutator_e.con" line in "am.con" (Double // at the beginning). That's the enemy mutator file.
+* New shotgunner variant. Pal 15 -> Fires explosive shells! Extremely deadly.
+	- This has a 25% chance to appear in place of a regular shotgunner.
+	- NOTE: If you don't want this to randomly appear, comment out the "include scripts/am_mutator_e.con" line in "am.con" (Double // at the beginning). That's the enemy mutator file.
 * There is a new Diopede type that spits acid in more areas at once and has more overall health. It has palette 137 and is a bit bigger than the regular diopede.
 * You can now place enemies with different palette colors in your maps. The default colors will be instantiated if palette is left as is, which is 0.
 * Added a new enemy: Seeker Drone (Tile 11744). Acts a bit like the drones but they are weaker, and can sometimes move to dodge while firing. They do area damage when dead.
@@ -60,7 +63,7 @@
 
 * Overstacking health no longer degenerates.
 * Radars have 33% chance to be replaced by a backpack that boosts your ammo capacities by 10% on pickup.
-* Portable medkits have 20% chance to be replaced by a syringe that permanently boosts maximum health capacity by 5.
+* Portable medkits have 20% chance to be replaced by a syringe that permanently boosts maximum health capacity by 2.
 * New pickup: Buddy. Create a robot buddy around you that shoots enemies and follows you around. You need to bind a new key for this.
 	- Has 25% chance to spawn in place of a medkit. If you don't want these to randomly appear, comment out the "include scripts/am_mutator_i.con" in "am.con" (Double // at the beginning).
 * New pickup: Deflector. Deflect back all projectiles while completely nullifying hitscan damage. You need to bind a new key for this.
@@ -70,9 +73,8 @@
 ## Miscellaneous
 ----------------
 
-* Third person Shelly run animation made a little faster.
 * Player screen flashes the right colors when harmed by something after being harmed by slime / acid damage.
-
+* You can find a test map called "am_test.map" in the installation. It's a very simple "zoo" map of the new features basically.
 
 ## CONTACT
 - You can contact me in Discord under DrkKsy#9327.

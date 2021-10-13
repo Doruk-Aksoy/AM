@@ -6402,6 +6402,9 @@ defstate lesser_shotgun_shared
                             setprojectile[P_GRENADE].workslike temp4
                             setprojectile[P_GRENADE].extra temp8
                             setprojectile[P_GRENADE].extra_rand temp9
+							
+							ifpdistl ENEMY_SOUND_DIST
+								sound S_MECH_GRENADE
                         break
 						case 2
 							for itervar range AM_EXSHELL_SHOTSPERBURST {
@@ -6434,6 +6437,17 @@ defstate lesser_shotgun_shared
 								
 								seta .ang am_estate
 							}
+							
+							getp .sound_pitch temp
+							randvar temp3 64
+							add temp3 512
+							add temp temp3
+							setp .sound_pitch temp
+							// use beefier shotgun sound
+							ifpdistl ENEMY_SOUND_DIST
+								sound AM_S_EXSHOTGUN
+							sub temp temp3
+							setp .sound_pitch temp
 						break
                         default
                             eshoot P_SHOTGUN
@@ -6443,6 +6457,20 @@ defstate lesser_shotgun_shared
                             eshoot P_SHOTGUN
                             eshoot P_SHOTGUN
                             eshoot P_SHOTGUN
+							
+							// added firing sound here, no need for another if
+							getp .sound_pitch temp
+							randvar temp3 64
+							add temp3 512
+							add temp temp3
+							setp .sound_pitch temp
+							// use beefier shotgun sound
+							rand temp2 AM_S_SHOTGUN_RAND
+							add temp2 AM_S_SHOTGUNFIRE_1
+							ifpdistl ENEMY_SOUND_DIST
+								soundvar temp2
+							sub temp temp3
+							setp .sound_pitch temp
                             break
                     endswitch
 
@@ -6452,27 +6480,9 @@ defstate lesser_shotgun_shared
                     geta .z temp6
                     add temp6 1536
                     seta .z temp6
+					
+					// removed sounds from here
 
-                    ife gunner_type 1
-                    {
-                        ifpdistl ENEMY_SOUND_DIST
-                            sound S_MECH_GRENADE
-                    }
-                    else
-                    {
-                        getp .sound_pitch temp
-                        randvar temp3 64
-                        add temp3 512
-                        add temp temp3
-                        setp .sound_pitch temp
-						// use beefier shotgun sound
-                        rand temp2 AM_S_SHOTGUN_RAND
-                        add temp2 AM_S_SHOTGUNFIRE_1
-                        ifpdistl ENEMY_SOUND_DIST
-                            soundvar temp2
-                        sub temp temp3
-                        setp .sound_pitch temp
-                    }
                     ifaction AC_CULTIST_SHOOT_CRC
                     {
                         sub temp6 3072

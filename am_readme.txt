@@ -64,7 +64,7 @@ c) Pickups
 
 * Overstacking health no longer degenerates.
 * Radars have 33% chance to be replaced by a backpack that boosts your ammo capacities by 10% on pickup.
-* Portable medkits have 20% chance to be replaced by a syringe that permanently boosts maximum health capacity by 5.
+* Portable medkits have 20% chance to be replaced by a syringe that permanently boosts maximum health capacity by 2.
 * New pickup: Buddy. Create a robot buddy around you that shoots enemies and follows you around. You need to bind a new key for this.
 	- Has 25% chance to spawn in place of a medkit. If you don't want these to randomly appear, comment out the "include scripts/am_mutator_i.con" in "am.con" (Double // at the beginning).
 * New pickup: Deflector. Deflect back all projectiles while completely nullifying hitscan damage. You need to bind a new key for this.
@@ -74,5 +74,5 @@ c) Pickups
 d) Miscellaneous
 ----------------
 
-* Third person Shelly run animation made a little faster.
 * Player screen flashes the right colors when harmed by something after being harmed by slime / acid damage.
+* You can find a test map called "am_test.map" in the installation. It's a very simple "zoo" map of the new features basically.

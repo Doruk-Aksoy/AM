@@ -1,4 +1,4 @@
-# ION FURY: ANGER MANAGEMENT (WIP 2.0 UPGRADE)
+# ION FURY: ANGER MANAGEMENT (2.0 READY)
 
 <img src="https://imgur.com/Y2q9K4B.png"/>
 
@@ -75,6 +75,12 @@
 
 * Player screen flashes the right colors when harmed by something after being harmed by slime / acid damage.
 * You can find a test map called "am_test.map" in the installation. It's a very simple "zoo" map of the new features basically.
+
+## Showcase Videos
+------------------
+
+- Showcase #1: Power Up! https://youtu.be/DdNKoZn0WvQ
+- Showcase #2: Inhospitable Hospitality: https://youtu.be/IR07waFuJ8k
 
 ## CONTACT
 - You can contact me in Discord under DrkKsy#9327.

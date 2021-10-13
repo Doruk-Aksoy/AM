@@ -83,4 +83,6 @@
 - Showcase #2: Power Up! https://youtu.be/DdNKoZn0WvQ
 
 ## CONTACT
+
 - You can contact me in Discord under DrkKsy#9327.
+- You can also join my modding discord: https://discord.gg/JjTB3Gm

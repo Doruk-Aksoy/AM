@@ -4157,7 +4157,7 @@ useractor enemy A_MECHSECT MECHSECT_HEALTH AC_MECHSECT_IDLE
             shiftl temp4 1
             seta .htextra temp4
         }
-        else ife player.curr_weapon WEAPON_LOVERBOY ifn weapon1_alt 0
+        else ife player.curr_weapon WEAPON_LOVERBOY // ifn weapon1_alt 0 -- commented out, so the loverboy one shots the mechsects :)
         {
             shiftl temp4 1
             seta .htextra temp4

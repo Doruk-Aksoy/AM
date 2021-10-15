@@ -20,7 +20,9 @@ a) Weapons
 ----------
 
 * Loverboy fire sound changed with a beefier one.
+* Loverboy does +1 more damage now.
 * Shotgun fire sound changed with a beefier one.
+* Shotgun fires +1 more pellets.
 * Fire damage of SMG increased by 1 over time, and chance for enemies to catch fire increased a tiny bit.
 * Loverboy aim fuckup halved.
 * SMG now deals its regular damage when used akimbo rather than 80% of it.
@@ -35,6 +37,7 @@ a) Weapons
 b) Enemies
 ----------
 
+* Mechsects can get one shot from Loverboy primary fire more reliably now.
 * Brute napalm ball does radius damage now.
 * Brute and Skinjob flames spread a bit more, there are a bit more flames around and the flames linger 33% longer.
 * Brute melee damage scales with game skill, lowest is 10, maximum 28.

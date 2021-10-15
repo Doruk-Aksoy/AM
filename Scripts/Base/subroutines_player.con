@@ -186,7 +186,10 @@ defstate show_shotgun_ammo
 
 	redefinequote 190 %ld / %ld
 	set am_p_tmp2 SHOTGUN_CLIP
-	subvarvar am_p_tmp2 temp3
+	sub am_p_tmp2 temp3
+	ifl temp2 am_p_tmp2
+		set am_p_tmp2 temp2
+	
 	qsprintf 190 190 am_p_tmp2 temp2
 	set hudx_quote 190
 	set hudx_tilenum BIGALPHANUM

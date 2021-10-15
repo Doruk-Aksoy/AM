@@ -96,7 +96,7 @@ gamestartup                             DEFAULTVISIBILITY       GENERICIMPACTDAM
 
 // weapon damage
 define WEAPON0_DMG                      10
-define WEAPON1_DMG                      5 // per round ++ random per round
+define WEAPON1_DMG                      6 // per round ++ random per round
 define WEAPON2_DMG                      3
 define GRENADE_DMG                      150
 define WEAPON3_DMG                      9 // currently just uses loverboy projectile, change this later!

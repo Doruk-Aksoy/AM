@@ -217,8 +217,9 @@ appendevent EVENT_DOFIRE
 			for itervar range AM_EXSHELL_SHOTSPERBURST {
 				getp .ang am_ang
 				set temp am_ang
-				rand temp2 64
-				sub temp2 32
+				rand temp2 1024
+				sub temp2 512
+				shiftr temp2 4 // div by 16 to map range to -32 32
 				add temp temp2
 				setp .ang temp
 				

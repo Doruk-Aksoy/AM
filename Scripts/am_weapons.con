@@ -194,6 +194,7 @@ useractor notenemy AM_FLAME
 						sub am_dist temp2
 						ifl am_dist 1024 {
 							set cansee_target temp
+							set cansee_height 6144
 							state cansee_simple
 							ife cansee_return 1 {			
 								rand am_tmp 2

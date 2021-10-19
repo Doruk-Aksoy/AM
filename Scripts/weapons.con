@@ -5146,7 +5146,8 @@ useractor notenemy A_FIRECYCLONE 0 AC_FIRECYCLONE_SPIN
             seta[].shade temp
         }
 
-        ifpdistl AM_FIRECYCLONE_PULLDIST
+		// dont pull unless the player has line of sight between the thing
+        ifpdistl AM_FIRECYCLONE_PULLDIST ifcansee
         {
             getplayer[].i temp
             geta[].ang temp4

@@ -720,6 +720,7 @@ useractor notenemy AM_BUDDY 0
 		ifg am_tmp 6400
 			set temp 1
 		set cansee_target htg_owner
+		set cansee_height 6144
 		state cansee_simple
 		ife cansee_return 0 {
 			add ps_flash 1
@@ -774,6 +775,7 @@ useractor notenemy AM_BUDDY 0
 						add am_z 3200
 						seta .z am_z
 						set cansee_target temp
+						set cansee_height 6144
 						state cansee_simple
 						sub am_z 3200
 						seta .z am_z
@@ -799,6 +801,7 @@ useractor notenemy AM_BUDDY 0
 								add am_z 3200
 								seta .z am_z
 								set cansee_target temp
+								set cansee_height 6144
 								state cansee_simple
 								sub am_z 3200
 								seta .z am_z
@@ -812,6 +815,7 @@ useractor notenemy AM_BUDDY 0
 								add am_z 3200
 								seta .z am_z
 								set cansee_target temp
+								set cansee_height 6144
 								state cansee_simple
 								sub am_z 3200
 								seta .z am_z

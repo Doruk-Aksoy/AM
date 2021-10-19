@@ -4725,26 +4725,26 @@ defstate p_buddy
 ends
 
 defstate p_show_ammo_menu_text
-	ifn temp4 0 {
+	ifn am_hud_temp3 0 {
 		state ResetText
-		set temp2 temp
-		add temp2 1
+		set am_hud_hold am_hud_temp
+		add am_hud_hold 1
 		
-		switch temp
+		switch am_hud_temp
 			case AM_AMMOTYPE_NORMALSHELL
-				getkeyname temp5 19 2 // w1
+				getkeyname am_hud_key 19 2 // w1
 			break
 			case AM_AMMOTYPE_GRENADE
-				getkeyname temp5 20 2 // w1
+				getkeyname am_hud_key 20 2 // w1
 			break
 			case AM_AMMOTYPE_EXPLOSIVESHELL
-				getkeyname temp5 21 2 // w1
+				getkeyname am_hud_key 21 2 // w1
 			break
 		endswitch
 
 		redefinequote 190 %s. %s ^0(^11%ld^0)
-		qsprintf 190 190 temp5 temp3 temp4
-		mul temp2 16
+		qsprintf 190 190 am_hud_key am_hud_temp2 am_hud_temp3
+		mul am_hud_hold 16
 		set hudx_quote 190
 		set hudx_tilenum STARTALPHANUM
 		set hudx_orientation 272
@@ -4753,19 +4753,19 @@ defstate p_show_ammo_menu_text
 		set hudx_scale 32768
 		set hudx_pal 0
 		set hudx_y 120
-		add hudx_y temp2
+		add hudx_y am_hud_hold
 		state DrawText640x480Hud
 	}
 ends
 
 defstate p_show_ammo_menu_text_exit
 	state ResetText
-	set temp2 temp
-	add temp2 1
-	getkeyname temp3 11 2 // look_up
+	set am_hud_hold am_hud_temp
+	add am_hud_hold 1
+	getkeyname am_hud_key 11 2 // look_up
 	redefinequote 190 %s^0. ^12Quit
-	qsprintf 190 190 temp3
-	mul temp2 16
+	qsprintf 190 190 am_hud_key
+	mul am_hud_hold 16
 	set hudx_quote 190
 	set hudx_tilenum STARTALPHANUM
 	set hudx_orientation 272
@@ -4774,23 +4774,23 @@ defstate p_show_ammo_menu_text_exit
 	set hudx_scale 32768
 	set hudx_pal 0
 	set hudx_y 120
-	add hudx_y temp2
+	add hudx_y am_hud_hold
 	state DrawText640x480Hud
 ends
 
 defstate p_handle_ammo_menu_press
-	set temp2 0
-	geti .bits temp
-	ifand temp INPUT_LOOK_UP {
+	set am_tmp2 0
+	geti .bits am_bits
+	ifand am_bits INPUT_LOOK_UP {
 		ifn p_prev_input 1 {
-			set temp2 1
+			set am_tmp2 1
 			set p_prev_input 1
 		}
 	}
 	else
 		set p_prev_input 0
 	
-	ife temp2 1 {
+	ife am_tmp2 1 {
 		ife p_extra_ammo_menu_on 0 {
 			// only let the player use it when not on ladders or end of level
 			ife p_eol 0 ife p_laddermounted 0 ifg sprite.extra 0 {
@@ -4809,24 +4809,24 @@ defstate p_ammo_menu
 	ife p_extra_ammo_menu_on 1 {
 		ifn p_ammohack 1 {
 			// don't show the original ammo type as an option if we're in hack mode
-			set temp AM_AMMOTYPE_NORMALSHELL
-			set temp3 1005
-			set temp4 player.ammo_amount WEAPON_SHOTGUN
+			set am_hud_temp AM_AMMOTYPE_NORMALSHELL
+			set am_hud_temp2 1005
+			set am_hud_temp3 player.ammo_amount WEAPON_SHOTGUN
 			state p_show_ammo_menu_text
 		}
 		
-		set temp AM_AMMOTYPE_GRENADE
-		set temp3 1006
-		set temp4 p_grenades
+		set am_hud_temp AM_AMMOTYPE_GRENADE
+		set am_hud_temp2 1006
+		set am_hud_temp3 p_grenades
 		state p_show_ammo_menu_text
 		
-		set temp AM_AMMOTYPE_EXPLOSIVESHELL
-		set temp3 1007
-		set temp4 p_explosiveshells
+		set am_hud_temp AM_AMMOTYPE_EXPLOSIVESHELL
+		set am_hud_temp2 1007
+		set am_hud_temp3 p_explosiveshells
 		state p_show_ammo_menu_text
 		
-		add temp 2
-		set temp3 1008
+		add am_hud_temp 2
+		set am_hud_temp2 1008
 		state p_show_ammo_menu_text_exit
 	}
 ends

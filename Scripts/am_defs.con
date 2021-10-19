@@ -114,6 +114,8 @@ define AM_BRUTE_MUZZLEFLASH					6003
 
 define AM_FIRECYCLONE_PULLDIST				8192
 
+define P_RADAR_DURATION						675 // more duration
+
 // are also used like bits in player ammo display code
 define AM_AMMOTYPE_NORMALSHELL				0
 define AM_AMMOTYPE_GRENADE					1
@@ -145,11 +147,18 @@ var am_maxammo_tmp
 
 var am_tmp
 var am_tmp2
+var am_hud_temp
+var am_hud_temp2
+var am_hud_temp3
+var am_hud_hold
+var am_bits
+var am_hud_key
 var am_weight // the result of weight roll for mutator
 var am_weight_comp // comparison of weight
 var am_rolled // class roll done
 var am_resetpicnum
 var am_hitang
+var am_hitang_save 0 2
 var am_ztarget
 var am_proj
 var am_angtemp

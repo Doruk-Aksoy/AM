@@ -247,13 +247,18 @@ defstate fury_i_grenadelauncher
     ifpdistl RETRIEVEDISTANCE ifcanseetarget ifcount 6 ifp palive
     {
         state item_secret
+		set am_ammotmp 0
         ife player[].gotweapon WEAPON_SHOTGUN 0
         {
             set p_face_grin 45
             set myfavoriteguns 1
         }
+		
         ifn p_grenades p_max_grenades
             set flash_wasweaponammo 2
+		else
+			set am_ammotmp 1
+		
         ife player[].curr_weapon 0
         {
             getp[].weaponswitch temp6
@@ -271,7 +276,9 @@ defstate fury_i_grenadelauncher
 
             setp[].weaponswitch temp6
         }
-        else
+        else ife am_ammotmp 1 // dont give ammo infinitely!
+			break
+		else
         {
             ife p_firstgrenade 0
             {

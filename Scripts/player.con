@@ -118,7 +118,7 @@ var powerup_display_counter
 
 var force_mode 1 0
 define DROWNTIMER 5
-define LOVERBOY_ALT_TIME 20
+define LOVERBOY_ALT_TIME 65535
 
 define LADDERSPEED 688          // Modify this value to speed up or slow down ladders
 var p_ladder_other 0 1

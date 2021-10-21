@@ -21,6 +21,8 @@ a) Weapons
 
 * Loverboy fire sound changed with a beefier one.
 * Loverboy does +1 more damage now.
+* Loverboy alt can be used for a much longer time now.
+* Loverboy alt lock-on angle increased to 45 degrees from 33.75 degrees.
 * Shotgun fire sound changed with a beefier one.
 * Shotgun fires +1 more pellets.
 * Fire damage of SMG increased by 1 over time, and chance for enemies to catch fire increased a tiny bit.

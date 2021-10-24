@@ -81,3 +81,14 @@ d) Miscellaneous
 
 * Player screen flashes the right colors when harmed by something after being harmed by slime / acid damage.
 * You can find a test map called "am_test.map" in the installation. It's a very simple "zoo" map of the new features basically.
+
+e) Showcase Videos
+------------------
+
+- Showcase #1: Inhospitable Hospitality: https://youtu.be/IR07waFuJ8k
+- Showcase #2: Power Up! https://youtu.be/DdNKoZn0WvQ
+
+f) CONTACT
+
+- You can contact me in Discord under DrkKsy#9327.
+- You can also join my modding discord: https://discord.gg/JjTB3Gm
